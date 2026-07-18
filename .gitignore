@@ -1,0 +1,56 @@
+# ===== 依赖 =====
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+
+# ===== IDE / 编辑器 =====
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ===== 大文件 / 二进制包 =====
+*.tar.gz
+*.pptx
+spiderfoot-deploy.tar.gz
+
+# ===== 比赛提交文件夹（含个人/学校信息）=====
+2026080287-*/
+
+# ===== 备份目录 =====
+.original_backup/
+
+# ===== 数据库文件（可能含敏感泄露数据）=====
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== 环境变量 / 密钥 =====
+.env
+.env.local
+*.pem
+*.key
+
+# ===== 系统文件 =====
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===== 日志 / 临时文件 =====
+*.log
+*.tmp
+*.bak
+
+# ===== leak-check 上游代码（单独说明即可）=====
+leak-check-main/
+
+# ===== 答辩材料（含个人信息）=====
+答辩演讲稿_*.docx
+答辩逐字稿_*.docx
+答辩问答预案_*.docx
+演示文稿*.pptx
+
+# ===== 报名表（含个人信息）=====
+计设报名表/

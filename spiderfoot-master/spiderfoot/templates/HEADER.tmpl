@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <title>消痕侠 - 数字痕迹管理平台</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="消痕侠 - 数字痕迹管理平台，一键扫描、脱敏、删除全网公开信息">
+    <link rel="icon" type="image/png" href="${docroot}/static/img/spiderfoot-icon.png">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Core CSS -->
+    <link href="${docroot}/static/css/privacyguard.css" rel="stylesheet">
+    <link href="${docroot}/static/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${docroot}/static/node_modules/alertifyjs/build/css/alertify.min.css" rel="stylesheet">
+    <link href="${docroot}/static/node_modules/tablesorter/dist/css/jquery.tablesorter.pager.min.css" rel="stylesheet">
+
+    <script>
+      var head = document.getElementsByTagName('HEAD')[0];
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = "${docroot}/static/node_modules/tablesorter/dist/css/theme.default.min.css";
+      head.appendChild(link);
+    </script>
+  </head>
+
+  <body class="pg-body">
+
+    <!-- Sidebar Navigation -->
+    <aside class="pg-sidebar" id="sidebar">
+      <div class="pg-sidebar-logo">
+        <div class="pg-logo-icon">
+          <!-- 消痕侠 Logo：盾牌 + 扫描十字 -->
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M11 2L3 5.5V11c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V5.5L11 2z" fill="rgba(255,255,255,0.25)" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="11" cy="11" r="3.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.5"/>
+            <line x1="11" y1="5.5" x2="11" y2="7.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="11" y1="14.5" x2="11" y2="16.5" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="5.5" y1="11" x2="7.5" y2="11" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="14.5" y1="11" x2="16.5" y2="11" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="pg-logo-text">
+          <span class="pg-logo-main">消痕侠</span>
+          <span class="pg-logo-sub">数字痕迹管理平台</span>
+        </div>
+      </div>
+
+      <nav class="pg-nav">
+        <div class="pg-nav-section">
+          <span class="pg-nav-label">主要功能</span>
+          <a href="${docroot}/" class="pg-nav-item ${'' if pageid != 'SCANLIST' else 'active'}">
+            <svg class="pg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span>扫描任务</span>
+          </a>
+          <a href="${docroot}/newscan" class="pg-nav-item ${'' if pageid != 'NEWSCAN' else 'active'}">
+            <svg class="pg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+            <span>新建扫描</span>
+          </a>
+        </div>
+
+        <div class="pg-nav-section">
+          <span class="pg-nav-label">隐私管理</span>
+          <a href="${docroot}/leakcheck" class="pg-nav-item ${'' if pageid != 'LEAKCHECK' else 'active'}">
+            <svg class="pg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+            <span>泄露检测</span>
+            <span class="pg-nav-badge pg-badge-red">NEW</span>
+          </a>
+          <a href="${docroot}/privacyaction" class="pg-nav-item ${'active' if pageid == 'PRIVACYACTION' else ''}">
+            <svg class="pg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>痕迹清理与管控</span>
+            <span class="pg-nav-badge pg-badge-blue">NEW</span>
+          </a>
+          <a href="${docroot}/riskalertspage" class="pg-nav-item ${'active' if pageid == 'RISKALERTS' else ''}">
+            <svg class="pg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            <span>风险告警</span>
+            <span class="pg-nav-badge pg-badge-red" id="nav-alert-badge" style="display:none;">0</span>
+          </a>
+        </div>
+
+        <div class="pg-nav-section">
+          <span class="pg-nav-label">微服务状态</span>
+          <a href="${docroot}/dataviz" class="pg-nav-item ${'active' if pageid == 'DATAVIZ' else ''}">
+            <svg class="pg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="4" y1="20" x2="20" y2="20"/>
+              <rect x="5" y="11" width="3" height="8" rx="1"/>
+              <rect x="10.5" y="7" width="3" height="12" rx="1"/>
+              <rect x="16" y="4" width="3" height="15" rx="1"/>
+            </svg>
+            <span>数据洞察看板</span>
+          </a>
+          <a href="${docroot}/servicemonitor" class="pg-nav-item ${'active' if pageid == 'SERVICEMONITOR' else ''}">
+            <svg class="pg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            <span>服务监控</span>
+          </a>
+          <a href="${docroot}/opts" class="pg-nav-item ${'' if pageid != 'SETTINGS' else 'active'}">
+            <svg class="pg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            <span>系统设置</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Services Status Mini Panel -->
+      <div class="pg-service-panel">
+        <div class="pg-service-title">系统状态</div>
+        <div class="pg-service-item" id="sb-service-scan">
+          <span class="pg-status-dot pg-dot-yellow" id="sb-dot-scan"></span>
+          <span>扫描任务</span>
+          <span class="pg-service-status" id="sb-status-scan">加载中...</span>
+        </div>
+        <div class="pg-service-item">
+          <span class="pg-status-dot pg-dot-green"></span>
+          <span>Web 服务</span>
+          <span class="pg-service-status">运行中</span>
+        </div>
+        <div class="pg-service-item">
+          <span class="pg-status-dot pg-dot-green"></span>
+          <span>数据库</span>
+          <span class="pg-service-status">正常</span>
+        </div>
+        <div class="pg-service-item" id="sb-service-risk">
+          <span class="pg-status-dot pg-dot-green" id="sb-dot-risk"></span>
+          <span>风险告警</span>
+          <span class="pg-service-status" id="sb-status-risk">--</span>
+        </div>
+      </div>
+    </aside>
+
+    <script>
+    (function() {
+      var docroot = '${docroot}';
+      function updateSidebarStatus() {
+        fetch(docroot + '/scanlist').then(function(r) { return r.json(); }).then(function(data) {
+          var running = 0, finished = 0;
+          for (var i = 0; i < data.length; i++) {
+            var s = data[i][6];
+            if (['RUNNING','STARTING','STARTED','INITIALIZING'].indexOf(s) >= 0) running++;
+            else if (s === 'FINISHED') finished++;
+          }
+          var dot = document.getElementById('sb-dot-scan');
+          var status = document.getElementById('sb-status-scan');
+          if (dot && status) {
+            if (running > 0) {
+              dot.className = 'pg-status-dot pg-dot-yellow';
+              status.textContent = running + ' 进行中';
+            } else {
+              dot.className = 'pg-status-dot pg-dot-green';
+              status.textContent = finished + ' 已完成';
+            }
+          }
+          // 更新风险告警
+          fetch(docroot + '/riskalerts').then(function(r) {
+            if (!r.ok) throw new Error('not ok');
+            return r.json();
+          }).then(function(alerts) {
+            // 过滤已关闭（dismissed）的告警
+            var dismissed = [];
+            try { dismissed = JSON.parse(localStorage.getItem('sf_dismissed_alerts') || '[]'); } catch(e) {}
+            var activeAlerts = alerts.filter(function(a) { return dismissed.indexOf(a.alertId) < 0; });
+
+            var high   = activeAlerts.filter(function(a) { return a.risk === 'HIGH'; }).length;
+            var medium = activeAlerts.filter(function(a) { return a.risk === 'MEDIUM'; }).length;
+
+            var dot = document.getElementById('sb-dot-risk');
+            var status = document.getElementById('sb-status-risk');
+            if (dot && status) {
+              if (high > 0) {
+                dot.className = 'pg-status-dot pg-dot-red';
+                status.textContent = high + ' 高风险';
+              } else {
+                dot.className = 'pg-status-dot pg-dot-green';
+                status.textContent = '暂无告警';
+              }
+            }
+
+            // 更新隐私评分
+            // 无扫描数据时显示 --；有数据时按权重计算：
+            //   起始 100 分，每条 HIGH -10，每条 MEDIUM -4，最低 10 分
+            var scoreEl = document.getElementById('privacy-score');
+            if (scoreEl) {
+              if (alerts.length === 0) {
+                // 无任何扫描数据，不显示具体分数
+                scoreEl.textContent = '--';
+              } else {
+                var score = Math.max(10, 100 - high * 10 - medium * 4);
+                scoreEl.textContent = score;
+                var badge = document.getElementById('global-risk');
+                if (badge) {
+                  if (score < 60) {
+                    badge.style.color = 'var(--accent-red)';
+                    badge.style.borderColor = 'rgba(239,68,68,0.3)';
+                  } else if (score < 80) {
+                    badge.style.color = 'var(--accent-yellow)';
+                    badge.style.borderColor = 'rgba(245,158,11,0.3)';
+                  } else {
+                    badge.style.color = 'var(--accent-green)';
+                    badge.style.borderColor = 'rgba(34,197,94,0.3)';
+                  }
+                }
+              }
+            }
+
+            // 更新侧边栏告警徽章（只计未关闭的）
+            var alertBadge = document.getElementById('nav-alert-badge');
+            if (alertBadge) {
+              if (activeAlerts.length > 0) {
+                alertBadge.textContent = activeAlerts.length > 99 ? '99+' : activeAlerts.length;
+                alertBadge.style.display = 'inline-block';
+              } else {
+                alertBadge.style.display = 'none';
+              }
+            }
+          }).catch(function() {
+            // 请求失败（未登录/网络错误）保持 -- 不修改
+          });
+        }).catch(function() {});
+      }
+      updateSidebarStatus();
+      // 每 30 秒刷新一次状态
+      setInterval(updateSidebarStatus, 30000);
+    })();
+    </script>
+
+    <!-- Main Content Area -->
+    <main class="pg-main" id="mainbody">
+      <div class="pg-topbar">
+        <button class="pg-menu-toggle" onclick="(function(){var sb=document.getElementById('sidebar');var body=document.querySelector('.pg-body');sb.classList.toggle('collapsed');body.classList.toggle('sidebar-collapsed');})()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div class="pg-topbar-title" id="page-title">消痕侠 - 数字痕迹管理平台</div>
+        <div class="pg-topbar-actions">
+          <a href="${docroot}/logout" class="pg-btn pg-btn-ghost pg-btn-sm" style="margin-right:8px;">退出登录</a>
+          <div class="pg-risk-badge" id="global-risk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>隐私评分</span>
+            <span class="pg-risk-score" id="privacy-score">--</span>
+          </div>
+          <div class="pg-version-tag">v${version}</div>
+        </div>
+      </div>
+      <div class="pg-content">

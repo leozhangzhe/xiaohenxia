@@ -1,0 +1,398 @@
+<%include file="HEADER.tmpl"/>
+<script>var docroot = '${docroot}';</script>
+<script type='text/javascript' src='${docroot}/static/js/spiderfoot.opts.js'></script>
+
+<div class="pg-page-header pg-fade-in">
+  <h1 class="pg-page-title">系统设置</h1>
+  <p class="pg-page-subtitle">配置扫描模块参数与 API 密钥，设置将在下次扫描时生效</p>
+</div>
+
+% if updated:
+<div class="pg-alert pg-alert-success pg-fade-in">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+  <div>设置已保存成功，将在下次扫描时生效。</div>
+</div>
+% endif
+
+<form class="pg-fade-in" action='${docroot}/savesettings' id="savesettingsform" method='POST' enctype="multipart/form-data">
+  <input type=hidden id='allopts' name='allopts' value=''>
+  <input type=hidden id='token' name='token' value="${token}">
+  <input type="file" name='configFile' id="configFile" class='hidden' onChange='$("#savesettingsform").submit()' />
+
+  <!-- 操作栏 -->
+  <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+    <button id="btn-save-changes" class='pg-btn pg-btn-primary' type="submit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      保存设置
+    </button>
+    <button id="btn-import-config" class='pg-btn pg-btn-ghost' type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      导入 API 密钥
+    </button>
+    <button id="btn-opt-export" class='pg-btn pg-btn-ghost' type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      导出 API 密钥
+    </button>
+    <button id="btn-reset-settings" class='pg-btn pg-btn-ghost' type="button" style="color:var(--accent-red)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.58"/></svg>
+      恢复出厂设置
+    </button>
+  </div>
+
+  <!-- 两栏布局：左侧模块导航 + 右侧设置内容 -->
+  <div style="display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:start;">
+
+    <!-- 左侧导航 -->
+    <div class="pg-card" style="position:sticky;top:80px;max-height:calc(100vh - 120px);overflow-y:auto;">
+      <div class="pg-card-header">
+        <div class="pg-card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          模块列表
+        </div>
+      </div>
+      <div style="padding: 8px 0;">
+        <a href='#' onclick='switchTab("global"); return false;' id='tab_global'
+           style="display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:13px;color:var(--accent-blue);text-decoration:none;background:rgba(79,142,247,0.08);border-left:3px solid var(--accent-blue);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          全局设置
+        </a>
+        % for mod in sorted(opts['__modules__'].keys()):
+          <% keylist = dict((k, v) for k, v in opts['__modules__'][mod]['opts'].items() if not k.startswith('_')) %>
+          % if len(keylist) > 0:
+            <% keyicon = "" %>
+            <% apikeylist = dict((k, v) for k, v in opts['__modules__'][mod]['opts'].items() if k.find("api_key") >= 0) %>
+            <%
+            if len(apikeylist) > 0:
+                keyicon = "🔑"
+            %>
+            <a href='#' onclick='switchTab("${mod}"); return false;' id='tab_${mod}'
+               style="display:flex;align-items:center;justify-content:space-between;padding:7px 16px;font-size:12px;color:var(--text-secondary);text-decoration:none;transition:all 0.15s;border-left:3px solid transparent;"
+               onmouseover="this.style.background='rgba(255,255,255,0.03)';this.style.color='var(--text-primary)';"
+               onmouseout="this.style.background='';this.style.color='';">
+              <span>${opts['__modules__'][mod]['name']}</span>
+              % if len(apikeylist) > 0:
+              <span style="font-size:11px;" title="需要API密钥">🔑</span>
+              % endif
+            </a>
+          % endif
+        % endfor
+      </div>
+    </div>
+
+    <!-- 右侧内容区 -->
+    <div>
+      <!-- 全局设置 -->
+      <div id='optsect_global' class="pg-card">
+        <div class="pg-card-header">
+          <div class="pg-card-title">全局设置</div>
+        </div>
+        <div class="pg-card-body">
+          <div class="pg-table-wrap">
+            <table class="pg-table">
+              <thead><tr><th>配置项说明</th><th style="width:340px;">值</th></tr></thead>
+              <tbody>
+              % for opt in sorted(opts.keys()):
+                % if not opt.startswith("__"):
+                <tr>
+                  <td>${opts['__globaloptdescs__'].get(opt) or "暂无说明"}</td>
+                  <td>
+                    % if type(opts[opt]) is int:
+                      <input id='${opt}' class='pg-input' type="text" value="${opts[opt]}" style="width:100%;">
+                    % endif
+                    % if type(opts[opt]) is str:
+                      <input id='${opt}' class='pg-input' type="text" value="${opts[opt]}" style="width:100%;">
+                    % endif
+                    % if type(opts[opt]) is bool:
+                      <%
+                      if opts[opt] == True:
+                          seltrue = "selected"
+                          selfalse = ""
+                      else:
+                          selfalse = "selected"
+                          seltrue = ""
+                      %>
+                      <select id='${opt}' class='pg-select'>
+                        <option value=1 ${seltrue}>开启</option>
+                        <option value=0 ${selfalse}>关闭</option>
+                      </select>
+                    % endif
+                    % if type(opts[opt]) is list and type(opts[opt][0]) is str:
+                      <% expandedopt = ','.join(opts[opt]) %>
+                      <input id='${opt}' class='pg-input' type="text" value="${expandedopt}" style="width:100%;">
+                    % endif
+                    % if type(opts[opt]) is list and type(opts[opt][0]) is int:
+                      <% expandedopt = ','.join(str(x) for x in opts[opt]) %>
+                      <input id='${opt}' class='pg-input' type="text" value="${expandedopt}" style="width:100%;">
+                    % endif
+                  </td>
+                </tr>
+                % endif
+              % endfor
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 各模块设置 -->
+      % for mod in sorted(opts['__modules__'].keys()):
+        <%
+          summary = opts['__modules__'][mod].get('descr') or '暂无说明。'
+          categories = opts['__modules__'][mod].get('cats') or []
+          labels = opts['__modules__'][mod].get('labels') or []
+          meta = opts['__modules__'][mod].get('meta')
+          modopts = opts['__modules__'][mod].get('opts')
+          optdescs = opts['__modules__'][mod].get('optdescs')
+          data_source = meta.get('dataSource') or {}
+          website = data_source.get('website') or ''
+          description = data_source.get('description') or ''
+          apiKeyInstructions = data_source.get('apiKeyInstructions') or ''
+        %>
+        <div id='optsect_${mod}' class="pg-card" style="display:none;">
+          <div class="pg-card-header">
+            <div class="pg-card-title">${opts['__modules__'][mod]['name']}</div>
+            <div style="font-size:11px;color:var(--text-muted);">${mod}</div>
+          </div>
+          <div class="pg-card-body">
+            <!-- 模块信息 -->
+            <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;">
+              <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:8px;">${summary}</div>
+              % if description:
+              <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">${description}</div>
+              % endif
+              <div style="display:flex;gap:12px;margin-top:10px;flex-wrap:wrap;">
+                % if categories:
+                <div style="font-size:11px;color:var(--text-muted);">分类：
+                  % for cat in categories:
+                  <span style="background:rgba(79,142,247,0.1);color:var(--accent-blue);padding:2px 8px;border-radius:10px;margin-left:4px;">${cat}</span>
+                  % endfor
+                </div>
+                % endif
+                % if labels:
+                <div style="font-size:11px;color:var(--text-muted);">标签：
+                  % for label in labels:
+                  <span style="background:rgba(255,255,255,0.06);color:var(--text-muted);padding:2px 8px;border-radius:10px;margin-left:4px;">${label}</span>
+                  % endfor
+                </div>
+                % endif
+                % if website:
+                <a href="${website}" target="_blank" style="font-size:11px;color:var(--accent-blue);">🔗 官方网站</a>
+                % endif
+              </div>
+            </div>
+
+            <!-- 配置项 -->
+            <div class="pg-table-wrap">
+              <table class="pg-table">
+                <thead><tr><th>配置项说明</th><th style="width:340px;">值</th></tr></thead>
+                <tbody>
+                % for opt in sorted(modopts.keys()):
+                  % if not opt.startswith("_"):
+                  <tr>
+                    <td>
+                      ${optdescs.get(opt) or "暂无说明"}
+                      % if "api_key" in opt:
+                        % if apiKeyInstructions:
+                          <%
+                          import re
+                          instructions = ""
+                          for step in apiKeyInstructions:
+                              if "https://" in step or "http://" in step:
+                                  step = re.sub(r'(https?://.[^ ]+)', '<a target=_new href=\'\\1\'>\\1</a>', step)
+                              instructions += f"<li>{step}</li>"
+                          %>
+                          <br><details style="margin-top:6px;"><summary style="font-size:11px;color:var(--accent-blue);cursor:pointer;">🔑 获取 API 密钥步骤</summary><ol style="font-size:11px;color:var(--text-muted);margin-top:6px;padding-left:16px;line-height:2;">${instructions}</ol></details>
+                        % endif
+                      % endif
+                    </td>
+                    <td>
+                      % if type(modopts[opt]) is int:
+                        <input id='${mod}:${opt}' class='pg-input' type="text" value="${modopts[opt]}" style="width:100%;">
+                      % endif
+                      % if type(modopts[opt]) is str:
+                        <input id='${mod}:${opt}' class='pg-input' type="text" value="${modopts[opt]}" style="width:100%;">
+                      % endif
+                      % if type(modopts[opt]) is bool:
+                        <%
+                        if modopts[opt] == True:
+                            seltrue = "selected"
+                            selfalse = ""
+                        else:
+                            selfalse = "selected"
+                            seltrue = ""
+                        %>
+                        <select id='${mod}:${opt}' class='pg-select'>
+                          <option value=1 ${seltrue}>开启</option>
+                          <option value=0 ${selfalse}>关闭</option>
+                        </select>
+                      % endif
+                      % if type(modopts[opt]) is list and type(modopts[opt][0]) is str:
+                        <% expandedopt = ','.join(modopts[opt]) %>
+                        <input id='${mod}:${opt}' class='pg-input' type="text" value="${expandedopt}" style="width:100%;">
+                      % endif
+                      % if type(modopts[opt]) is list and type(modopts[opt][0]) is int:
+                        <% expandedopt = ','.join(str(x) for x in modopts[opt]) %>
+                        <input id='${mod}:${opt}' class='pg-input' type="text" value="${expandedopt}" style="width:100%;">
+                      % endif
+                    </td>
+                  </tr>
+                  % endif
+                % endfor
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      % endfor
+    </div>
+  </div>
+</form>
+
+<script>
+/* 配置项英文→中文翻译 */
+(function() {
+  var optZh = {
+    /* 全局配置项名 */
+    '_debug': '调试模式',
+    '_maxthreads': '最大并发线程数',
+    '_useragent': '浏览器标识 (User-Agent)',
+    '_dnsserver': '自定义 DNS 服务器',
+    '_fetchtimeout': '请求超时时间(秒)',
+    '_internettlds': '顶级域名列表地址',
+    '_internettlds_cache': '域名列表缓存时间(小时)',
+    '_genericusers': '通用用户名列表',
+    '_socks1type': 'SOCKS 代理类型',
+    '_socks2addr': 'SOCKS 代理地址',
+    '_socks3port': 'SOCKS 代理端口',
+    '_socks4user': 'SOCKS 代理用户名',
+    '_socks5pwd': 'SOCKS 代理密码',
+    /* 常见模块配置项名 */
+    'api_key': 'API 密钥',
+    'api_secret': 'API 密钥',
+    'apikey': 'API 密钥',
+    'apiurl': 'API 接口地址',
+    'api_url': 'API 接口地址',
+    'api_endpoint': 'API 接口地址',
+    'base_url': '基础 URL',
+    'baseurl': '基础 URL',
+    'url': '接口地址',
+    'username': '用户名',
+    'password': '密码',
+    'user': '用户名',
+    'pass': '密码',
+    'email': '邮箱地址',
+    'token': '访问令牌 (Token)',
+    'limit': '查询数量限制',
+    'pages': '翻页数量',
+    'delay': '请求间隔(毫秒)',
+    'max_pages': '最大翻页数',
+    'max_results': '最大结果数',
+    'max_threads': '最大并发线程数',
+    'timeout': '超时时间(秒)',
+    'verify_ssl': '验证 SSL 证书',
+    'retention_days': '数据保留天数',
+    'cookers': '是否启用 Cookie',
+    'proxy': '代理地址',
+    'headers': '自定义请求头',
+    'frequency': '扫描频率',
+    'depth': '扫描深度',
+    'maxdepth': '最大扫描深度',
+    'verbose': '详细输出',
+    'enabled': '是否启用',
+    'rate_limit': '请求频率限制',
+    'exclude': '排除项',
+    'include': '包含项',
+    'domains_only': '仅限域名',
+    'subdomains': '包含子域名',
+    'historical': '历史数据',
+    'dns_records': 'DNS 记录类型',
+    'language': '语言',
+    'country': '国家/地区',
+    'regions': '区域范围',
+    'pages_source': '数据来源',
+    'safe_browsing': '安全浏览',
+    'email_only': '仅邮箱',
+    'full_name': '全名',
+    'company': '公司名称',
+    'location': '地理位置',
+    'keywords': '关键词',
+  };
+
+  /* 配置项说明翻译 */
+  var descZh = {
+    'API Key': '第三方服务的接口密钥，用于访问其数据',
+    'API key': '第三方服务的接口密钥，用于访问其数据',
+    'Your API key': '你的 API 密钥',
+    'API key for': '以下服务的 API 密钥：',
+    'API token obtained from': '从以下平台获取的访问令牌：',
+    'Set to True to enable': '设为开启以启用此功能',
+    'Enable': '启用',
+    'Disable': '禁用',
+    'Number of': '数量限制：',
+    'Maximum number of': '最大数量：',
+    'Timeout in seconds': '超时时间（秒）',
+    'DNS server to use for resolution': '用于域名解析的 DNS 服务器',
+    'User-Agent string': '浏览器标识字符串',
+    ' SOCKS proxy': 'SOCKS 代理',
+    'Verify SSL certificates': '是否验证 SSL 证书安全性',
+    'Maximum pages to fetch': '最大抓取页面数',
+    'Delay between requests': '请求之间的间隔时间',
+  };
+
+  function translateCell(text) {
+    if (!text || typeof text !== 'string') return text;
+    var t = text;
+    /* 精确匹配 */
+    if (optZh[t]) return optZh[t];
+    /* 包含匹配（配置项说明） */
+    Object.keys(descZh).forEach(function(key) {
+      if (t.indexOf(key) >= 0) {
+        t = t.replace(key, descZh[key]);
+      }
+    });
+    return t;
+  }
+
+  /* 页面加载后翻译表格中的配置项名称 */
+  function applyZh() {
+    document.querySelectorAll('.pg-table tbody tr td:first-child').forEach(function(td) {
+      /* 只翻译纯文本节点，不破坏 HTML 标签 */
+      if (td.children.length === 0 || (td.children.length === 1 && td.children[0].tagName === 'DETAILS')) {
+        var orig = td.childNodes[0];
+        if (orig && orig.nodeType === 3) {
+          orig.textContent = translateCell(orig.textContent.trim());
+        }
+      }
+    });
+    /* 翻译全局设置配置项名（input/select 的 id） */
+    document.querySelectorAll('.pg-table input[id], .pg-table select[id]').forEach(function(el) {
+      var id = el.id;
+      var label = id.split(':').pop();
+      var tr = el.closest('tr');
+      if (tr && optZh[label]) {
+        var firstTd = tr.querySelector('td:first-child');
+        if (firstTd) {
+          var txt = firstTd.textContent.trim();
+          /* 如果第一行文本就是配置项名本身 */
+          if (txt === label || txt.indexOf(label + ' ') === 0) {
+            firstTd.childNodes[0].textContent = optZh[label] + '：';
+          }
+        }
+      }
+    });
+  }
+
+  /* 监听 tab 切换后也翻译 */
+  var origSwitch = window.switchTab;
+  window.switchTab = function(tab) {
+    if (origSwitch) origSwitch(tab);
+    setTimeout(applyZh, 50);
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(applyZh, 200);
+  });
+})();
+</script>
+
+<%include file="FOOTER.tmpl"/>

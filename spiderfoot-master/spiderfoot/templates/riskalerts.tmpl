@@ -1,0 +1,414 @@
+<%include file="HEADER.tmpl"/>
+
+<style>
+/* ── 风险告警页面 ── */
+.risk-overview {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.risk-stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e8ecf2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: box-shadow 0.2s;
+}
+.risk-stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.risk-stat-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.risk-stat-icon svg { width: 22px; height: 22px; }
+.risk-stat-icon.red   { background: rgba(239,68,68,0.1); color: #ef4444; }
+.risk-stat-icon.amber { background: rgba(245,158,11,0.1); color: #f59e0b; }
+.risk-stat-icon.green { background: rgba(34,197,94,0.1);  color: #22c55e; }
+.risk-stat-icon.blue  { background: rgba(59,130,246,0.1); color: #3b82f6; }
+.risk-stat-num { font-size: 26px; font-weight: 700; color: #1e293b; line-height: 1; }
+.risk-stat-label { font-size: 13px; color: #94a3b8; margin-top: 2px; }
+
+/* 告警列表 */
+.risk-table-wrap {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e8ecf2;
+  overflow: hidden;
+}
+.risk-table-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e8ecf2;
+}
+.risk-table-head h3 { font-size: 15px; font-weight: 600; color: #1e293b; }
+.risk-filter-btns { display: flex; gap: 6px; }
+.risk-filter-btn {
+  padding: 5px 12px; border-radius: 6px; border: 1px solid #e2e8f0;
+  background: #fff; font-size: 12px; color: #64748b; cursor: pointer;
+  transition: all 0.15s;
+}
+.risk-filter-btn:hover, .risk-filter-btn.active {
+  background: #2563eb; color: #fff; border-color: #2563eb;
+}
+
+table.risk-alert-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.risk-alert-table thead th {
+  text-align: left; padding: 10px 16px;
+  background: #f8fafc; color: #64748b; font-weight: 500;
+  border-bottom: 1px solid #e8ecf2; white-space: nowrap;
+}
+table.risk-alert-table tbody td {
+  padding: 12px 16px; border-bottom: 1px solid #f1f5f9; color: #334155;
+  vertical-align: middle;
+}
+table.risk-alert-table tbody tr:hover { background: #f8fafc; }
+
+.risk-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600;
+}
+.risk-badge.HIGH   { background: rgba(239,68,68,0.1); color: #ef4444; }
+.risk-badge.MEDIUM { background: rgba(245,158,11,0.1); color: #f59e0b; }
+.risk-badge.LOW    { background: rgba(34,197,94,0.1);  color: #22c55e; }
+
+.risk-action-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 500;
+}
+.risk-action-badge.todo        { background: #f1f5f9; color: #64748b; }
+.risk-action-badge.in_progress { background: rgba(245,158,11,0.1); color: #d97706; }
+.risk-action-badge.resolved    { background: rgba(34,197,94,0.1);  color: #16a34a; }
+.risk-action-badge.retest      { background: rgba(59,130,246,0.1); color: #2563eb; }
+
+.risk-type-tag {
+  display: inline-block; padding: 1px 6px; border-radius: 3px;
+  font-size: 11px; background: #eff6ff; color: #3b82f6; margin-left: 6px;
+}
+
+.risk-scan-link { color: #2563eb; text-decoration: none; }
+.risk-scan-link:hover { text-decoration: underline; }
+
+.risk-playbook-btn {
+  padding: 4px 10px; border-radius: 5px; border: 1px solid #e2e8f0;
+  background: #fff; font-size: 11px; color: #64748b; cursor: pointer;
+  transition: all 0.15s;
+}
+.risk-playbook-btn:hover { background: #2563eb; color: #fff; border-color: #2563eb; }
+
+.risk-empty {
+  text-align: center; padding: 60px 20px; color: #94a3b8;
+}
+.risk-empty svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: 0.4; }
+.risk-empty p { font-size: 14px; }
+
+/* 弹窗 */
+.risk-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.38);
+  z-index: 2147483000;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  box-sizing: border-box;
+}
+.risk-modal-overlay.show { display: flex; }
+.risk-modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 520px;
+  max-width: min(520px, calc(100vw - 40px));
+  max-height: min(80vh, calc(100vh - 36px));
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.risk-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px; border-bottom: 1px solid #e8ecf2;
+}
+.risk-modal-header h3 { font-size: 16px; font-weight: 600; color: #1e293b; }
+.risk-modal-close {
+  width: 30px; height: 30px; border: none; background: #f1f5f9;
+  border-radius: 6px; cursor: pointer; display: flex; align-items: center;
+  justify-content: center; color: #64748b; font-size: 16px;
+}
+.risk-modal-body { padding: 20px 22px; }
+.risk-modal-body label { font-size: 13px; font-weight: 500; color: #475569; display: block; margin-bottom: 6px; }
+.risk-modal-body select, .risk-modal-body textarea {
+  width: 100%; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 8px;
+  font-size: 13px; margin-bottom: 14px; outline: none;
+}
+.risk-modal-body select:focus, .risk-modal-body textarea:focus { border-color: #2563eb; }
+.risk-modal-footer {
+  padding: 14px 22px; border-top: 1px solid #e8ecf2;
+  display: flex; justify-content: flex-end; gap: 8px;
+}
+.risk-modal-footer button {
+  padding: 7px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: none;
+}
+.risk-modal-footer .btn-cancel { background: #f1f5f9; color: #475569; }
+.risk-modal-footer .btn-save { background: #2563eb; color: #fff; }
+
+.pb-section { margin-bottom: 16px; }
+.pb-section h4 { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 8px; }
+.pb-step { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; color: #475569; }
+.pb-step-num {
+  width: 22px; height: 22px; border-radius: 50%; background: #eff6ff;
+  color: #2563eb; font-size: 12px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+</style>
+
+<!-- 页面标题 -->
+<div style="margin-bottom: 20px;">
+  <h2 style="font-size: 20px; font-weight: 700; color: #1e293b;">风险告警中心</h2>
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">实时监控扫描结果中的高风险信息，支持标记处理状态</p>
+</div>
+
+<!-- 概览卡片 -->
+<div class="risk-overview">
+  <div class="risk-stat-card">
+    <div class="risk-stat-icon red">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <div>
+      <div class="risk-stat-num" id="stat-high">0</div>
+      <div class="risk-stat-label">高风险</div>
+    </div>
+  </div>
+  <div class="risk-stat-card">
+    <div class="risk-stat-icon amber">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div>
+      <div class="risk-stat-num" id="stat-medium">0</div>
+      <div class="risk-stat-label">中风险</div>
+    </div>
+  </div>
+  <div class="risk-stat-card">
+    <div class="risk-stat-icon green">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    </div>
+    <div>
+      <div class="risk-stat-num" id="stat-resolved">0</div>
+      <div class="risk-stat-label">已处理</div>
+    </div>
+  </div>
+  <div class="risk-stat-card">
+    <div class="risk-stat-icon blue">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    </div>
+    <div>
+      <div class="risk-stat-num" id="stat-total">0</div>
+      <div class="risk-stat-label">告警总数</div>
+    </div>
+  </div>
+</div>
+
+<!-- 告警列表 -->
+<div class="risk-table-wrap">
+  <div class="risk-table-head">
+    <h3>告警列表</h3>
+    <div class="risk-filter-btns">
+      <button class="risk-filter-btn active" onclick="filterAlerts('all', this)">全部</button>
+      <button class="risk-filter-btn" onclick="filterAlerts('HIGH', this)">高风险</button>
+      <button class="risk-filter-btn" onclick="filterAlerts('MEDIUM', this)">中风险</button>
+      <button class="risk-filter-btn" onclick="filterAlerts('todo', this)">待处理</button>
+      <button class="risk-filter-btn" onclick="filterAlerts('resolved', this)">已处理</button>
+    </div>
+  </div>
+  <div id="alert-list-container">
+    <div class="risk-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <p>加载中...</p>
+    </div>
+  </div>
+</div>
+
+<!-- 处理弹窗 -->
+<div class="risk-modal-overlay" id="actionModal">
+  <div class="risk-modal">
+    <div class="risk-modal-header">
+      <h3 id="modal-title">处理告警</h3>
+      <button class="risk-modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="risk-modal-body">
+      <div id="modal-playbook"></div>
+      <label>处理状态</label>
+      <select id="modal-status">
+        <option value="todo">待处理</option>
+        <option value="in_progress">处理中</option>
+        <option value="resolved">已解决</option>
+        <option value="retest">待复测</option>
+      </select>
+      <label>处理方式</label>
+      <select id="modal-method">
+        <option value="">请选择</option>
+        <option value="mask">信息脱敏</option>
+        <option value="hide">申请隐藏</option>
+        <option value="delete">申请删除</option>
+        <option value="manual">人工处理</option>
+      </select>
+      <label>备注</label>
+      <textarea id="modal-note" rows="3" placeholder="输入处理备注..."></textarea>
+    </div>
+    <div class="risk-modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-save" onclick="saveAction()">保存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var allAlerts = [];
+var currentFilter = 'all';
+var currentAlertId = null;
+
+function loadAlerts() {
+  fetch(docroot + '/riskalerts')
+    .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+    .then(function(data) {
+      allAlerts = data;
+      renderStats(data);
+      renderTable(data);
+    })
+    .catch(function() {
+      document.getElementById('alert-list-container').innerHTML =
+        '<div class="risk-empty"><p>加载失败，请刷新重试</p></div>';
+    });
+}
+
+function renderStats(data) {
+  var high = 0, medium = 0, resolved = 0;
+  data.forEach(function(a) {
+    if (a.risk === 'HIGH') high++;
+    if (a.risk === 'MEDIUM') medium++;
+    if (a.actionStatus === 'resolved' || a.actionStatus === 'retest') resolved++;
+  });
+  document.getElementById('stat-high').textContent = high;
+  document.getElementById('stat-medium').textContent = medium;
+  document.getElementById('stat-resolved').textContent = resolved;
+  document.getElementById('stat-total').textContent = data.length;
+}
+
+function filterAlerts(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.risk-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderTable(allAlerts);
+}
+
+function renderTable(data) {
+  var filtered = data;
+  if (currentFilter === 'HIGH') filtered = data.filter(function(a) { return a.risk === 'HIGH'; });
+  else if (currentFilter === 'MEDIUM') filtered = data.filter(function(a) { return a.risk === 'MEDIUM'; });
+  else if (currentFilter === 'todo') filtered = data.filter(function(a) { return a.actionStatus === 'todo' || !a.actionStatus; });
+  else if (currentFilter === 'resolved') filtered = data.filter(function(a) { return a.actionStatus === 'resolved' || a.actionStatus === 'retest'; });
+
+  if (filtered.length === 0) {
+    document.getElementById('alert-list-container').innerHTML =
+      '<div class="risk-empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><p>暂无匹配的告警记录</p></div>';
+    return;
+  }
+
+  var statusLabel = {todo:'待处理', in_progress:'处理中', resolved:'已解决', retest:'待复测'};
+  var html = '<table class="risk-alert-table"><thead><tr>' +
+    '<th>风险等级</th><th>告警标题</th><th>来源扫描</th><th>详情</th><th>状态</th><th>操作</th>' +
+    '</tr></thead><tbody>';
+  filtered.forEach(function(a) {
+    html += '<tr data-risk="' + a.risk + '" data-status="' + (a.actionStatus||'todo') + '">' +
+      '<td><span class="risk-badge ' + a.risk + '">' + a.risk + '</span>' +
+        (a.type === 'correlation' ? '<span class="risk-type-tag">关联规则</span>' : '<span class="risk-type-tag">敏感数据</span>') +
+      '</td>' +
+      '<td style="max-width:220px;font-weight:500;">' + escHtml(a.title) + '</td>' +
+      '<td><a class="risk-scan-link" href="' + docroot + '/scaninfo?id=' + a.scanId + '">' + escHtml(a.scanName || a.scanTarget) + '</a></td>' +
+      '<td style="max-width:200px;color:#64748b;">' + escHtml(a.detail || a.ruleDescr || '') + '</td>' +
+      '<td><span class="risk-action-badge ' + (a.actionStatus||'todo') + '">' + (statusLabel[a.actionStatus] || '待处理') + '</span></td>' +
+      '<td><button class="risk-playbook-btn" onclick="openModal(\'' + a.alertId + '\')">处理</button></td>' +
+      '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('alert-list-container').innerHTML = html;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function openModal(alertId) {
+  currentAlertId = alertId;
+  var alert = allAlerts.find(function(a) { return a.alertId === alertId; });
+  if (!alert) return;
+  document.getElementById('modal-title').textContent = '处理告警 - ' + alert.title;
+  document.getElementById('modal-status').value = alert.actionStatus || 'todo';
+  document.getElementById('modal-method').value = alert.actionMethod || '';
+  document.getElementById('modal-note').value = alert.actionNote || '';
+
+  var pb = document.getElementById('modal-playbook');
+  if (alert.playbook && alert.playbook.length > 0) {
+    var pbHtml = '<div class="pb-section"><h4>处理建议</h4>';
+    alert.playbook.forEach(function(step, i) {
+      pbHtml += '<div class="pb-step"><span class="pb-step-num">' + (i+1) + '</span><span>' + escHtml(step) + '</span></div>';
+    });
+    pbHtml += '</div>';
+    pb.innerHTML = pbHtml;
+  } else {
+    pb.innerHTML = '';
+  }
+  // Center the dialog inside the right content area instead of full viewport.
+  var overlay = document.getElementById('actionModal');
+  var content = document.querySelector('.pg-content');
+  if (overlay && content) {
+    var rect = content.getBoundingClientRect();
+    overlay.style.left = Math.max(0, Math.floor(rect.left)) + 'px';
+    overlay.style.width = Math.max(320, Math.floor(rect.width)) + 'px';
+  } else if (overlay) {
+    overlay.style.left = '0px';
+    overlay.style.width = '100vw';
+  }
+  document.getElementById('actionModal').classList.add('show');
+}
+
+function closeModal() {
+  var overlay = document.getElementById('actionModal');
+  overlay.classList.remove('show');
+  overlay.style.left = '0px';
+  overlay.style.width = '100vw';
+  currentAlertId = null;
+}
+
+function saveAction() {
+  if (!currentAlertId) return;
+  var status = document.getElementById('modal-status').value;
+  var method = document.getElementById('modal-method').value;
+  var note = document.getElementById('modal-note').value;
+  fetch(docroot + '/riskactionupdate?alertId=' + encodeURIComponent(currentAlertId) +
+    '&status=' + encodeURIComponent(status) +
+    '&method=' + encodeURIComponent(method) +
+    '&note=' + encodeURIComponent(note))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      closeModal();
+      loadAlerts();
+    })
+    .catch(function() { alert('保存失败，请重试'); });
+}
+
+document.addEventListener('DOMContentLoaded', loadAlerts);
+setInterval(loadAlerts, 60000);
+</script>
+
+<%include file="FOOTER.tmpl"/>

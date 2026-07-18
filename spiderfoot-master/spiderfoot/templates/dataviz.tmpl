@@ -1,0 +1,317 @@
+<%include file="HEADER.tmpl"/>
+
+<style>
+/* ── 数据洞察看板 ── */
+.dv-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.dv-stat-card {
+  background: #fff; border-radius: 12px; padding: 20px;
+  border: 1px solid #e8ecf2; transition: box-shadow 0.2s;
+}
+.dv-stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.dv-stat-label { font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+.dv-stat-value { font-size: 30px; font-weight: 700; color: #1e293b; }
+.dv-stat-sub  { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+
+.dv-charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.dv-chart-card {
+  background: #fff; border-radius: 12px; padding: 20px;
+  border: 1px solid #e8ecf2;
+}
+.dv-chart-title {
+  font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.dv-chart-title svg { width: 18px; height: 18px; color: #3b82f6; }
+
+/* SVG 图表容器 */
+.dv-chart-area {
+  width: 100%; height: 240px;
+  display: flex; align-items: flex-end; gap: 6px;
+  padding-top: 10px;
+}
+.dv-bar-group {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;
+}
+.dv-bar {
+  width: 100%; max-width: 36px; border-radius: 6px 6px 0 0;
+  transition: height 0.6s ease; min-height: 4px; position: relative; cursor: pointer;
+}
+.dv-bar:hover { opacity: 0.85; }
+.dv-bar-label { font-size: 11px; color: #94a3b8; text-align: center; word-break: break-all; max-width: 50px; }
+.dv-bar-value {
+  font-size: 10px; font-weight: 600; color: #475569;
+  position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+/* 环形统计 */
+.dv-donut-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 240px; }
+.dv-donut { width: 150px; height: 150px; position: relative; }
+.dv-donut svg { transform: rotate(-90deg); }
+.dv-donut-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.dv-donut-num { font-size: 28px; font-weight: 700; color: #1e293b; }
+.dv-donut-label { font-size: 12px; color: #94a3b8; }
+.dv-donut-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; justify-content: center; }
+.dv-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #64748b; }
+.dv-legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+/* 风险分布 */
+.dv-risk-bars { display: flex; flex-direction: column; gap: 14px; }
+.dv-risk-item { }
+.dv-risk-header { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+.dv-risk-name { color: #475569; font-weight: 500; }
+.dv-risk-count { color: #1e293b; font-weight: 600; }
+.dv-risk-track { width: 100%; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+.dv-risk-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+
+.dv-empty { text-align: center; padding: 40px; color: #94a3b8; font-size: 14px; }
+</style>
+
+<div style="margin-bottom: 20px;">
+  <h2 style="font-size: 20px; font-weight: 700; color: #1e293b;">数据洞察看板</h2>
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">可视化呈现扫描数据与风险分布，辅助决策分析</p>
+</div>
+
+<!-- 概览统计 -->
+<div class="dv-stats-row">
+  <div class="dv-stat-card">
+    <div class="dv-stat-label">扫描总次数</div>
+    <div class="dv-stat-value" id="dv-total-scans">0</div>
+    <div class="dv-stat-sub" id="dv-total-sub">全部历史扫描</div>
+  </div>
+  <div class="dv-stat-card">
+    <div class="dv-stat-label">发现数据量</div>
+    <div class="dv-stat-value" id="dv-total-events">0</div>
+    <div class="dv-stat-sub">所有扫描数据汇总</div>
+  </div>
+  <div class="dv-stat-card">
+    <div class="dv-stat-label">高风险项</div>
+    <div class="dv-stat-value" style="color:#ef4444;" id="dv-high-risk">0</div>
+    <div class="dv-stat-sub">需要立即处理</div>
+  </div>
+  <div class="dv-stat-card">
+    <div class="dv-stat-label">隐私评分</div>
+    <div class="dv-stat-value" id="dv-privacy-score">--</div>
+    <div class="dv-stat-sub">综合风险指数</div>
+  </div>
+</div>
+
+<!-- 图表区 -->
+<div class="dv-charts-row">
+  <!-- 扫描次数柱状图 -->
+  <div class="dv-chart-card">
+    <div class="dv-chart-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="20"/><rect x="5" y="11" width="3" height="8" rx="1"/><rect x="10.5" y="7" width="3" height="12" rx="1"/><rect x="16" y="4" width="3" height="15" rx="1"/></svg>
+      扫描历史趋势
+    </div>
+    <div class="dv-chart-area" id="dv-scan-chart">
+      <div class="dv-empty">加载中...</div>
+    </div>
+  </div>
+
+  <!-- 环形图 - 扫描状态分布 -->
+  <div class="dv-chart-card">
+    <div class="dv-chart-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20" fill="rgba(59,130,246,0.15)" stroke="none"/></svg>
+      扫描状态分布
+    </div>
+    <div class="dv-donut-wrap" id="dv-donut-area">
+      <div class="dv-empty">加载中...</div>
+    </div>
+  </div>
+</div>
+
+<!-- 风险分布 -->
+<div class="dv-charts-row">
+  <div class="dv-chart-card">
+    <div class="dv-chart-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      高风险数据类型分布
+    </div>
+    <div class="dv-risk-bars" id="dv-risk-bars">
+      <div class="dv-empty">加载中...</div>
+    </div>
+  </div>
+  <div class="dv-chart-card">
+    <div class="dv-chart-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      近期告警趋势
+    </div>
+    <div class="dv-chart-area" id="dv-alert-chart">
+      <div class="dv-empty">加载中...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function apiJson(url, fallback) {
+  return fetch(url, { credentials: 'same-origin' })
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var ct = (r.headers.get('content-type') || '').toLowerCase();
+      if (ct.indexOf('application/json') === -1) throw new Error('NOT_JSON');
+      return r.json();
+    })
+    .then(function(data) { return Array.isArray(data) ? data : fallback; })
+    .catch(function() { return fallback; });
+}
+
+function normScans(rows) {
+  return (rows || []).map(function(s) {
+    return {
+      id: s && s[0],
+      created: s && s[3] ? String(s[3]) : '',
+      status: s && s[6] ? String(s[6]) : 'UNKNOWN'
+    };
+  });
+}
+
+function normAlerts(rows) {
+  return (rows || []).map(function(a) {
+    return {
+      risk: a && a.risk ? String(a.risk) : 'LOW',
+      actionStatus: a && a.actionStatus ? String(a.actionStatus) : 'todo',
+      title: a && a.title ? String(a.title) : '未知风险'
+    };
+  });
+}
+
+function safeSet(id, html) {
+  var el = document.getElementById(id);
+  if (el) el.innerHTML = html;
+}
+
+function renderStats(scans, alerts) {
+  var high = alerts.filter(function(a) { return a.risk === 'HIGH'; }).length;
+  var med = alerts.filter(function(a) { return a.risk === 'MEDIUM'; }).length;
+  var score = alerts.length ? Math.max(10, 100 - high * 10 - med * 4) : 100;
+  document.getElementById('dv-total-scans').textContent = scans.length;
+  document.getElementById('dv-total-events').textContent = alerts.length;
+  document.getElementById('dv-high-risk').textContent = high;
+  document.getElementById('dv-total-sub').textContent = scans.length + ' 个历史扫描';
+  document.getElementById('dv-privacy-score').textContent = score;
+}
+
+function renderScanChart(scans) {
+  if (!scans.length) {
+    return safeSet('dv-scan-chart', '<div class="dv-empty">暂无扫描数据</div>');
+  }
+  var map = {};
+  scans.forEach(function(s) {
+    var d = s.created && s.created.length >= 10 ? s.created.slice(5, 10) : '未知';
+    map[d] = (map[d] || 0) + 1;
+  });
+  var keys = Object.keys(map).sort().slice(-10);
+  var max = Math.max(1, Math.max.apply(null, keys.map(function(k) { return map[k]; })));
+  var html = keys.map(function(k) {
+    var v = map[k];
+    var h = Math.max(6, Math.round(v / max * 85));
+    return '<div class="dv-bar-group"><div class="dv-bar" style="height:' + h + '%;background:#3b82f6;"><span class="dv-bar-value">' + v + '</span></div><span class="dv-bar-label">' + k + '</span></div>';
+  }).join('');
+  safeSet('dv-scan-chart', html);
+}
+
+function renderDonut(scans) {
+  if (!scans.length) {
+    return safeSet('dv-donut-area', '<div class="dv-empty">暂无数据</div>');
+  }
+  var m = { FINISHED: 0, RUNNING: 0, OTHER: 0 };
+  scans.forEach(function(s) {
+    if (s.status === 'FINISHED') m.FINISHED += 1;
+    else if (s.status === 'RUNNING' || s.status === 'STARTING' || s.status === 'STARTED') m.RUNNING += 1;
+    else m.OTHER += 1;
+  });
+  var total = scans.length;
+  var html = '<div class="dv-risk-bars">' +
+    '<div class="dv-risk-item"><div class="dv-risk-header"><span class="dv-risk-name">已完成</span><span class="dv-risk-count">' + m.FINISHED + '</span></div><div class="dv-risk-track"><div class="dv-risk-fill" style="width:' + Math.round(m.FINISHED / total * 100) + '%;background:#22c55e;"></div></div></div>' +
+    '<div class="dv-risk-item"><div class="dv-risk-header"><span class="dv-risk-name">运行中</span><span class="dv-risk-count">' + m.RUNNING + '</span></div><div class="dv-risk-track"><div class="dv-risk-fill" style="width:' + Math.round(m.RUNNING / total * 100) + '%;background:#f59e0b;"></div></div></div>' +
+    '<div class="dv-risk-item"><div class="dv-risk-header"><span class="dv-risk-name">其他状态</span><span class="dv-risk-count">' + m.OTHER + '</span></div><div class="dv-risk-track"><div class="dv-risk-fill" style="width:' + Math.round(m.OTHER / total * 100) + '%;background:#94a3b8;"></div></div></div>' +
+    '</div>';
+  safeSet('dv-donut-area', html);
+}
+
+function renderRiskBars(alerts) {
+  if (!alerts.length) {
+    return safeSet('dv-risk-bars', '<div class="dv-empty">暂无风险数据</div>');
+  }
+  var cnt = {};
+  alerts.forEach(function(a) {
+    var k = a.title || '未知风险';
+    cnt[k] = (cnt[k] || 0) + 1;
+  });
+  var keys = Object.keys(cnt).sort(function(a, b) { return cnt[b] - cnt[a]; }).slice(0, 8);
+  var max = Math.max(1, Math.max.apply(null, keys.map(function(k) { return cnt[k]; })));
+  var html = keys.map(function(k) {
+    var v = cnt[k];
+    var p = Math.round(v / max * 100);
+    return '<div class="dv-risk-item"><div class="dv-risk-header"><span class="dv-risk-name">' + esc(k) + '</span><span class="dv-risk-count">' + v + '</span></div><div class="dv-risk-track"><div class="dv-risk-fill" style="width:' + p + '%;background:#ef4444;"></div></div></div>';
+  }).join('');
+  safeSet('dv-risk-bars', html);
+}
+
+function renderAlertChart(alerts) {
+  if (!alerts.length) {
+    return safeSet('dv-alert-chart', '<div class="dv-empty">暂无告警数据</div>');
+  }
+  var high = alerts.filter(function(a) { return a.risk === 'HIGH'; }).length;
+  var med = alerts.filter(function(a) { return a.risk === 'MEDIUM'; }).length;
+  var todo = alerts.filter(function(a) { return a.actionStatus === 'todo'; }).length;
+  var done = alerts.length - todo;
+  var items = [
+    { label: '高风险', value: high, color: '#ef4444' },
+    { label: '中风险', value: med, color: '#f59e0b' },
+    { label: '待处理', value: todo, color: '#3b82f6' },
+    { label: '已处理', value: done, color: '#22c55e' }
+  ];
+  var max = Math.max(1, Math.max.apply(null, items.map(function(i) { return i.value; })));
+  var html = items.map(function(item) {
+    var h = Math.max(6, Math.round(item.value / max * 85));
+    return '<div class="dv-bar-group"><div class="dv-bar" style="height:' + h + '%;background:' + item.color + ';width:50px;"><span class="dv-bar-value">' + item.value + '</span></div><span class="dv-bar-label">' + item.label + '</span></div>';
+  }).join('');
+  safeSet('dv-alert-chart', html);
+}
+
+function esc(s) {
+  if (!s) return '';
+  var d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function loadDashboard() {
+  Promise.all([
+    apiJson(docroot + '/scanlist', []),
+    apiJson(docroot + '/riskalerts', [])
+  ]).then(function(results) {
+    var scans = normScans(results[0]);
+    var alerts = normAlerts(results[1]);
+    renderStats(scans, alerts);
+    try { renderScanChart(scans); } catch (_) { safeSet('dv-scan-chart', '<div class="dv-empty">图表渲染失败</div>'); }
+    try { renderDonut(scans); } catch (_) { safeSet('dv-donut-area', '<div class="dv-empty">图表渲染失败</div>'); }
+    try { renderRiskBars(alerts); } catch (_) { safeSet('dv-risk-bars', '<div class="dv-empty">图表渲染失败</div>'); }
+    try { renderAlertChart(alerts); } catch (_) { safeSet('dv-alert-chart', '<div class="dv-empty">图表渲染失败</div>'); }
+  }).catch(function() {
+    ['dv-scan-chart', 'dv-donut-area', 'dv-risk-bars', 'dv-alert-chart'].forEach(function(id) {
+      safeSet(id, '<div class="dv-empty">数据加载失败</div>');
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', loadDashboard);
+setInterval(loadDashboard, 120000);
+</script>
+
+<%include file="FOOTER.tmpl"/>

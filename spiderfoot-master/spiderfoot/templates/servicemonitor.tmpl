@@ -1,0 +1,455 @@
+<%include file="HEADER.tmpl"/>
+
+<style>
+/* ── 服务监控页面 ── */
+.sm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.sm-card {
+  background: #fff; border-radius: 12px; padding: 20px;
+  border: 1px solid #e8ecf2; transition: box-shadow 0.2s;
+}
+.sm-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.sm-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.sm-card-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.sm-card-icon svg { width: 20px; height: 20px; }
+.sm-card-name { font-size: 15px; font-weight: 600; color: #1e293b; }
+.sm-card-sub { font-size: 12px; color: #94a3b8; }
+
+.sm-status-line {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+}
+.sm-status-line:last-child { border-bottom: none; }
+.sm-status-label { color: #64748b; }
+.sm-status-right { display: flex; align-items: center; gap: 8px; }
+
+.sm-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  display: inline-block; flex-shrink: 0;
+}
+.sm-dot-green { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.4); }
+.sm-dot-red   { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.4); }
+.sm-dot-yellow { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.4); }
+.sm-dot-gray  { background: #94a3b8; }
+
+.sm-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600;
+}
+.sm-badge.ok     { background: rgba(34,197,94,0.1); color: #16a34a; }
+.sm-badge.error  { background: rgba(239,68,68,0.1); color: #ef4444; }
+.sm-badge.warn   { background: rgba(245,158,11,0.1); color: #d97706; }
+.sm-badge.checking { background: rgba(148,163,184,0.1); color: #94a3b8; }
+
+/* 性能指标 */
+.sm-metrics {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 24px;
+}
+.sm-metric-card {
+  background: #fff; border-radius: 12px; padding: 18px;
+  border: 1px solid #e8ecf2; text-align: center;
+}
+.sm-metric-value { font-size: 24px; font-weight: 700; color: #1e293b; }
+.sm-metric-label { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+.sm-metric-bar {
+  width: 100%; height: 6px; background: #f1f5f9; border-radius: 3px;
+  margin-top: 10px; overflow: hidden;
+}
+.sm-metric-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+
+/* 日志流 */
+.sm-log-section {
+  background: #fff; border-radius: 12px; padding: 20px;
+  border: 1px solid #e8ecf2; margin-bottom: 24px;
+}
+.sm-log-title {
+  font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sm-log-title svg { width: 18px; height: 18px; color: #3b82f6; }
+.sm-log-box {
+  background: #0f172a; border-radius: 8px; padding: 14px;
+  max-height: 240px; overflow-y: auto; font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 12px; line-height: 1.7;
+}
+.sm-log-entry { color: #94a3b8; }
+.sm-log-entry .time { color: #64748b; }
+.sm-log-entry .ok { color: #22c55e; }
+.sm-log-entry .err { color: #ef4444; }
+.sm-log-entry .warn { color: #f59e0b; }
+.sm-log-entry .info { color: #3b82f6; }
+</style>
+
+<div style="margin-bottom: 20px;">
+  <h2 style="font-size: 20px; font-weight: 700; color: #1e293b;">服务监控</h2>
+  <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">实时监测各核心服务的运行状态与性能指标</p>
+</div>
+
+<!-- 磁盘使用率 -->
+<div class="sm-metrics" style="grid-template-columns: repeat(5, 1fr);">
+  <div class="sm-metric-card">
+    <div class="sm-metric-value" id="sm-mem">--</div>
+    <div class="sm-metric-label">内存使用率 <span id="sm-mem-detail"></span></div>
+    <div class="sm-metric-bar"><div class="sm-metric-fill" id="sm-mem-bar" style="width:0%;background:#22c55e;"></div></div>
+  </div>
+  <div class="sm-metric-card">
+    <div class="sm-metric-value" id="sm-cpu">--</div>
+    <div class="sm-metric-label">CPU 使用率 <span id="sm-cpu-detail"></span></div>
+    <div class="sm-metric-bar"><div class="sm-metric-fill" id="sm-cpu-bar" style="width:0%;background:#22c55e;"></div></div>
+  </div>
+  <div class="sm-metric-card">
+    <div class="sm-metric-value" id="sm-disk">--</div>
+    <div class="sm-metric-label">磁盘使用率 <span id="sm-disk-detail"></span></div>
+    <div class="sm-metric-bar"><div class="sm-metric-fill" id="sm-disk-bar" style="width:0%;background:#22c55e;"></div></div>
+  </div>
+  <div class="sm-metric-card">
+    <div class="sm-metric-value" id="sm-uptime">--</div>
+    <div class="sm-metric-label">服务运行时间</div>
+    <div class="sm-metric-bar"><div class="sm-metric-fill" style="width:100%;background:#3b82f6;"></div></div>
+  </div>
+  <div class="sm-metric-card">
+    <div class="sm-metric-value" id="sm-proc-mem">--</div>
+    <div class="sm-metric-label">进程内存占用</div>
+    <div class="sm-metric-bar"><div class="sm-metric-fill" id="sm-proc-bar" style="width:0%;background:#6366f1;"></div></div>
+  </div>
+</div>
+
+<!-- 服务状态卡片 -->
+<div class="sm-grid">
+  <!-- Web 服务 -->
+  <div class="sm-card">
+    <div class="sm-card-header">
+      <div class="sm-card-icon" style="background:rgba(59,130,246,0.1);color:#3b82f6;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <div><div class="sm-card-name">Web 服务</div><div class="sm-card-sub">CherryPy HTTP Server</div></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">运行状态</span>
+      <div class="sm-status-right"><span class="sm-dot sm-dot-green" id="sm-web-dot"></span><span class="sm-badge ok" id="sm-web-badge">运行中</span></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">端口</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;">5001</span>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">响应时间</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-web-rt">-- ms</span>
+    </div>
+  </div>
+
+  <!-- 数据库 -->
+  <div class="sm-card">
+    <div class="sm-card-header">
+      <div class="sm-card-icon" style="background:rgba(34,197,94,0.1);color:#22c55e;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      </div>
+      <div><div class="sm-card-name">数据库</div><div class="sm-card-sub">MySQL 8.0</div></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">运行状态</span>
+      <div class="sm-status-right"><span class="sm-dot" id="sm-db-dot"></span><span class="sm-badge" id="sm-db-badge">检测中</span></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">认证模式</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;">MySQL Session Auth</span>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">查询延迟</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-db-rt">-- ms</span>
+    </div>
+  </div>
+
+  <!-- 扫描引擎 -->
+  <div class="sm-card">
+    <div class="sm-card-header">
+      <div class="sm-card-icon" style="background:rgba(139,92,246,0.1);color:#8b5cf6;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      </div>
+      <div><div class="sm-card-name">扫描引擎</div><div class="sm-card-sub">SpiderFoot Scanner</div></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">运行状态</span>
+      <div class="sm-status-right"><span class="sm-dot" id="sm-scan-dot"></span><span class="sm-badge" id="sm-scan-badge">检测中</span></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">活跃任务</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-scan-active">0</span>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">历史任务</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-scan-total">0</span>
+    </div>
+  </div>
+</div>
+
+<!-- 风险告警服务 -->
+<div class="sm-grid" style="grid-template-columns: repeat(2, 1fr);">
+  <div class="sm-card">
+    <div class="sm-card-header">
+      <div class="sm-card-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div><div class="sm-card-name">风险告警服务</div><div class="sm-card-sub">实时风险评估引擎</div></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">运行状态</span>
+      <div class="sm-status-right"><span class="sm-dot" id="sm-alert-dot"></span><span class="sm-badge" id="sm-alert-badge">检测中</span></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">待处理告警</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-alert-pending">0</span>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">告警总数</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-alert-total">0</span>
+    </div>
+  </div>
+
+  <div class="sm-card">
+    <div class="sm-card-header">
+      <div class="sm-card-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div><div class="sm-card-name">隐私保护模块</div><div class="sm-card-sub">脱敏 / 隐藏 / 删除引擎</div></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">运行状态</span>
+      <div class="sm-status-right"><span class="sm-dot" id="sm-priv-dot"></span><span class="sm-badge" id="sm-priv-badge">检测中</span></div>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">累计处理</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-priv-total">0</span>
+    </div>
+    <div class="sm-status-line">
+      <span class="sm-status-label">最近操作</span>
+      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-priv-last">--</span>
+    </div>
+  </div>
+</div>
+
+<!-- 检测日志 -->
+<div class="sm-log-section">
+  <div class="sm-log-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    检测日志
+    <button onclick="clearLogs()" style="margin-left:auto;padding:3px 10px;border:1px solid #e2e8f0;border-radius:5px;background:#fff;font-size:11px;color:#64748b;cursor:pointer;">清空</button>
+  </div>
+  <div class="sm-log-box" id="sm-log-box"></div>
+</div>
+
+<script>
+var logEntries = [];
+
+function addLog(msg, level) {
+  var now = new Date();
+  var t = now.toTimeString().substring(0, 8);
+  logEntries.push({time: t, msg: msg, level: level || 'info'});
+  if (logEntries.length > 100) logEntries.shift();
+  renderLogs();
+}
+
+function renderLogs() {
+  var box = document.getElementById('sm-log-box');
+  box.innerHTML = logEntries.map(function(e) {
+    return '<div class="sm-log-entry"><span class="time">[' + e.time + ']</span> <span class="' + e.level + '">' + escLog(e.msg) + '</span></div>';
+  }).join('');
+  box.scrollTop = box.scrollHeight;
+}
+
+function clearLogs() { logEntries = []; renderLogs(); loadServerLogs(); }
+
+function escLog(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function barColor(pct) {
+  if (pct > 85) return '#ef4444';
+  if (pct > 65) return '#f59e0b';
+  return '#22c55e';
+}
+
+function setStatus(dotId, badgeId, status) {
+  var dot = document.getElementById(dotId);
+  var badge = document.getElementById(badgeId);
+  if (!dot || !badge) return;
+  dot.className = 'sm-dot';
+  badge.className = 'sm-badge';
+  if (status === 'ok') { dot.classList.add('sm-dot-green'); badge.classList.add('ok'); badge.textContent = '正常'; }
+  else if (status === 'error') { dot.classList.add('sm-dot-red'); badge.classList.add('error'); badge.textContent = '异常'; }
+  else if (status === 'warn') { dot.classList.add('sm-dot-yellow'); badge.classList.add('warn'); badge.textContent = '警告'; }
+  else { dot.classList.add('sm-dot-gray'); badge.classList.add('checking'); badge.textContent = '检测中'; }
+}
+
+/* ── 拉取真实系统指标 ── */
+function fetchSysInfo() {
+  fetch(docroot + '/sysinfo')
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d) {
+      // CPU
+      document.getElementById('sm-cpu').textContent = d.cpu_percent + '%';
+      document.getElementById('sm-cpu-detail').textContent = '(' + d.cpu_cores + '核)';
+      document.getElementById('sm-cpu-bar').style.width = d.cpu_percent + '%';
+      document.getElementById('sm-cpu-bar').style.background = barColor(d.cpu_percent);
+
+      // 内存
+      document.getElementById('sm-mem').textContent = d.mem_percent + '%';
+      document.getElementById('sm-mem-detail').textContent = d.mem_used + '/' + d.mem_total + ' GB';
+      document.getElementById('sm-mem-bar').style.width = d.mem_percent + '%';
+      document.getElementById('sm-mem-bar').style.background = barColor(d.mem_percent);
+
+      // 磁盘
+      document.getElementById('sm-disk').textContent = d.disk_percent + '%';
+      document.getElementById('sm-disk-detail').textContent = d.disk_used + '/' + d.disk_total + ' GB';
+      document.getElementById('sm-disk-bar').style.width = d.disk_percent + '%';
+      document.getElementById('sm-disk-bar').style.background = barColor(d.disk_percent);
+
+      // 运行时间
+      document.getElementById('sm-uptime').textContent = d.uptime;
+
+      // 进程内存
+      document.getElementById('sm-proc-mem').textContent = d.process_mem_mb + ' MB';
+      var procPct = Math.min(Math.round(d.process_mem_mb / (d.mem_total * 1024) * 100), 100);
+      document.getElementById('sm-proc-bar').style.width = Math.max(procPct, 2) + '%';
+
+      addLog('系统指标已刷新 — CPU:' + d.cpu_percent + '% 内存:' + d.mem_percent + '% 磁盘:' + d.disk_percent + '%', 'info');
+    })
+    .catch(function(e) {
+      addLog('获取系统指标失败: ' + e.message, 'err');
+    });
+}
+
+/* ── 拉取真实日志 ── */
+function loadServerLogs() {
+  fetch(docroot + '/serverlogs?lines=30')
+    .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function(d) {
+      var lines = (d.logs || '').split('\n');
+      logEntries = [];
+      lines.forEach(function(line) {
+        var level = 'info';
+        if (/ERROR|error|Exception|Traceback/i.test(line)) level = 'err';
+        else if (/WARNING|warn/i.test(line)) level = 'warn';
+        else if (/SUCCESS|OK|started|Started/i.test(line)) level = 'ok';
+        var msg = line.replace(/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}/, '').trim();
+        if (msg) {
+          var timeMatch = line.match(/^(\d{2}:\d{2}:\d{2})/);
+          var t = timeMatch ? timeMatch[1] : new Date().toTimeString().substring(0, 8);
+          logEntries.push({time: t, msg: msg, level: level});
+        }
+      });
+      renderLogs();
+    })
+    .catch(function(e) {
+      addLog('加载日志失败: ' + e.message, 'err');
+    });
+}
+
+/* ── 服务健康检查 ── */
+function checkAll() {
+  // 1. Web 服务
+  var webStart = performance.now();
+  fetch(docroot + '/scanlist')
+    .then(function(r) {
+      var rt = Math.round(performance.now() - webStart);
+      document.getElementById('sm-web-rt').textContent = rt + ' ms';
+      if (r.ok) {
+        setStatus('sm-web-dot','sm-web-badge','ok');
+        return r.json();
+      }
+      throw new Error('HTTP ' + r.status);
+    })
+    .then(function(scans) {
+      var running = scans.filter(function(s) { return ['RUNNING','STARTING','STARTED','INITIALIZING'].indexOf(s[6]) >= 0; });
+      document.getElementById('sm-scan-active').textContent = running.length;
+      document.getElementById('sm-scan-total').textContent = scans.length;
+      if (running.length > 0) {
+        setStatus('sm-scan-dot','sm-scan-badge','warn');
+        addLog('扫描引擎：' + running.length + ' 个任务运行中', 'warn');
+      } else {
+        setStatus('sm-scan-dot','sm-scan-badge','ok');
+      }
+    })
+    .catch(function(e) {
+      setStatus('sm-web-dot','sm-web-badge','error');
+      setStatus('sm-scan-dot','sm-scan-badge','error');
+      addLog('Web 服务异常: ' + e.message, 'err');
+    });
+
+  // 2. 数据库 + 告警服务
+  var dbStart = performance.now();
+  fetch(docroot + '/riskalerts')
+    .then(function(r) {
+      var rt = Math.round(performance.now() - dbStart);
+      document.getElementById('sm-db-rt').textContent = rt + ' ms';
+      if (r.ok) {
+        setStatus('sm-db-dot','sm-db-badge','ok');
+        return r.json();
+      }
+      throw new Error('HTTP ' + r.status);
+    })
+    .then(function(alerts) {
+      var pending = alerts.filter(function(a) { return a.actionStatus === 'todo' || !a.actionStatus; });
+      document.getElementById('sm-alert-pending').textContent = pending.length;
+      document.getElementById('sm-alert-total').textContent = alerts.length;
+      if (pending.length > 0) {
+        setStatus('sm-alert-dot','sm-alert-badge','warn');
+        addLog('告警服务：' + pending.length + ' 条待处理 / 共 ' + alerts.length + ' 条', 'warn');
+      } else {
+        setStatus('sm-alert-dot','sm-alert-badge','ok');
+      }
+    })
+    .catch(function(e) {
+      setStatus('sm-db-dot','sm-db-badge','error');
+      setStatus('sm-alert-dot','sm-alert-badge','error');
+      addLog('数据库/告警服务异常: ' + e.message, 'err');
+    });
+
+  // 3. 隐私保护模块
+  fetch(docroot + '/privacyactionlist?page=1&page_size=1')
+    .then(function(r) {
+      if (r.ok) {
+        setStatus('sm-priv-dot','sm-priv-badge','ok');
+        return r.json();
+      }
+      throw new Error('HTTP ' + r.status);
+    })
+    .then(function(data) {
+      if (data && data.success !== false) {
+        document.getElementById('sm-priv-total').textContent = data.total || 0;
+        if (data.items && data.items.length > 0) {
+          document.getElementById('sm-priv-last').textContent = (data.items[0].created_at || '--').substring(0, 16);
+        }
+      }
+    })
+    .catch(function(e) {
+      setStatus('sm-priv-dot','sm-priv-badge','error');
+      addLog('隐私保护模块异常: ' + e.message, 'err');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  addLog('服务监控面板已启动，正在加载真实数据...', 'info');
+  fetchSysInfo();
+  loadServerLogs();
+  checkAll();
+  // 系统指标 15 秒刷新
+  setInterval(fetchSysInfo, 15000);
+  // 服务检查 15 秒刷新
+  setInterval(checkAll, 15000);
+  // 日志 30 秒刷新
+  setInterval(loadServerLogs, 30000);
+});
+</script>
+
+<%include file="FOOTER.tmpl"/>

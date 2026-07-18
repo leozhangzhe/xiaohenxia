@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消痕侠 — 数字痕迹管理与隐私安全平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --accent: #06b6d4;
+            --accent2: #8b5cf6;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --gradient1: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+            --gradient2: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+            --gradient3: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            --shadow: 0 4px 24px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* ====== Hero Section ====== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(160deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(ellipse at 30% 50%, rgba(37,99,235,0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 50%, rgba(6,182,212,0.1) 0%, transparent 50%);
+            animation: heroFloat 20s ease-in-out infinite;
+        }
+        @keyframes heroFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(1deg); }
+            66% { transform: translate(-20px, 20px) rotate(-1deg); }
+        }
+        .hero-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 20px;
+            background: rgba(37,99,235,0.15);
+            border: 1px solid rgba(37,99,235,0.3);
+            border-radius: 100px;
+            color: #60a5fa;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease;
+        }
+        .hero-badge i { font-size: 0.75rem; }
+        .hero-title {
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffffff 0%, #93c5fd 50%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #94a3b8;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat-num {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: var(--gradient1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 4px;
+            letter-spacing: 1px;
+        }
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #475569;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        /* ====== Sections Common ====== */
+        section {
+            padding: 6rem 2rem;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+        }
+        .section-label::before {
+            content: '';
+            width: 32px; height: 2px;
+            background: var(--primary);
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+        .section-desc {
+            font-size: 1.05rem;
+            color: var(--text-light);
+            max-width: 650px;
+            margin-bottom: 3rem;
+        }
+
+        /* ====== Problem Section ====== */
+        .problem {
+            background: #fff;
+        }
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .problem-card {
+            padding: 2rem;
+            border-radius: 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .problem-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: #fecaca;
+        }
+        .problem-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .problem-card:nth-child(1) .problem-icon { background: #fef2f2; color: #ef4444; }
+        .problem-card:nth-child(2) .problem-icon { background: #fff7ed; color: #f59e0b; }
+        .problem-card:nth-child(3) .problem-icon { background: #fef2f2; color: #dc2626; }
+        .problem-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .problem-card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* ====== Solution / Features ====== */
+        .features { background: var(--bg); }
+        .feature-flow {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+        .feature-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        .feature-step-num {
+            width: 56px; height: 56px;
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        .feature-step:nth-child(1) .feature-step-num { background: var(--gradient1); color: #fff; }
+        .feature-step:nth-child(2) .feature-step-num { background: var(--gradient2); color: #fff; }
+        .feature-step:nth-child(3) .feature-step-num { background: var(--gradient3); color: #fff; }
+        .feature-step:nth-child(4) .feature-step-num { background: linear-gradient(135deg, #10b981, #06b6d4); color: #fff; }
+        .feature-step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .feature-step p { font-size: 0.82rem; color: var(--text-light); line-height: 1.6; }
+        .feature-arrow {
+            display: flex;
+            align-items: center;
+            padding-top: 1.2rem;
+            color: #cbd5e1;
+            font-size: 1.2rem;
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        .feature-card {
+            padding: 2rem;
+            border-radius: 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        .feature-card:hover::before { opacity: 1; }
+        .feature-card:nth-child(1)::before { background: var(--gradient1); }
+        .feature-card:nth-child(2)::before { background: var(--gradient2); }
+        .feature-card:nth-child(3)::before { background: var(--gradient3); }
+        .feature-card:nth-child(4)::before { background: linear-gradient(135deg, #10b981, #06b6d4); }
+        .feature-card:nth-child(5)::before { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+
+        .fc-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+        }
+        .fc-icon {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+        .feature-card:nth-child(1) .fc-icon { background: #eff6ff; color: var(--primary); }
+        .feature-card:nth-child(2) .fc-icon { background: #faf5ff; color: var(--accent2); }
+        .feature-card:nth-child(3) .fc-icon { background: #fef2f2; color: #ef4444; }
+        .feature-card:nth-child(4) .fc-icon { background: #f0fdfa; color: #14b8a6; }
+        .feature-card:nth-child(5) .fc-icon { background: #fff7ed; color: #f59e0b; }
+        .fc-header h3 { font-size: 1.05rem; font-weight: 700; }
+        .feature-card p { font-size: 0.88rem; color: var(--text-light); }
+        .feature-card .fc-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 1rem;
+        }
+        .fc-tag {
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            background: var(--bg);
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        /* ====== Tech Stack ====== */
+        .tech { background: #fff; }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+        }
+        .tech-card {
+            padding: 1.8rem;
+            border-radius: 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .tech-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        .tech-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+        .tech-card:nth-child(1) .tech-icon { background: #eff6ff; color: #2563eb; }
+        .tech-card:nth-child(2) .tech-icon { background: #f0fdf4; color: #16a34a; }
+        .tech-card:nth-child(3) .tech-icon { background: #fefce8; color: #ca8a04; }
+        .tech-card:nth-child(4) .tech-icon { background: #faf5ff; color: #9333ea; }
+        .tech-card:nth-child(5) .tech-icon { background: #ecfeff; color: #0891b2; }
+        .tech-card:nth-child(6) .tech-icon { background: #fff7ed; color: #ea580c; }
+        .tech-card:nth-child(7) .tech-icon { background: #fef2f2; color: #dc2626; }
+        .tech-card:nth-child(8) .tech-icon { background: #f0f9ff; color: #0284c7; }
+        .tech-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.3rem; }
+        .tech-card p { font-size: 0.78rem; color: var(--text-light); }
+
+        /* ====== Architecture ====== */
+        .arch { background: #0f172a; color: #fff; }
+        .arch .section-label { color: #60a5fa; }
+        .arch .section-label::before { background: #60a5fa; }
+        .arch .section-title { color: #fff; }
+        .arch .section-desc { color: #94a3b8; }
+        .arch-diagram {
+            background: rgba(30,41,59,0.8);
+            border: 1px solid rgba(100,116,139,0.2);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .arch-diagram::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(37,99,235,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(37,99,235,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .arch-layer {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            border-radius: 14px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .arch-layer:hover { transform: scale(1.02); }
+        .arch-layer-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+            opacity: 0.7;
+        }
+        .arch-layer-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .arch-layer-detail {
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-top: 4px;
+        }
+        .arch-layer-frontend {
+            background: rgba(37,99,235,0.15);
+            border: 1px solid rgba(37,99,235,0.3);
+        }
+        .arch-layer-server {
+            background: rgba(139,92,246,0.15);
+            border: 1px solid rgba(139,92,246,0.3);
+        }
+        .arch-layer-engine {
+            background: rgba(6,182,212,0.15);
+            border: 1px solid rgba(6,182,212,0.3);
+        }
+        .arch-layer-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            max-width: 700px;
+            width: 100%;
+        }
+        .arch-layer-db {
+            background: rgba(245,158,11,0.15);
+            border: 1px solid rgba(245,158,11,0.3);
+        }
+        .arch-layer-db2 {
+            background: rgba(16,185,129,0.15);
+            border: 1px solid rgba(16,185,129,0.3);
+        }
+        .arch-arrow {
+            color: #475569;
+            font-size: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ====== Data Stats ====== */
+        .data-section { background: var(--bg); }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+        .data-card {
+            padding: 2rem;
+            border-radius: 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .data-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+        .data-num {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 0.3rem;
+        }
+        .data-card:nth-child(1) .data-num { color: var(--primary); }
+        .data-card:nth-child(2) .data-num { color: var(--accent2); }
+        .data-card:nth-child(3) .data-num { color: var(--accent); }
+        .data-card:nth-child(4) .data-num { color: #f59e0b; }
+        .data-unit {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text);
+        }
+        .data-desc {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+        }
+
+        /* ====== Highlights ====== */
+        .highlights { background: #fff; }
+        .hl-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .hl-card {
+            padding: 2rem;
+            border-radius: 16px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .hl-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: var(--primary);
+        }
+        .hl-num {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            opacity: 0.3;
+            margin-bottom: 0.5rem;
+        }
+        .hl-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .hl-card p { font-size: 0.85rem; color: var(--text-light); }
+
+        /* ====== CTA / Demo ====== */
+        .demo {
+            background: linear-gradient(160deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #fff;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .demo::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(37,99,235,0.1) 0%, transparent 70%);
+        }
+        .demo .section-title { color: #fff; }
+        .demo .section-desc { color: #94a3b8; margin: 0 auto 2.5rem; }
+        .demo-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 36px;
+            background: var(--gradient1);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(37,99,235,0.4);
+        }
+        .demo-info {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #64748b;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ====== Footer ====== */
+        .footer {
+            background: #0f172a;
+            border-top: 1px solid rgba(100,116,139,0.1);
+            padding: 2rem;
+            text-align: center;
+            color: #475569;
+            font-size: 0.8rem;
+        }
+        .footer a {
+            color: #60a5fa;
+            text-decoration: none;
+        }
+
+        /* ====== Animations ====== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ====== Responsive ====== */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.8rem; letter-spacing: -1px; }
+            .hero-stats { gap: 1.5rem; }
+            .hero-stat-num { font-size: 1.8rem; }
+            .section-title { font-size: 1.8rem; }
+            .problem-grid, .feature-cards, .hl-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+            .data-grid { grid-template-columns: repeat(2, 1fr); }
+            .feature-flow { flex-direction: column; align-items: center; }
+            .feature-arrow { transform: rotate(90deg); }
+            .arch-layer-data { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ====== Hero ====== -->
+    <section class="hero">
+        <div class="hero-grid"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-shield-halved"></i>
+                OSINT 驱动的隐私安全平台
+            </div>
+            <h1 class="hero-title">消痕侠</h1>
+            <p class="hero-subtitle">
+                一站式数字痕迹扫描、泄露检测与隐私保护平台。<br>
+                让每一份数字足迹都尽在掌控。
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-num">200+</div>
+                    <div class="hero-stat-label">OSINT 数据源</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num">2,467</div>
+                    <div class="hero-stat-label">事件数据集</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num">5</div>
+                    <div class="hero-stat-label">核心功能模块</div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-hint">
+            <span>向下滚动</span>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- ====== Problem ====== -->
+    <section class="problem">
+        <div class="container">
+            <div class="reveal">
+                <div class="section-label">背景与痛点</div>
+                <h2 class="section-title">你的数字足迹，比你想象的多</h2>
+                <p class="section-desc">
+                    手机号、邮箱、社交账号、域名……每一次上网都在互联网上留下痕迹。这些碎片信息一旦被关联拼合，将构成完整的个人画像。
+                </p>
+            </div>
+            <div class="problem-grid reveal">
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fas fa-eye"></i></div>
+                    <h3>信息过度暴露</h3>
+                    <p>个人手机号、邮箱等关键信息在多个平台公开可查，社工库与数据泄露让隐私无处遁形。</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fas fa-link"></i></div>
+                    <h3>数据关联风险</h3>
+                    <p>看似无关的碎片信息通过 OSINT 关联分析后，可以拼合出完整的个人画像，危及人身与财产安全。</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon"><i class="fas fa-user-secret"></i></div>
+                    <h3>缺乏有效工具</h3>
+                    <p>现有隐私保护方案分散且不专业，用户无法系统性地发现、评估和处理自身的隐私暴露问题。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Solution Flow ====== -->
+    <section class="features">
+        <div class="container">
+            <div class="reveal">
+                <div class="section-label">解决方案</div>
+                <h2 class="section-title">检测 — 分析 — 预警 — 处置</h2>
+                <p class="section-desc">
+                    消痕侠构建了完整的隐私安全闭环，从发现问题到解决问题，一站式搞定。
+                </p>
+            </div>
+
+            <div class="feature-flow reveal">
+                <div class="feature-step">
+                    <div class="feature-step-num"><i class="fas fa-radar"></i> 1</div>
+                    <h3>全面扫描</h3>
+                    <p>200+ OSINT 模块<br>多维度信息采集</p>
+                </div>
+                <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="feature-step">
+                    <div class="feature-step-num">2</div>
+                    <h3>智能分析</h3>
+                    <p>泄露检测与 BFS 关联扩散<br>风险自动评级</p>
+                </div>
+                <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="feature-step">
+                    <div class="feature-step-num">3</div>
+                    <h3>实时预警</h3>
+                    <p>多维度风险告警<br>高危信息即时通知</p>
+                </div>
+                <div class="feature-arrow"><i class="fas fa-arrow-right"></i></div>
+                <div class="feature-step">
+                    <div class="feature-step-num">4</div>
+                    <h3>一键处置</h3>
+                    <p>智能脱敏与隐藏<br>隐私保护建议</p>
+                </div>
+            </div>
+
+            <div class="feature-cards reveal">
+                <div class="feature-card">
+                    <div class="fc-header">
+                        <div class="fc-icon"><i class="fas fa-magnifying-glass"></i></div>
+                        <h3>数字痕迹扫描</h3>
+                    </div>
+                    <p>集成 SpiderFoot 200+ OSINT 模块，支持手机号、邮箱、域名、IP、人名等多种目标类型深度扫描，结果以数据浏览、关联图谱、气泡图等多视图呈现。</p>
+                    <div class="fc-tags">
+                        <span class="fc-tag">社交账号关联</span>
+                        <span class="fc-tag">DNS/SSL 证书</span>
+                        <span class="fc-tag">暗网监控</span>
+                        <span class="fc-tag">地理位置</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="fc-header">
+                        <div class="fc-icon"><i class="fas fa-database"></i></div>
+                        <h3>泄露检测</h3>
+                    </div>
+                    <p>内置泄露数据库，通过 BFS 深度关联查询发现目标信息的泄露记录。自动识别输入类型，最多 2 层扩散、64 条关联，结果自动脱敏展示。</p>
+                    <div class="fc-tags">
+                        <span class="fc-tag">手机号/邮箱/身份证</span>
+                        <span class="fc-tag">BFS 关联扩散</span>
+                        <span class="fc-tag">自动脱敏</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="fc-header">
+                        <div class="fc-icon"><i class="fas fa-bell"></i></div>
+                        <h3>风险告警</h3>
+                    </div>
+                    <p>基于扫描与泄露检测结果进行多维度风险评估，对数据泄露、暗网暴露、社工攻击风险进行实时告警与关联扩散预警。</p>
+                    <div class="fc-tags">
+                        <span class="fc-tag">泄露告警</span>
+                        <span class="fc-tag">暗网预警</span>
+                        <span class="fc-tag">社工风险</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="fc-header">
+                        <div class="fc-icon"><i class="fas fa-mask"></i></div>
+                        <h3>智能脱敏</h3>
+                    </div>
+                    <p>对扫描发现的暴露信息提供自动脱敏处理：手机号保留前3后4、邮箱地址隐藏、身份证号遮盖，确保敏感信息在展示过程中的安全性。</p>
+                    <div class="fc-tags">
+                        <span class="fc-tag">手机号脱敏</span>
+                        <span class="fc-tag">邮箱脱敏</span>
+                        <span class="fc-tag">身份证遮盖</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="fc-header">
+                        <div class="fc-icon"><i class="fas fa-file-export"></i></div>
+                        <h3>数据管理与导出</h3>
+                    </div>
+                    <p>支持 CSV、Excel 多格式导出，可对大规模扫描结果进行全文检索与分类筛选，提供误报标记与灵活的扫描配置管理。</p>
+                    <div class="fc-tags">
+                        <span class="fc-tag">CSV/Excel 导出</span>
+                        <span class="fc-tag">全文检索</span>
+                        <span class="fc-tag">误报标记</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Tech Stack ====== -->
+    <section class="tech">
+        <div class="container">
+            <div class="reveal">
+                <div class="section-label">技术架构</div>
+                <h2 class="section-title">成熟可靠的技术选型</h2>
+                <p class="section-desc">
+                    基于成熟的 OSINT 生态构建，兼顾功能丰富性与系统稳定性。
+                </p>
+            </div>
+            <div class="tech-grid reveal">
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fab fa-python"></i></div>
+                    <h4>Python 3</h4>
+                    <p>后端核心语言</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-server"></i></div>
+                    <h4>CherryPy</h4>
+                    <p>Web 服务框架</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-database"></i></div>
+                    <h4>MySQL 8.0</h4>
+                    <p>用户认证存储</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-diagram-project"></i></div>
+                    <h4>SpiderFoot 4.0</h4>
+                    <p>200+ OSINT 模块</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-circle-nodes"></i></div>
+                    <h4>Sigma.js</h4>
+                    <p>图谱可视化引擎</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-code"></i></div>
+                    <h4>jQuery</h4>
+                    <p>前端交互框架</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-file-code"></i></div>
+                    <h4>Mako</h4>
+                    <p>高性能模板引擎</p>
+                </div>
+                <div class="tech-card">
+                    <div class="tech-icon"><i class="fas fa-cube"></i></div>
+                    <h4>SQLite</h4>
+                    <p>泄露数据存储</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Architecture Diagram ====== -->
+    <section class="arch">
+        <div class="container">
+            <div class="reveal">
+                <div class="section-label">系统架构</div>
+                <h2 class="section-title">分层解耦，模块化设计</h2>
+                <p class="section-desc">
+                    清晰的四层架构，前端展示层、Web 服务层、OSINT 引擎层、数据存储层各司其职。
+                </p>
+            </div>
+            <div class="arch-diagram reveal">
+                <div class="arch-layer arch-layer-frontend">
+                    <div class="arch-layer-title">展示层</div>
+                    <div class="arch-layer-name">PrivacyGuard UI + Sigma.js 图谱</div>
+                    <div class="arch-layer-detail">jQuery · Bootstrap · Mako 模板 · 响应式设计</div>
+                </div>
+                <div class="arch-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="arch-layer arch-layer-server">
+                    <div class="arch-layer-title">服务层</div>
+                    <div class="arch-layer-name">CherryPy Web Server</div>
+                    <div class="arch-layer-detail">扫描管理 · 泄露检测 · 用户认证 · API 路由</div>
+                </div>
+                <div class="arch-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="arch-layer arch-layer-engine">
+                    <div class="arch-layer-title">引擎层</div>
+                    <div class="arch-layer-name">SpiderFoot OSINT Engine</div>
+                    <div class="arch-layer-detail">200+ 数据采集模块 · BFS 关联分析 · 自动脱敏算法</div>
+                </div>
+                <div class="arch-arrow"><i class="fas fa-arrow-down"></i></div>
+                <div class="arch-layer-data">
+                    <div class="arch-layer arch-layer-db">
+                        <div class="arch-layer-title">数据层 A</div>
+                        <div class="arch-layer-name">MySQL 8.0</div>
+                        <div class="arch-layer-detail">用户 · 会话 · 扫描配置</div>
+                    </div>
+                    <div class="arch-layer arch-layer-db2">
+                        <div class="arch-layer-title">数据层 B</div>
+                        <div class="arch-layer-name">SQLite</div>
+                        <div class="arch-layer-detail">泄露数据库 · 事件记录</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Data Stats ====== -->
+    <section class="data-section">
+        <div class="container">
+            <div class="reveal">
+                <div class="section-label">数据规模</div>
+                <h2 class="section-title">以数据驱动的安全分析</h2>
+                <p class="section-desc">
+                    丰富的数据集为模型训练和风险评估提供坚实基础。
+                </p>
+            </div>
+            <div class="data-grid reveal">
+                <div class="data-card">
+                    <div class="data-num">2,467</div>
+                    <div class="data-unit">条</div>
+                    <div class="data-desc">OSINT 扫描事件数据集</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-num">8</div>
+                    <div class="data-unit">类</div>
+                    <div class="data-desc">目标类型覆盖</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-num">40+</div>
+                    <div class="data-unit">种</div>
+                    <div class="data-desc">事件数据类型</div>
+                </div>
+                <div class="data-card">
+                    <div class="data-num">4</div>
+                    <div class="data-unit">组</div>
+                    <div class="data-desc">实验分析数据</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Highlights ====== -->
+    <section class="highlights">
+        <div class="container">
+            <div class="reveal">
+                <div class="section-label">项目亮点</div>
+                <h2 class="section-title">为什么选择消痕侠？</h2>
+                <p class="section-desc">
+                    我们在功能完整性、技术深度和用户体验上做了充分的打磨。
+                </p>
+            </div>
+            <div class="hl-grid reveal">
+                <div class="hl-card">
+                    <div class="hl-num">01</div>
+                    <h3>一站式隐私闭环</h3>
+                    <p>将信息扫描、泄露检测、脱敏处理、风险预警整合于统一平台，打造完整的隐私安全工作流，无需在多个工具之间来回切换。</p>
+                </div>
+                <div class="hl-card">
+                    <div class="hl-num">02</div>
+                    <h3>开源情报驱动</h3>
+                    <p>基于 SpiderFoot 生态的 200+ 数据源模块，持续保持情报覆盖的广度与时效性，并支持灵活扩展。</p>
+                </div>
+                <div class="hl-card">
+                    <div class="hl-num">03</div>
+                    <h3>智能关联分析</h3>
+                    <p>通过 BFS 图搜索算法实现跨数据源的关联扩散，自动发现隐藏的隐私风险链条，超越单点检测的局限。</p>
+                </div>
+                <div class="hl-card">
+                    <div class="hl-num">04</div>
+                    <h3>隐私优先设计</h3>
+                    <p>所有泄露查询结果自动脱敏展示，确保敏感信息在传输和展示全过程中的安全性，符合数据保护理念。</p>
+                </div>
+                <div class="hl-card">
+                    <div class="hl-num">05</div>
+                    <h3>现代化交互体验</h3>
+                    <p>自研 PrivacyGuard UI 设计系统，提供直观的数据可视化、关联图谱和响应式操作体验，专业且易用。</p>
+                </div>
+                <div class="hl-card">
+                    <div class="hl-num">06</div>
+                    <h3>完整交付体系</h3>
+                    <p>配套研究报告、数据集、实验分析和可运行程序，并部署于腾讯云支持在线演示，开箱即用。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Demo CTA ====== -->
+    <section class="demo">
+        <div class="container">
+            <div class="reveal">
+                <h2 class="section-title">在线体验</h2>
+                <p class="section-desc">
+                    平台已部署至腾讯云服务器，支持在线访问与实时演示。
+                </p>
+                <a href="http://<SERVER_HOST>:5001" target="_blank" class="demo-btn">
+                    <i class="fas fa-rocket"></i>
+                    打开消痕侠
+                </a>
+                <p class="demo-info">
+                    <i class="fas fa-server"></i> 腾讯云轻量应用服务器 · Ubuntu · 2核2G
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== Footer ====== -->
+    <footer class="footer">
+        <p>
+            消痕侠 — 基于开源情报的隐私安全管理平台 · 
+            Powered by <a href="https://github.com/smicallef/spiderfoot" target="_blank">SpiderFoot</a> (MIT License)
+        </p>
+    </footer>
+
+    <script>
+        // Scroll reveal animation
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // Smooth scroll
+        document.querySelector('.scroll-hint').addEventListener('click', () => {
+            document.querySelector('.problem').scrollIntoView({ behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
