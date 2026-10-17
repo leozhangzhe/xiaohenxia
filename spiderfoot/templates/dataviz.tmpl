@@ -93,9 +93,9 @@
     <div class="dv-stat-sub" id="dv-total-sub">全部历史扫描</div>
   </div>
   <div class="dv-stat-card">
-    <div class="dv-stat-label">发现数据量</div>
+    <div class="dv-stat-label">当前告警数</div>
     <div class="dv-stat-value" id="dv-total-events">0</div>
-    <div class="dv-stat-sub">所有扫描数据汇总</div>
+    <div class="dv-stat-sub">当前已记录的告警，非发现总量</div>
   </div>
   <div class="dv-stat-card">
     <div class="dv-stat-label">高风险项</div>
@@ -105,7 +105,7 @@
   <div class="dv-stat-card">
     <div class="dv-stat-label">隐私评分</div>
     <div class="dv-stat-value" id="dv-privacy-score">--</div>
-    <div class="dv-stat-sub">综合风险指数</div>
+    <div class="dv-stat-sub">仅使用 SpiderFoot 已保存的扫描结果，覆盖范围有限；不提供综合安全评分。</div>
   </div>
 </div>
 
@@ -196,13 +196,11 @@ function safeSet(id, html) {
 
 function renderStats(scans, alerts) {
   var high = alerts.filter(function(a) { return a.risk === 'HIGH'; }).length;
-  var med = alerts.filter(function(a) { return a.risk === 'MEDIUM'; }).length;
-  var score = alerts.length ? Math.max(10, 100 - high * 10 - med * 4) : 100;
   document.getElementById('dv-total-scans').textContent = scans.length;
   document.getElementById('dv-total-events').textContent = alerts.length;
   document.getElementById('dv-high-risk').textContent = high;
   document.getElementById('dv-total-sub').textContent = scans.length + ' 个历史扫描';
-  document.getElementById('dv-privacy-score').textContent = score;
+  document.getElementById('dv-privacy-score').textContent = '暂无足够数据';
 }
 
 function renderScanChart(scans) {

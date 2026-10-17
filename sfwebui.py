@@ -1545,12 +1545,18 @@ class SpiderFootWebUi:
             marked_fp = bool(row[13] or row[14])
             results.append({
                 "input_type": input_type,
+                "event_type": str(row[4]),
+                "data_value": str(row[1]),
                 "data_source": "SpiderFoot / " + str(row[3]),
+                "source_module": str(row[3]),
+                "event_hash": str(row[8]),
+                "risk": str(row[7] or "INFO"),
                 "title": str(row[10] or row[4]),
                 "original_url": original_url,
                 "query_time": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(row[0])),
                 "time_note": "SpiderFoot 扫描记录时间，非实时查询",
                 "status": "已标记误报" if marked_fp else "待人工核验",
+                "false_positive": marked_fp,
                 "confidence_note": f"SpiderFoot 原始置信度 {row[5]}/100；未独立核验",
                 "false_positive_hint": "已由用户标记误报；请核对原始来源。" if marked_fp else "自动扫描可能产生误报；请核对原始来源。",
             })
@@ -1800,20 +1806,29 @@ class SpiderFootWebUi:
         """
         cherrypy.response.headers['Content-Type'] = "application/json; charset=utf-8"
 
-        dbh = self._db()
-
         if fp not in ["0", "1"]:
-            return json.dumps(["ERROR", "No FP flag set or not set correctly."]).encode('utf-8')
+            raise cherrypy.HTTPError(400, "Invalid false-positive flag")
 
         try:
             ids = json.loads(resultids)
-        except Exception:
-            return json.dumps(["ERROR", "No IDs supplied."]).encode('utf-8')
+        except (TypeError, ValueError):
+            raise cherrypy.HTTPError(400, "Invalid result IDs")
+        if (not isinstance(ids, list) or not ids or len(ids) > 100
+                or any(not isinstance(value, str) or not value or len(value) > 128 for value in ids)):
+            raise cherrypy.HTTPError(400, "Invalid result IDs")
+
+        dbh = self._db()
+        try:
+            return self._resultsetfp_owned(dbh, id, ids, fp)
+        finally:
+            dbh.close()
+
+    def _resultsetfp_owned(self, dbh, id, ids, fp):
 
         # Cannot set FPs if a scan is not completed
         status = dbh.scanInstanceGet(id)
         if not status:
-            return self.error(f"Invalid scan ID: {id}")
+            raise cherrypy.HTTPError(404, "Resource not found")
 
         if status[5] not in ["ABORTED", "FINISHED", "ERROR-FAILED"]:
             return json.dumps([
@@ -1834,13 +1849,13 @@ class SpiderFootWebUi:
 
         # Set all the children as FPs too.. it's only logical afterall, right?
         childs = dbh.scanElementChildrenAll(id, ids)
-        allIds = ids + childs
+        allIds = list(dict.fromkeys(ids + childs))
 
-        ret = dbh.scanResultsUpdateFP(id, allIds, fp)
-        if ret:
-            return json.dumps(["SUCCESS", ""]).encode('utf-8')
+        updated = dbh.scanResultsUpdateFP(id, allIds, int(fp))
+        if updated == len(allIds):
+            return json.dumps(["SUCCESS", {"updated": updated}]).encode('utf-8')
 
-        return json.dumps(["ERROR", "Exception encountered."]).encode('utf-8')
+        raise cherrypy.HTTPError(404, "Result not found")
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

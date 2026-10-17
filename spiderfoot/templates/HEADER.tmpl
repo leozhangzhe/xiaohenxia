@@ -15,6 +15,7 @@
     <link href="${docroot}/static/css/privacyguard.css" rel="stylesheet">
     <link href="${docroot}/static/node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="${docroot}/static/node_modules/alertifyjs/build/css/alertify.min.css" rel="stylesheet">
+    <script src="${docroot}/static/node_modules/jquery/dist/jquery.min.js"></script>
     <link href="${docroot}/static/node_modules/tablesorter/dist/css/jquery.tablesorter.pager.min.css" rel="stylesheet">
 
     <script>
@@ -192,35 +193,15 @@
                 status.textContent = high + ' 高风险';
               } else {
                 dot.className = 'pg-status-dot pg-dot-green';
-                status.textContent = '暂无告警';
+                status.textContent = '当前未发现告警（覆盖有限）';
+                status.title = '仅基于 SpiderFoot 已保存扫描结果；无告警不代表安全。';
               }
             }
 
-            // 更新隐私评分
-            // 无扫描数据时显示 --；有数据时按权重计算：
-            //   起始 100 分，每条 HIGH -10，每条 MEDIUM -4，最低 10 分
             var scoreEl = document.getElementById('privacy-score');
             if (scoreEl) {
-              if (alerts.length === 0) {
-                // 无任何扫描数据，不显示具体分数
-                scoreEl.textContent = '--';
-              } else {
-                var score = Math.max(10, 100 - high * 10 - medium * 4);
-                scoreEl.textContent = score;
-                var badge = document.getElementById('global-risk');
-                if (badge) {
-                  if (score < 60) {
-                    badge.style.color = 'var(--accent-red)';
-                    badge.style.borderColor = 'rgba(239,68,68,0.3)';
-                  } else if (score < 80) {
-                    badge.style.color = 'var(--accent-yellow)';
-                    badge.style.borderColor = 'rgba(245,158,11,0.3)';
-                  } else {
-                    badge.style.color = 'var(--accent-green)';
-                    badge.style.borderColor = 'rgba(34,197,94,0.3)';
-                  }
-                }
-              }
+              scoreEl.textContent = '--';
+              scoreEl.title = 'SpiderFoot 已保存结果覆盖有限，不提供综合安全评分。';
             }
 
             // 更新侧边栏告警徽章（只计未关闭的）

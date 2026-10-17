@@ -211,8 +211,8 @@
 <script src="${docroot}/static/node_modules/sigma/build/plugins/sigma.plugins.dragNodes.min.js"></script>
 <script src="${docroot}/static/node_modules/sigma/build/plugins/sigma.layout.forceAtlas2.min.js"></script>
 <script src="${docroot}/static/node_modules/sigma/build/plugins/sigma.renderers.snapshot.min.js"></script>
-<script src="${docroot}/static/js/spiderfoot.scaninfo.js?v=${version}"></script>
-<script src="${docroot}/static/js/spiderfoot.resultview.js?v=${version}"></script>
+<script src="${docroot}/static/js/spiderfoot.scaninfo.js?v=${version}-stage3-fix"></script>
+<script src="${docroot}/static/js/spiderfoot.resultview.js?v=${version}-stage3-fix"></script>
 <script type='text/javascript'>
     var currentType = "ALL";
     var currentSection = "btn-status";
@@ -246,12 +246,23 @@
         if (sel.length === 0) { alertify.error("请先选择至少一条记录"); return false; }
         var data = JSON.stringify(sel);
         $("#loader").show();
-        sf.fetchData(docroot + '/resultsetfp', {'id': '${id}', 'fp': flag, 'resultids': data }, function(ret) {
-            $("#loader").hide();
-            if (ret[0] === "SUCCESS") { refresh(); return; }
-            if (ret[0] === "WARNING") { alertify.error(ret[1]); return; }
-            if (ret[0] === "ERROR") { alertify.error("标记误报时发生错误：" + ret[1]); }
-        });
+        $.ajax({ type: 'POST', url: docroot + '/resultsetfp', dataType: 'json',
+                 data: {'id': '${id}', 'fp': flag, 'resultids': data} })
+          .done(function(ret) {
+              if (Array.isArray(ret) && ret[0] === 'SUCCESS' && ret[1] && ret[1].updated > 0) {
+                  refresh();
+                  loadNormalizedScanResults("${id}");
+                  alertify.success('误报状态已保存');
+              } else {
+                  alertify.error('误报状态未更新，请刷新后重试。');
+              }
+          })
+          .fail(function(xhr) {
+              if (xhr.status !== 403 || xhr.getResponseHeader('X-CSRF-Error') !== '1') {
+                  alertify.error('误报状态未更新，请刷新后重试。');
+              }
+          })
+          .always(function() { $("#loader").hide(); });
     }
 
     // 自动加载扫描概览

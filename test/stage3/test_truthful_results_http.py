@@ -62,6 +62,10 @@ def test_scan_results_show_existing_event_provenance_and_page_link(alice, scan_e
     assert item["input_type"] == "邮箱"
     assert item["data_source"] == "SpiderFoot / sfp_example"
     assert item["title"] == "公开页面链接"
+    assert item["data_value"] == "https://example.org/profile/alice"
+    assert item["event_type"] == "STAGE3_LINK"
+    assert item["event_hash"] == "stage3-link"
+    assert item["source_module"] == "sfp_example"
     assert item["query_time"]
     assert item["time_note"] == "SpiderFoot 扫描记录时间，非实时查询"
     assert item["status"] == "待人工核验"
@@ -75,6 +79,16 @@ def test_scan_results_show_existing_event_provenance_and_page_link(alice, scan_e
     script = client.get(url + "/static/js/spiderfoot.resultview.js")
     assert script.status_code == 200
     assert "/scanresults?id=" in script.text
+
+
+def test_real_scan_page_loads_jquery_before_initializing_results(alice):
+    client, url = alice
+    page = client.get(url + "/scaninfo", params={"id": ALICE})
+    assert page.status_code == 200
+    html = page.text
+    jquery = html.index("/static/node_modules/jquery/dist/jquery.min.js")
+    initializer = html.index("loadNormalizedScanResults(\"" + ALICE + "\")")
+    assert jquery < initializer
 
 
 def test_finished_scan_without_events_reports_no_match_not_safety(bob):

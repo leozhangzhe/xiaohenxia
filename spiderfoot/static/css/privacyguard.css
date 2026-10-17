@@ -1695,3 +1695,9 @@ footer.navbar-default { display: none !important; }
   font-size: 12px;
   color: var(--text-muted);
 }
+.pg-main, .pg-content { min-width: 0; }
+.pg-result-table-wrap { overflow-x: auto; max-width: 100%; }
+.pg-result-table { min-width: 1050px; }
+.pg-result-table th, .pg-result-table td { white-space: normal; overflow-wrap: anywhere; vertical-align: top; }
+.pg-result-toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px 0; }
+.pg-result-toolbar select { max-width: 240px; }

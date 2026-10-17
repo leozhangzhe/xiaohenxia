@@ -115,17 +115,21 @@ function scanSummaryView(scanId) {
 
             setContent(buildSummaryHtml(status));
 
-            sf.fetchData(docroot + '/scansummary', { id: scanId, by: 'type' }, function(data) {
+            $.ajax({ type: 'POST', url: docroot + '/scansummary',
+                     data: { id: scanId, by: 'type' }, cache: false, dataType: 'json' })
+            .done(function(data) {
                 if (!data || !data.length) {
-                    $('#summary-table').html('<div class="pg-empty-desc" style="padding:20px;">暂无数据</div>');
+                    $('#summary-table').text('当前数据源未发现匹配，不代表不存在相关信息。');
                     return;
                 }
                 var table = '<table class="pg-table"><thead><tr><th>数据类型</th><th>数量</th><th>最后发现</th></tr></thead><tbody>';
                 data.forEach(function(row) {
-                    table += '<tr><td>' + row[0] + '</td><td>' + row[1] + '</td><td>' + (row[2] || '-') + '</td></tr>';
+                    table += '<tr><td>' + escapeHtml(row[0]) + '</td><td>' + escapeHtml(row[1]) + '</td><td>' + escapeHtml(row[2] || '-') + '</td></tr>';
                 });
                 table += '</tbody></table>';
                 $('#summary-table').html(table);
+            }).fail(function() {
+                $('#summary-table').text('数据源不可用，请稍后重试。');
             });
         }).fail(function(jqXHR) {
             if (maybeRedirectToLoginFromXhr(jqXHR)) return;
@@ -180,58 +184,55 @@ function browseCorrelations(scanId) {
 //---------------------------------------------------------------------------
 function browseEventList(scanId, extraParams) {
     setSection('btn-browse');
-    var params = { id: scanId, eventType: currentType || 'ALL' };
-    if (extraParams) { for (var k in extraParams) { params[k] = extraParams[k]; } }
-
+    currentType = extraParams && extraParams.eventType ? extraParams.eventType : currentType || 'ALL';
+    var query = extraParams && extraParams.value ? String(extraParams.value).toLowerCase() : '';
     setContent('<div style="padding:20px;"><div class="pg-empty"><div class="pg-empty-icon"><span class="pg-loader" style="width:28px;height:28px;border-width:3px;"></span></div><div class="pg-empty-title" style="margin-top:12px;">正在加载事件数据...</div></div></div>');
 
-    sf.fetchData(docroot + '/scaneventresults', params, function(data) {
-        if (!data || !data.length) {
-            setContent('<div style="padding:40px;text-align:center;color:var(--text-muted);">' +
-                '<div style="font-size:48px;margin-bottom:12px;">📭</div>' +
-                '<div style="font-size:16px;">暂无事件数据</div></div>');
+    fetchNormalizedScanResults(scanId).then(function(data) {
+        var container = document.getElementById('scanresults-content');
+        container.replaceChildren();
+        if (data.status === 'partial') {
+            var partial = document.createElement('p');
+            partial.textContent = data.message || '部分完成：结果可能不完整。';
+            container.appendChild(partial);
+        }
+        var toolbar = document.createElement('div');
+        toolbar.className = 'pg-result-toolbar';
+        var types = Array.from(new Set(data.results.map(function(item) { return item.event_type; }).filter(Boolean))).sort();
+        var select = document.createElement('select');
+        select.id = 'event-type-filter';
+        select.className = 'pg-input';
+        [['ALL', '全部数据类型']].concat(types.map(function(type) { return [type, type]; })).forEach(function(entry) {
+            var option = document.createElement('option');
+            option.value = entry[0];
+            option.textContent = entry[1];
+            select.appendChild(option);
+        });
+        select.value = currentType;
+        select.onchange = function() { browseEventList(scanId, { eventType: select.value }); };
+        toolbar.appendChild(select);
+        ['csv', 'json'].forEach(function(format) {
+            var button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'pg-btn pg-btn-ghost pg-btn-sm';
+            button.textContent = '导出 ' + format.toUpperCase();
+            button.onclick = function() { exportEventData(scanId, currentType, format); };
+            toolbar.appendChild(button);
+        });
+        container.appendChild(toolbar);
+        var shown = data.results.filter(function(item) {
+            return (currentType === 'ALL' || item.event_type === currentType)
+                && (!query || String(item.data_value || '').toLowerCase().includes(query));
+        });
+        if (!shown.length) {
+            var empty = document.createElement('p');
+            empty.textContent = data.message || '当前数据源未发现匹配，不代表不存在相关信息。';
+            container.appendChild(empty);
             return;
         }
-
-        var html = '<div style="padding:16px 20px;">';
-        // 顶部工具栏
-        html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;">';
-        html += '<div style="font-size:13px;color:var(--text-muted);">显示 <strong>' + data.length + '</strong> 条结果</div>';
-        html += '<select id="event-type-filter" class="pg-input" style="width:200px;font-size:12px;" onchange="browseEventList(\'' + scanId + '\', {eventType: this.value})">';
-        html += '<option value="ALL">全部数据类型</option>';
-        // 类型选择器稍后通过API补充
-        html += '</select>';
-        html += '<div style="margin-left:auto;display:flex;gap:8px;">';
-        html += '<button class="pg-btn pg-btn-ghost pg-btn-sm" onclick="exportEventData(\'' + scanId + '\', currentType, \'csv\')">导出 CSV</button>';
-        html += '<button class="pg-btn pg-btn-ghost pg-btn-sm" onclick="exportEventData(\'' + scanId + '\', currentType, \'json\')">导出 JSON</button>';
-        html += '</div></div>';
-
-        // 表格
-        html += '<div class="pg-table-wrap" style="max-height:600px;overflow:auto;">';
-        html += '<table class="pg-table" id="events-table"><thead><tr>';
-        html += '<th style="width:30px;"><input type="checkbox" id="checkall" onchange="switchSelectAll()"></th>';
-        html += '<th style="min-width:120px;">时间</th><th style="min-width:90px;">类型</th><th style="min-width:200px;">数据</th><th style="min-width:140px;">来源模块</th><th style="min-width:70px;">风险</th>';
-        html += '</tr></thead><tbody>';
-        data.forEach(function(row) {
-            // row: [lastseen, type, data, hash, filtrisk, module, source, generated, fp, id, eventType]
-            var risk  = row[10] || 'INFO';
-            var cls   = riskClassMap[risk] || 'pg-badge-gray';
-            var fp    = row[8] == 1;
-            var dataEsc = sf.replace_sfurltag(escapeHtml(row[2] || '-'));
-            html += '<tr' + (fp ? ' style="opacity:0.4;text-decoration:line-through;"' : '') + '>';
-            html += '<td><input type="checkbox" id="cb_' + (row[9] || row[3]) + '"></td>';
-            html += '<td style="font-size:11px;word-break:break-all;" title="' + escapeHtml(row[0] || '') + '">' + (row[0] || '-') + '</td>';
-            html += '<td><span class="pg-badge pg-badge-gray" style="font-size:10px;">' + (row[1] || '-') + '</span></td>';
-            html += '<td style="font-size:12px;word-break:break-all;" title="' + escapeHtml(row[2] || '') + '">' + dataEsc + '</td>';
-            html += '<td style="font-size:11px;color:var(--text-muted);word-break:break-all;" title="' + escapeHtml(row[5] || '') + '">' + (row[5] || '-') + '</td>';
-            html += '<td><span class="pg-badge ' + cls + '" style="font-size:10px;">' + (riskLevelMap[risk] || risk) + '</span></td>';
-            html += '</tr>';
-        });
-        html += '</tbody></table></div></div>';
-        setContent(html);
-
-        // 更新当前类型
-        currentType = params.eventType;
+        renderNormalizedResultTable(container, shown, true);
+    }).catch(function() {
+        setContent('<div class="pg-empty" style="padding:24px;">数据源不可用，请稍后重试。</div>');
     });
 }
 

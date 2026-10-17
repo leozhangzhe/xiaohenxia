@@ -1134,7 +1134,7 @@ class SpiderFootDb:
 
         return True
 
-    def scanResultsUpdateFP(self, instanceId: str, resultHashes: list, fpFlag: int) -> bool:
+    def scanResultsUpdateFP(self, instanceId: str, resultHashes: list, fpFlag: int) -> int:
         """Set the false positive flag for a result.
 
         Args:
@@ -1143,7 +1143,7 @@ class SpiderFootDb:
             fpFlag (int): false positive
 
         Returns:
-            bool: success
+            int: number of event rows updated; zero if any requested event is missing
 
         Raises:
             TypeError: arg type was invalid
@@ -1156,22 +1156,35 @@ class SpiderFootDb:
         if not isinstance(resultHashes, list):
             raise TypeError(f"resultHashes is {type(resultHashes)}; expected list()") from None
 
+        hashes = list(dict.fromkeys(resultHashes))
+        if not hashes:
+            return 0
+        if any(not isinstance(value, str) or not value for value in hashes):
+            raise TypeError("resultHashes must contain non-empty strings")
+
         with self.dbhLock:
-            for resultHash in resultHashes:
-                qry = "UPDATE tbl_scan_results SET false_positive = ? WHERE \
-                    scan_instance_id = ? AND hash = ?"
-                qvars = [fpFlag, instanceId, resultHash]
-                try:
-                    self.dbh.execute(qry, qvars)
-                except sqlite3.Error as e:
-                    raise IOError("SQL error encountered when updating false-positive") from e
-
             try:
-                self.conn.commit()
-            except sqlite3.Error as e:
-                raise IOError("SQL error encountered when updating false-positive") from e
+                for resultHash in hashes:
+                    self.dbh.execute(
+                        "SELECT 1 FROM tbl_scan_results WHERE scan_instance_id=? AND hash=? AND type <> 'ROOT'",
+                        (instanceId, resultHash))
+                    if self.dbh.fetchone() is None:
+                        return 0
 
-        return True
+                updated = 0
+                for resultHash in hashes:
+                    self.dbh.execute(
+                        "UPDATE tbl_scan_results SET false_positive=? WHERE scan_instance_id=? AND hash=? AND type <> 'ROOT'",
+                        (fpFlag, instanceId, resultHash))
+                    updated += self.dbh.rowcount
+                if updated != len(hashes):
+                    self.conn.rollback()
+                    return 0
+                self.conn.commit()
+                return updated
+            except sqlite3.Error as e:
+                self.conn.rollback()
+                raise IOError("SQL error encountered when updating false-positive") from e
 
     def configSet(self, optMap: dict = {}) -> bool:
         """Store the default configuration in the database.
