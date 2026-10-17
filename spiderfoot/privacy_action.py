@@ -98,6 +98,12 @@ def _mask_text_nlp(text: str) -> str:
 class PrivacyActionDB:
     """隐私处理记录的 MySQL 存储层。"""
 
+    LEGACY_CLAIM_PREFIX = re.compile(
+        r"(?:系统|申请)?已提交给平台|已向(?:对应)?平台提交(?:删除)?(?:申请|请求)?"
+        r"|预计\s*1\s*[-–—~～]\s*3\s*天(?:内)?(?:处理)?(?:完成)?"
+    )
+    LEGACY_NOTE = "历史模拟记录，平台提交情况未经核实，需人工跟进。"
+
     FOLLOWUP_STATUSES = (
         "draft", "recorded", "awaiting_manual", "platform_contacted",
         "platform_processing", "completed", "unable",
@@ -178,6 +184,19 @@ class PrivacyActionDB:
                     "UPDATE privacy_actions SET user_id=(SELECT id FROM users WHERE users.username=privacy_actions.username) "
                     "WHERE user_id IS NULL AND EXISTS (SELECT 1 FROM users WHERE users.username=privacy_actions.username)"
                 )
+                # Previous versions also converted old statuses to 'recorded'
+                # without cleaning their simulated notes. Unconfirmed records
+                # cover that migration without touching new confirmed requests.
+                cur.execute(
+                    "SELECT id, note FROM privacy_actions WHERE action_type IN ('hide','delete') "
+                    "AND (status IN ('processing','pending','done','failed') "
+                    "OR (status='recorded' AND user_confirmed=0))"
+                )
+                for row in cur.fetchall():
+                    cleaned = self._sanitize_legacy_note(row["note"])
+                    if cleaned != row["note"]:
+                        cur.execute("UPDATE privacy_actions SET note=%s WHERE id=%s",
+                                    (cleaned, row["id"]))
                 # Old processing/pending values never proved a platform request.
                 cur.execute(
                     "UPDATE privacy_actions SET status='recorded' "
@@ -199,6 +218,23 @@ class PrivacyActionDB:
         finally:
             if conn:
                 conn.close()
+
+    @classmethod
+    def _sanitize_legacy_note(cls, note):
+        """Remove only recognized leading simulation claims; retain human text."""
+        if not isinstance(note, str):
+            return note
+        remaining = note.lstrip()
+        found = False
+        while match := cls.LEGACY_CLAIM_PREFIX.match(remaining):
+            found = True
+            remaining = remaining[match.end():].lstrip(" \t\r\n，,；;。")
+        if not found:
+            return note
+        replacement = cls.LEGACY_NOTE + ("；" + remaining if remaining else "")
+        # Existing note columns are VARCHAR(512). Preserve all human text if
+        # adding the explanation would exceed the old column's capacity.
+        return replacement if len(replacement) <= 512 else remaining
 
     # ---- CRUD ----
 

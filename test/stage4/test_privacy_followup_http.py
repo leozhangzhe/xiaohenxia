@@ -130,6 +130,8 @@ def test_page_describes_manual_record_without_unsupported_claims(alice, admin):
     client, url = alice
     html = client.get(url + "/privacyaction").content.decode("utf-8")
     assert "申请记录与人工跟进" in html
+    assert "<span>申请记录与人工跟进</span>" in html
+    assert "痕迹清理与管控" not in html
     assert "这不是自动删除" in html
     assert "不保证第三方平台执行" in html
     assert "需要人工跟进或用户自行联系平台" in html
