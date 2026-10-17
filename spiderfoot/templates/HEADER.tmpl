@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title>消痕侠 - 数字痕迹管理平台</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="消痕侠 - 数字痕迹管理平台，一键扫描、脱敏、删除全网公开信息">
+    <meta name="description" content="消痕侠 - 数字痕迹来源检索、申请记录与人工跟进；数据覆盖有限">
     <link rel="icon" type="image/png" href="${docroot}/static/img/spiderfoot-icon.png">
 
     <!-- Fonts -->
@@ -51,6 +51,7 @@
       </div>
 
       <nav class="pg-nav">
+        <a href="${docroot}/livesearch" class="pg-nav-item ${'active' if pageid == 'LIVESEARCH' else ''}"><span>统一实时检索</span></a>
         <div class="pg-nav-section">
           <span class="pg-nav-label">主要功能</span>
           <a href="${docroot}/" class="pg-nav-item ${'' if pageid != 'SCANLIST' else 'active'}">

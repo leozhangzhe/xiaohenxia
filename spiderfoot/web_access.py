@@ -57,6 +57,9 @@ GENERAL_ROUTES = set("index newscan eventtypes modules correlationrules ping ris
 # CSRF validation in this shared request boundary rather than individual views.
 BUSINESS_WRITE_ROUTES = set("startscan stopscan scandelete rerunscan rerunscanmulti resultsetfp savesettings savesettingsraw vacuum riskactionupdate riskactionautofix privacyactionsubmit privacyactiondelete privacyactionstatus".split())
 POST_ONLY_ROUTES = BUSINESS_WRITE_ROUTES | {"leaksearch", "search", "scansearchresultexport"}
+GENERAL_ROUTES.update({"livesearch", "liveavailability", "livecreate", "liveget", "livelist", "livecancel", "livedelete"})
+BUSINESS_WRITE_ROUTES.update({"livecreate", "livecancel", "livedelete"})
+POST_ONLY_ROUTES.update({"livecreate", "livecancel", "livedelete"})
 CSRF_SESSION_KEY = "sf_business_csrf"
 
 

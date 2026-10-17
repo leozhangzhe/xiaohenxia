@@ -21,6 +21,8 @@ import secrets
 import sqlite3
 import string
 import time
+import threading
+from pathlib import Path
 from urllib.parse import urlsplit
 from copy import deepcopy
 from io import BytesIO, StringIO
@@ -64,6 +66,83 @@ class SpiderFootWebUi:
 
     def _db(self, config=None):
         return WebScanDb(config or self.config)
+
+    def _live(self):
+        from spiderfoot.live_search import LiveSearchService
+        from spiderfoot.live_process import ProcessRunner
+        lock = self.__dict__.setdefault('_live_lock', threading.Lock())
+        with lock:
+            if '_live_service' not in self.__dict__:
+                runner = ProcessRunner(Path(__file__).resolve().parent)
+                self._live_service = LiveSearchService(self.config['__database'] + '.live.sqlite', runner)
+                cherrypy.engine.subscribe('stop', self._live_service.close)
+            return self._live_service
+
+    @cherrypy.expose
+    def livesearch(self):
+        return Template(filename='spiderfoot/templates/livesearch.tmpl', lookup=self.lookup).render(
+            docroot=self.docroot, pageid='LIVESEARCH', version=__version__)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def liveavailability(self):
+        from spiderfoot.live_search import SOURCES
+        service = self._live()
+        return [{'source': source, 'installed': service.runner.available(source),
+                 'configured': bool(os.environ.get('SF_HIBP_API_KEY', '').strip()) if source == 'hibp' else service.runner.available(source),
+                 'limitations': limitations,
+                 'rebuild': 'powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-live-sources.ps1'} for source, limitations in SOURCES.items()]
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def livecreate(self, input_type=None, query=None, sources=None, csrf_token=None):
+        cherrypy.response.headers['Cache-Control'] = 'no-store'
+        try:
+            selected = json.loads(sources) if isinstance(sources, str) else sources
+            return self._live().create(current_user_id(), input_type, query, selected)
+        except (ValueError, TypeError):
+            cherrypy.response.status = 400
+            return {'error': '输入格式或数据源选择无效，请检查后重试。'}
+        except Exception:
+            cherrypy.response.status = 503
+            return {'error': '检索任务服务暂不可用。'}
+
+    def _live_operation(self, operation, task_id=None):
+        cherrypy.response.headers['Cache-Control'] = 'no-store'
+        try:
+            service = self._live()
+            owner = current_user_id()
+            if operation == 'list':
+                return service.list(owner)
+            if not isinstance(task_id, str) or not re.fullmatch(r'[a-f0-9]{32}', task_id):
+                raise KeyError
+            result = getattr(service, operation)(owner, task_id)
+            return result if result is not None else {'success': True}
+        except KeyError:
+            raise cherrypy.HTTPError(404, 'Resource not found') from None
+        except Exception:
+            cherrypy.response.status = 503
+            return {'error': '检索任务数据暂不可用。'}
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def liveget(self, id=None):
+        return self._live_operation('get', id)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def livelist(self):
+        return self._live_operation('list')
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def livecancel(self, id=None, csrf_token=None):
+        return self._live_operation('cancel', id)
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def livedelete(self, id=None, csrf_token=None):
+        return self._live_operation('delete', id)
 
     # NOTE: Keep scan list behavior compatible with upstream:
     # - `/` renders HTML scan list page

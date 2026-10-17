@@ -1,0 +1,33 @@
+<%include file="HEADER.tmpl"/>
+<div class="pg-page-header">
+  <h1 class="pg-page-title">统一实时检索</h1>
+  <p>分别查询已接入的数据源；覆盖有限，匹配线索需人工核验身份归属。</p>
+  <p>Holehe：邮箱可能注册过相关网站。注册信号不等于泄露记录。</p>
+  <p>不支持手机号、身份证、QQ 的全网检索。仅查询本人或已获授权的目标。</p>
+</div>
+<div class="pg-card"><div class="pg-card-body">
+  <label for="live-kind">输入类型</label>
+  <select id="live-kind" class="pg-input">
+    <option value="domain">域名 / 网站 / IP（SpiderFoot）</option>
+    <option value="username">用户名（Sherlock / Maigret / WhatsMyName）</option>
+    <option value="email">邮箱（Holehe / HIBP）</option>
+  </select>
+  <label for="live-query">检索目标</label>
+  <input id="live-query" class="pg-input" autocomplete="off" maxlength="254" placeholder="输入目标；查询值通过 POST 发送"/>
+  <button id="live-start" class="pg-btn pg-btn-primary" type="button">开始检索</button>
+  <p id="live-message" role="status" aria-live="polite"></p>
+  <details><summary>数据源安装状态与覆盖范围</summary><div id="live-install">正在读取...</div></details>
+</div></div>
+<div class="pg-card" style="margin-top:16px"><div class="pg-card-body">
+  <h2>我的检索任务</h2><div id="live-tasks">正在读取...</div>
+  <h2 id="live-title">请选择任务</h2>
+  <button id="live-cancel" class="pg-btn" type="button" disabled>取消当前任务</button>
+  <button id="live-delete" class="pg-btn" type="button" disabled>删除任务记录</button>
+  <div id="live-sources" aria-live="polite"></div>
+  <label for="live-source-filter">按数据源筛选</label><select id="live-source-filter"><option value="">全部数据源</option></select>
+  <label for="live-type-filter">按结果类型筛选</label><select id="live-type-filter"><option value="">全部结果类型</option></select>
+  <div id="live-results" style="overflow-wrap:anywhere; margin-top:12px"></div>
+</div></div>
+<script>var docroot = '${docroot}';</script>
+<script src="${docroot}/static/js/live-search.js?v=stage5"></script>
+<%include file="FOOTER.tmpl"/>
