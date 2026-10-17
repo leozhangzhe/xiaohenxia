@@ -51,11 +51,11 @@ class WebScanDb(SpiderFootDb):
 
 SCAN_ROUTES = set("scanexportlogs scancorrelationsexport scaneventresultexport scansearchresultexport scanviz scanopts rerunscan clonescan scaninfo scanresults scandelete resultsetfp stopscan scanlog scanerrors scanstatus scansummary scancorrelations scaneventresults scaneventresultsunique scanhistory scanelementtypediscovery search".split())
 BATCH_ROUTES = set("scaneventresultexportmulti scanexportjsonmulti scanvizmulti rerunscanmulti".split())
-ADMIN_ROUTES = set("opts optsexport optsraw savesettings savesettingsraw vacuum serverlogs".split())
+ADMIN_ROUTES = set("opts optsexport optsraw savesettings savesettingsraw vacuum serverlogs privacyactionadminlist privacyactionstatus".split())
 GENERAL_ROUTES = set("index newscan eventtypes modules correlationrules ping riskalerts riskactionupdate riskactionautofix riskactionreport startscan scanlist leakcheck leaksearch privacyaction privacyactionsubmit privacyactionlist privacyactiondelete riskalertspage dataviz servicemonitor sysinfo serverlogs csrf".split())
 # Every route below changes persistent data or scanner state. Keep methods and
 # CSRF validation in this shared request boundary rather than individual views.
-BUSINESS_WRITE_ROUTES = set("startscan stopscan scandelete rerunscan rerunscanmulti resultsetfp savesettings savesettingsraw vacuum riskactionupdate riskactionautofix privacyactionsubmit privacyactiondelete".split())
+BUSINESS_WRITE_ROUTES = set("startscan stopscan scandelete rerunscan rerunscanmulti resultsetfp savesettings savesettingsraw vacuum riskactionupdate riskactionautofix privacyactionsubmit privacyactiondelete privacyactionstatus".split())
 POST_ONLY_ROUTES = BUSINESS_WRITE_ROUTES | {"leaksearch", "search", "scansearchresultexport"}
 CSRF_SESSION_KEY = "sf_business_csrf"
 

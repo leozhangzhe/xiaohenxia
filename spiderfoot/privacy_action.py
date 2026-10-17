@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-隐私处理模块 - 消痕侠核心功能
-支持三种数字痕迹处理方式：
-  1. 脱敏处理 (mask)   — 对内容中的姓名/电话/地址/邮箱自动打码
-  2. 隐藏处理 (hide)   — 一键发起隐藏申请，内容不再对外公开
-  3. 删除申请 (delete) — 自动向平台提交删除请求，全程跟踪进度
+本地脱敏，以及隐藏/删除申请记录与人工跟进。
+申请记录本身不会联系第三方平台或改变外部内容。
 """
 
 import os
@@ -99,7 +96,12 @@ def _mask_text_nlp(text: str) -> str:
 # ================================================================
 
 class PrivacyActionDB:
-    """隐私处理任务的 MySQL 存储层"""
+    """隐私处理记录的 MySQL 存储层。"""
+
+    FOLLOWUP_STATUSES = (
+        "draft", "recorded", "awaiting_manual", "platform_contacted",
+        "platform_processing", "completed", "unable",
+    )
 
     TABLE_DDL = """
     CREATE TABLE IF NOT EXISTS privacy_actions (
@@ -113,6 +115,8 @@ class PrivacyActionDB:
         status      VARCHAR(32)  NOT NULL DEFAULT 'pending'
                     COMMENT 'pending|processing|done|failed',
         note        VARCHAR(512) DEFAULT '' COMMENT '备注/进度说明',
+        user_confirmed TINYINT NOT NULL DEFAULT 0 COMMENT '用户确认记录申请',
+        manual_note VARCHAR(1024) NOT NULL DEFAULT '' COMMENT '人工跟进备注',
         created_at  BIGINT       NOT NULL,
         updated_at  BIGINT       NOT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
@@ -157,9 +161,28 @@ class PrivacyActionDB:
                 column_count = next(iter(column_row.values())) if isinstance(column_row, dict) else column_row[0]
                 if not column_count:
                     cur.execute("ALTER TABLE privacy_actions ADD COLUMN user_id BIGINT NULL AFTER username")
+                for column, definition in (
+                    ("user_confirmed", "TINYINT NOT NULL DEFAULT 0"),
+                    ("manual_note", "VARCHAR(1024) NOT NULL DEFAULT ''"),
+                ):
+                    cur.execute(
+                        "SELECT COUNT(*) AS column_count FROM information_schema.columns "
+                        "WHERE table_schema=DATABASE() AND table_name=%s AND column_name=%s",
+                        ("privacy_actions", column),
+                    )
+                    row = cur.fetchone()
+                    count = next(iter(row.values())) if isinstance(row, dict) else row[0]
+                    if not count:
+                        cur.execute(f"ALTER TABLE privacy_actions ADD COLUMN {column} {definition}")
                 cur.execute(
                     "UPDATE privacy_actions SET user_id=(SELECT id FROM users WHERE users.username=privacy_actions.username) "
                     "WHERE user_id IS NULL AND EXISTS (SELECT 1 FROM users WHERE users.username=privacy_actions.username)"
+                )
+                # Old processing/pending values never proved a platform request.
+                cur.execute(
+                    "UPDATE privacy_actions SET status='recorded' "
+                    "WHERE action_type IN ('hide','delete') "
+                    "AND status IN ('processing','pending','done','failed')"
                 )
                 cur.execute(
                     "SELECT COUNT(*) FROM information_schema.statistics "
@@ -180,17 +203,14 @@ class PrivacyActionDB:
     # ---- CRUD ----
 
     def create_action(self, user_id: int, username: str, action_type: str,
-                      platform: str, content: str) -> dict:
+                      platform: str, content: str, user_confirmed: bool = False) -> dict:
         """
-        创建一条处理任务：
-          - mask   → 立即执行本地脱敏，状态直接置 done
-          - hide   → 状态置 processing，模拟异步发起申请
-          - delete → 状态置 processing，模拟异步提交删除请求
+        本地脱敏立即完成；隐藏/删除只生成待跟进记录。
         """
         action_id = str(uuid.uuid4())
         now = int(time.time())
         masked_content = None
-        status = "processing"
+        status = "recorded"
         note = ""
 
         if action_type == "mask":
@@ -210,10 +230,11 @@ class PrivacyActionDB:
                 cur.execute(
                     """INSERT INTO privacy_actions
                        (id, username, user_id, action_type, platform, content,
-                        masked_content, status, note, created_at, updated_at)
-                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                        masked_content, status, note, user_confirmed, manual_note,
+                        created_at, updated_at)
+                       VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
                     (action_id, username, user_id, action_type, platform, content,
-                     masked_content, status, note, now, now)
+                     masked_content, status, note, int(bool(user_confirmed)), "", now, now)
                 )
         except Exception:
             log.error("创建隐私申请记录失败。")
@@ -232,37 +253,43 @@ class PrivacyActionDB:
         }
 
     def list_actions(self, user_id: int, page: int = 1,
-                     page_size: int = 20) -> dict:
-        """分页查询当前用户的处理任务列表"""
+                     page_size: int = 20, *, admin: bool = False) -> dict:
+        """分页查询本人记录；管理员入口显式指定 admin。"""
+        page = max(1, page)
+        page_size = max(1, min(100, page_size))
         offset = (page - 1) * page_size
+        conn = None
         try:
             conn = self._connect()
             with conn.cursor() as cur:
-                cur.execute(
-                    "SELECT COUNT(*) AS cnt FROM privacy_actions WHERE user_id=%s",
-                    (user_id,)
-                )
+                scope = "action_type IN ('hide','delete')" if admin else "user_id=%s"
+                cur.execute("SELECT COUNT(*) AS cnt FROM privacy_actions WHERE " + scope,
+                            () if admin else (user_id,))
                 total = cur.fetchone()["cnt"]
+                preview = "content" if admin else "SUBSTRING(content, 1, 80)"
                 cur.execute(
-                    """SELECT id, action_type, platform, status, note,
-                              created_at, updated_at,
-                              SUBSTRING(content, 1, 80) AS content_preview,
+                    """SELECT id, username, action_type, platform, status, note,
+                              user_confirmed, manual_note, created_at, updated_at,
+                              """ + preview + """ AS content_preview,
                               masked_content
                        FROM privacy_actions
-                       WHERE user_id=%s
+                       WHERE """ + scope + """
                        ORDER BY created_at DESC
                        LIMIT %s OFFSET %s""",
-                    (user_id, page_size, offset)
+                    (page_size, offset) if admin else (user_id, page_size, offset)
                 )
                 rows = cur.fetchall()
             for row in rows:
                 row["content_preview"] = mask_text(row.get("content_preview") or "")
                 row["platform"] = mask_text(row.get("platform") or "")
-            conn.close()
+                row["manual_note"] = mask_text(row.get("manual_note") or "")
             return {"success": True, "total": total, "items": rows}
         except Exception:
             log.error("读取隐私申请记录失败。")
             return {"success": False, "error": "申请记录暂时无法读取。", "total": 0, "items": []}
+        finally:
+            if conn:
+                conn.close()
 
     def get_action(self, action_id: str, user_id: int) -> dict:
         """查询单条任务详情"""
@@ -286,6 +313,8 @@ class PrivacyActionDB:
                       status: str, note: str = "") -> dict:
         """更新任务状态（内部使用）"""
         now = int(time.time())
+        if status not in self.FOLLOWUP_STATUSES:
+            return {"success": False, "error": "处理状态无效"}
         try:
             conn = self._connect()
             with conn.cursor() as cur:
@@ -303,6 +332,37 @@ class PrivacyActionDB:
         except Exception:
             log.error("更新隐私申请状态失败。")
             return {"success": False, "error": "申请记录暂时无法更新。"}
+
+    def update_followup(self, action_id: str, status: str, manual_note: str) -> dict:
+        """仅供管理员 HTTP 入口调用；外部处理状态需留下人工依据。"""
+        if not isinstance(manual_note, str):
+            return {"success": False, "error": "人工备注格式无效"}
+        if status not in self.FOLLOWUP_STATUSES:
+            return {"success": False, "error": "处理状态无效"}
+        manual_note = (manual_note or "").strip()
+        if len(manual_note) > 1024 or (status in (
+                "platform_contacted", "platform_processing", "completed", "unable")
+                and not manual_note):
+            return {"success": False, "error": "请填写人工跟进依据（最多 1024 字）"}
+        conn = None
+        try:
+            conn = self._connect()
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE privacy_actions SET status=%s, manual_note=%s, note='', "
+                    "updated_at=CASE WHEN updated_at >= %s THEN updated_at+1 ELSE %s END "
+                    "WHERE id=%s AND action_type IN ('hide','delete')",
+                    (status, manual_note, int(time.time()), int(time.time()), action_id),
+                )
+                if cur.rowcount == 0:
+                    return {"success": False, "error": "申请记录不存在"}
+            return {"success": True, "status": status}
+        except Exception:
+            log.error("更新人工跟进状态失败。")
+            return {"success": False, "error": "人工跟进状态暂时无法更新。"}
+        finally:
+            if conn:
+                conn.close()
 
     def delete_action(self, action_id: str, user_id: int) -> dict:
         """删除一条处理记录"""
@@ -336,12 +396,9 @@ class PrivacyActionDB:
                 )
                 rows = cur.fetchall()
             conn.close()
-            stats = {
-                "mask":   {"done": 0, "processing": 0, "pending": 0, "failed": 0},
-                "hide":   {"done": 0, "processing": 0, "pending": 0, "failed": 0},
-                "delete": {"done": 0, "processing": 0, "pending": 0, "failed": 0},
-                "total":  0,
-            }
+            stats = {kind: {status: 0 for status in (*self.FOLLOWUP_STATUSES, "done")}
+                     for kind in ("mask", "hide", "delete")}
+            stats["total"] = 0
             for r in rows:
                 at = r["action_type"]
                 st = r["status"]

@@ -2908,6 +2908,8 @@ class SpiderFootWebUi:
         user_id = current_user_id()
         db = PrivacyActionDB()
         stats_res = db.get_stats(user_id)
+        if not stats_res.get("success"):
+            raise cherrypy.HTTPError(503, "申请记录数据暂不可用")
         stats = stats_res.get("stats", {})
         templ = Template(filename='spiderfoot/templates/privacyaction.tmpl', lookup=self.lookup)
         return templ.render(
@@ -2915,6 +2917,7 @@ class SpiderFootWebUi:
             pageid='PRIVACYACTION',
             version=__version__,
             stats=stats,
+            is_admin=cherrypy.session.get("sf_user") == self.auth_store.admin_user,
         )
 
     @cherrypy.expose
@@ -2923,6 +2926,7 @@ class SpiderFootWebUi:
                              action_type: str = None,
                              platform: str = None,
                              content: str = None,
+                             user_confirmed: str = None,
                              csrf_token: str = None) -> dict:
         """提交隐私处理任务（POST）"""
         username = cherrypy.session.get("sf_user", "")
@@ -2933,6 +2937,9 @@ class SpiderFootWebUi:
             return {"success": False, "error": "请填写目标平台或内容来源"}
         if not content or not content.strip() or len(content) > 10000:
             return {"success": False, "error": "请填写需要处理的内容或链接"}
+        if action_type in ("hide", "delete") and user_confirmed != "1":
+            cherrypy.response.status = 400
+            return {"success": False, "error": "请先确认申请记录与人工跟进说明"}
 
         db = PrivacyActionDB()
         return db.create_action(
@@ -2941,6 +2948,7 @@ class SpiderFootWebUi:
             action_type=action_type.strip(),
             platform=platform.strip(),
             content=content.strip(),
+            user_confirmed=user_confirmed == "1",
         )
 
     @cherrypy.expose
@@ -2956,7 +2964,47 @@ class SpiderFootWebUi:
         except ValueError:
             p, ps = 1, 20
         db = PrivacyActionDB()
-        return db.list_actions(user_id, p, ps)
+        result = db.list_actions(user_id, p, ps)
+        if not result.get("success"):
+            cherrypy.response.status = 503
+        return result
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def privacyactionadminlist(self: 'SpiderFootWebUi',
+                               page: str = "1", page_size: str = "20") -> dict:
+        """管理员读取待跟进记录；权限在统一路由边界检查。"""
+        user_id = current_user_id()
+        if cherrypy.session.get("sf_user") != self.auth_store.admin_user:
+            raise cherrypy.HTTPError(403, "Administrator required")
+        try:
+            p, ps = int(page), int(page_size)
+        except ValueError:
+            p, ps = 1, 20
+        result = PrivacyActionDB().list_actions(user_id, p, ps, admin=True)
+        if not result.get("success"):
+            cherrypy.response.status = 503
+        return result
+
+    @cherrypy.expose
+    @cherrypy.tools.json_out()
+    def privacyactionstatus(self: 'SpiderFootWebUi', action_id: str = None,
+                            status: str = None, manual_note: str = "",
+                            csrf_token: str = None) -> dict:
+        """管理员记录人工跟进状态；POST 与 CSRF 在统一路由边界检查。"""
+        if cherrypy.session.get("sf_user") != self.auth_store.admin_user:
+            raise cherrypy.HTTPError(403, "Administrator required")
+        if not isinstance(action_id, str) or not action_id or not status:
+            cherrypy.response.status = 400
+            return {"success": False, "error": "缺少申请或处理状态"}
+        result = PrivacyActionDB().update_followup(action_id, status, manual_note)
+        if result.get("success"):
+            return result
+        if result.get("error") == "申请记录不存在":
+            raise cherrypy.HTTPError(404, "Resource not found")
+        cherrypy.response.status = 400 if result.get("error") in (
+            "处理状态无效", "人工备注格式无效", "请填写人工跟进依据（最多 1024 字）") else 503
+        return result
 
     @cherrypy.expose
     @cherrypy.tools.json_out()

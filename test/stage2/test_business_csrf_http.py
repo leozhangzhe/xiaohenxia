@@ -53,7 +53,8 @@ def admin(http_server):
 
 
 def privacy_payload():
-    return {"action_type": "hide", "platform": "example.invalid", "content": "csrf-probe@example.invalid"}
+    return {"action_type": "hide", "platform": "example.invalid",
+            "content": "csrf-probe@example.invalid", "user_confirmed": "1"}
 
 
 def test_missing_privacy_csrf_is_rejected_without_database_write(alice, http_server):

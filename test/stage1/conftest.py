@@ -107,10 +107,11 @@ class BoundaryCursor:
                 id TEXT PRIMARY KEY, username TEXT NOT NULL, user_id INTEGER NULL,
                 action_type TEXT NOT NULL, platform TEXT NOT NULL, content TEXT NOT NULL,
                 masked_content TEXT, status TEXT NOT NULL, note TEXT DEFAULT '',
+                user_confirmed INTEGER NOT NULL DEFAULT 0, manual_note TEXT NOT NULL DEFAULT '',
                 created_at BIGINT NOT NULL, updated_at BIGINT NOT NULL)"""
         if "FROM information_schema.columns" in sql:
             columns = {row[1] for row in self.cursor.execute("PRAGMA table_info(privacy_actions)")}
-            self.cursor.execute("SELECT ? AS column_count", (1 if "user_id" in columns else 0,))
+            self.cursor.execute("SELECT ? AS column_count", (1 if params[1] in columns else 0,))
             return 0
         if sql.strip().upper().startswith("ALTER TABLE PRIVACY_ACTIONS ADD COLUMN USER_ID"):
             columns = {row[1] for row in self.cursor.execute("PRAGMA table_info(privacy_actions)")}

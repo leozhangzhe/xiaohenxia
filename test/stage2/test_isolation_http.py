@@ -151,6 +151,7 @@ def test_privacy_actions_are_persisted_with_immutable_user_id(alice, http_server
     secret = "stage2-private-unique@example.invalid"
     response = client.post(url + "/privacyactionsubmit", data={
         "action_type": "delete", "platform": "example.invalid", "content": secret,
+        "user_confirmed": "1",
         "csrf_token": business_token(client, url),
     })
     assert response.status_code == 200
@@ -188,6 +189,7 @@ def test_privacy_list_and_delete_are_scoped_to_user_id(alice, bob):
     bob_client, _ = bob
     created = alice_client.post(url + "/privacyactionsubmit", data={
         "action_type": "hide", "platform": "example.invalid", "content": "alice-only-private@example.invalid",
+        "user_confirmed": "1",
         "csrf_token": business_token(alice_client, url),
     }).json()
     assert created["success"]
