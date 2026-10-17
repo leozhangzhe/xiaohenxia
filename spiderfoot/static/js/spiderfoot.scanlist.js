@@ -175,8 +175,11 @@ window.showlist = function(types, filter) {
         try {
             var ct = (jqXHR && jqXHR.getResponseHeader) ? (jqXHR.getResponseHeader('Content-Type') || '') : '';
             var text = (jqXHR && jqXHR.responseText) ? String(jqXHR.responseText) : '';
-            // Session expired often returns HTML login page with 200.
-            if (ct.indexOf('text/html') >= 0 || text.indexOf('<html') >= 0 || text.indexOf('<!DOCTYPE html') >= 0) {
+            // A redirected login form can arrive as HTML with HTTP 200.
+            // Error pages (including 404) do not indicate an expired session.
+            if (jqXHR.status === 401 || (jqXHR.status === 200 && ct.indexOf('text/html') >= 0
+                    && /<form\b[^>]*action=["'][^"']*\/login["']/i.test(text)
+                    && /type=["']password["']/i.test(text))) {
                 var nextUrl = encodeURIComponent(window.location.pathname + window.location.search);
                 window.location.href = docroot + '/login?next=' + nextUrl;
                 return true;

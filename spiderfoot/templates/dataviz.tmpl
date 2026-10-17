@@ -157,7 +157,7 @@
 </div>
 
 <script>
-function apiJson(url, fallback) {
+function apiJson(url) {
   return fetch(url, { credentials: 'same-origin' })
     .then(function(r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -165,8 +165,10 @@ function apiJson(url, fallback) {
       if (ct.indexOf('application/json') === -1) throw new Error('NOT_JSON');
       return r.json();
     })
-    .then(function(data) { return Array.isArray(data) ? data : fallback; })
-    .catch(function() { return fallback; });
+    .then(function(data) {
+      if (!Array.isArray(data)) throw new Error('INVALID_DATA');
+      return data;
+    });
 }
 
 function normScans(rows) {
@@ -291,8 +293,8 @@ function esc(s) {
 
 function loadDashboard() {
   Promise.all([
-    apiJson(docroot + '/scanlist', []),
-    apiJson(docroot + '/riskalerts', [])
+    apiJson(docroot + '/scanlist'),
+    apiJson(docroot + '/riskalerts')
   ]).then(function(results) {
     var scans = normScans(results[0]);
     var alerts = normAlerts(results[1]);
@@ -302,8 +304,11 @@ function loadDashboard() {
     try { renderRiskBars(alerts); } catch (_) { safeSet('dv-risk-bars', '<div class="dv-empty">图表渲染失败</div>'); }
     try { renderAlertChart(alerts); } catch (_) { safeSet('dv-alert-chart', '<div class="dv-empty">图表渲染失败</div>'); }
   }).catch(function() {
+    ['dv-total-scans', 'dv-total-events', 'dv-high-risk', 'dv-privacy-score', 'dv-total-sub'].forEach(function(id) {
+      document.getElementById(id).textContent = '数据不可用';
+    });
     ['dv-scan-chart', 'dv-donut-area', 'dv-risk-bars', 'dv-alert-chart'].forEach(function(id) {
-      safeSet(id, '<div class="dv-empty">数据加载失败</div>');
+      safeSet(id, '<div class="dv-empty">数据不可用</div>');
     });
   });
 }

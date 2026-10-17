@@ -1825,6 +1825,14 @@ class SpiderFootWebUi:
 
     def _resultsetfp_owned(self, dbh, id, ids, fp):
 
+        # Validate requested events before following any parent/child edges.
+        for result_id in ids:
+            event = dbh.conn.execute(
+                "SELECT type FROM tbl_scan_results WHERE scan_instance_id=? AND hash=?",
+                (id, result_id)).fetchone()
+            if event is None or event[0] == 'ROOT':
+                raise cherrypy.HTTPError(404, "Result not found")
+
         # Cannot set FPs if a scan is not completed
         status = dbh.scanInstanceGet(id)
         if not status:
@@ -1947,13 +1955,15 @@ class SpiderFootWebUi:
                   and HIGH risk event types
         """
         alerts = []
-        dbh = self._db()
-
-        # Get all finished scans
+        dbh = None
+        # Get all finished scans. A failed source is not an empty alert list.
         try:
+            dbh = self._db()
             scans = dbh.scanInstanceList()
         except Exception:
-            return []
+            if dbh:
+                dbh.close()
+            raise cherrypy.HTTPError(503, "数据不可用") from None
 
         finished_statuses = ['FINISHED', 'ABORTED', 'ERROR-FAILED']
 
@@ -2008,7 +2018,8 @@ class SpiderFootWebUi:
                             'timestamp': ''
                         })
             except Exception:
-                pass
+                dbh.close()
+                raise cherrypy.HTTPError(503, "数据不可用") from None
 
             # Get HIGH risk event types (sensitive data found)
             try:
@@ -2069,8 +2080,10 @@ class SpiderFootWebUi:
                             'timestamp': ''
                         })
             except Exception:
-                pass
+                dbh.close()
+                raise cherrypy.HTTPError(503, "数据不可用") from None
 
+        dbh.close()
         state = self._load_risk_action_state()
         for alert in alerts:
             alert_id = alert.get('alertId')
@@ -2547,7 +2560,7 @@ class SpiderFootWebUi:
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def scanlist(self: 'SpiderFootWebUi') -> list:
+    def scanlist(self: 'SpiderFootWebUi', _: str = None) -> list:
         """Produce a list of scans.
 
         Returns:
@@ -2559,8 +2572,14 @@ class SpiderFootWebUi:
         if 'text/html' in accept and 'application/json' not in accept:
             raise cherrypy.HTTPRedirect(f"{self.docroot}/", status=302)
 
-        dbh = self._db()
-        data = dbh.scanInstanceList()
+        dbh = None
+        try:
+            dbh = self._db()
+            data = dbh.scanInstanceList()
+        except (OSError, sqlite3.Error):
+            if dbh:
+                dbh.close()
+            raise cherrypy.HTTPError(503, "数据不可用") from None
         retdata = []
 
         for row in data:
@@ -2571,7 +2590,11 @@ class SpiderFootWebUi:
                 "LOW": 0,
                 "INFO": 0
             }
-            correlations = dbh.scanCorrelationSummary(row[0], by="risk")
+            try:
+                correlations = dbh.scanCorrelationSummary(row[0], by="risk")
+            except (OSError, sqlite3.Error):
+                dbh.close()
+                raise cherrypy.HTTPError(503, "数据不可用") from None
             if correlations:
                 for c in correlations:
                     riskmatrix[c[0]] = c[1]
@@ -2588,6 +2611,7 @@ class SpiderFootWebUi:
 
             retdata.append([row[0], row[1], self._mask_scan_target(row[2]), created, started, finished, row[6], row[7], riskmatrix])
 
+        dbh.close()
         return retdata
 
     @cherrypy.expose
@@ -2637,17 +2661,16 @@ class SpiderFootWebUi:
         """
         retdata = []
 
-        dbh = self._db()
-
+        dbh = None
         try:
+            dbh = self._db()
             scandata = dbh.scanResultSummary(id, by)
-        except Exception:
-            return retdata
-
-        try:
             statusdata = dbh.scanInstanceGet(id)
         except Exception:
-            return retdata
+            raise cherrypy.HTTPError(503, "数据不可用") from None
+        finally:
+            if dbh:
+                dbh.close()
 
         for row in scandata:
             if row[0] == "ROOT":

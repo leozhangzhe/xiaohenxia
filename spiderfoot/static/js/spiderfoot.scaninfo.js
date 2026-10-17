@@ -14,7 +14,9 @@ function maybeRedirectToLoginFromXhr(jqXHR) {
     try {
         var ct = (jqXHR && jqXHR.getResponseHeader) ? (jqXHR.getResponseHeader('Content-Type') || '') : '';
         var text = (jqXHR && jqXHR.responseText) ? String(jqXHR.responseText) : '';
-        if (ct.indexOf('text/html') >= 0 || text.indexOf('<html') >= 0 || text.indexOf('<!DOCTYPE html') >= 0) {
+        if (jqXHR.status === 401 || (jqXHR.status === 200 && ct.indexOf('text/html') >= 0
+                && /<form\b[^>]*action=["'][^"']*\/login["']/i.test(text)
+                && /type=["']password["']/i.test(text))) {
             var nextUrl = encodeURIComponent(window.location.pathname + window.location.search);
             window.location.href = docroot + '/login?next=' + nextUrl;
             return true;

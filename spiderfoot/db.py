@@ -745,12 +745,13 @@ class SpiderFootDb:
             except sqlite3.Error as e:
                 raise IOError("SQL error encountered when retrieving scan instance") from e
 
-    def scanResultSummary(self, instanceId: str, by: str = "type") -> list:
+    def scanResultSummary(self, instanceId: str, by: str = "type", excludeInputSeeds: bool = False) -> list:
         """Obtain a summary of the results, filtered by event type, module or entity.
 
         Args:
             instanceId (str): scan instance ID
             by (str): filter by type
+            excludeInputSeeds (bool): omit events emitted by the UI input module
 
         Returns:
             list: scan instance info
@@ -774,23 +775,26 @@ class SpiderFootDb:
             qry = "SELECT r.type, e.event_descr, MAX(ROUND(generated)) AS last_in, \
                 count(*) AS total, count(DISTINCT r.data) as utotal FROM \
                 tbl_scan_results r, tbl_event_types e WHERE e.event = r.type \
-                AND r.scan_instance_id = ? GROUP BY r.type ORDER BY e.event_descr"
+                AND r.scan_instance_id = ? AND (? = 0 OR COALESCE(r.module, '') <> 'SpiderFoot UI') \
+                GROUP BY r.type ORDER BY e.event_descr"
 
         if by == "module":
             qry = "SELECT r.module, '', MAX(ROUND(generated)) AS last_in, \
                 count(*) AS total, count(DISTINCT r.data) as utotal FROM \
                 tbl_scan_results r, tbl_event_types e WHERE e.event = r.type \
-                AND r.scan_instance_id = ? GROUP BY r.module ORDER BY r.module DESC"
+                AND r.scan_instance_id = ? AND (? = 0 OR COALESCE(r.module, '') <> 'SpiderFoot UI') \
+                GROUP BY r.module ORDER BY r.module DESC"
 
         if by == "entity":
             qry = "SELECT r.data, e.event_descr, MAX(ROUND(generated)) AS last_in, \
                 count(*) AS total, count(DISTINCT r.data) as utotal FROM \
                 tbl_scan_results r, tbl_event_types e WHERE e.event = r.type \
                 AND r.scan_instance_id = ? \
+                AND (? = 0 OR COALESCE(r.module, '') <> 'SpiderFoot UI') \
                 AND e.event_type in ('ENTITY') \
                 GROUP BY r.data, e.event_descr ORDER BY total DESC limit 50"
 
-        qvars = [instanceId]
+        qvars = [instanceId, excludeInputSeeds]
 
         with self.dbhLock:
             try:
@@ -1702,30 +1706,20 @@ class SpiderFootDb:
         if not isinstance(parentIds, list):
             raise TypeError(f"parentIds is {type(parentIds)}; expected list()")
 
-        datamap = list()
-        keepGoing = True
-        nextIds = list()
-
-        nextSet = self.scanElementChildrenDirect(instanceId, parentIds)
-        for row in nextSet:
-            datamap.append(row[8])
-
-        for row in nextSet:
-            if row[8] not in nextIds:
-                nextIds.append(row[8])
-
-        while keepGoing:
-            nextSet = self.scanElementChildrenDirect(instanceId, nextIds)
-            if nextSet is None or len(nextSet) == 0:
-                keepGoing = False
-                break
-
-            for row in nextSet:
-                datamap.append(row[8])
-                nextIds = list()
-                nextIds.append(row[8])
-
-        return datamap
+        descendants = []
+        visited = set(parentIds)
+        frontier = list(visited)
+        while frontier:
+            next_frontier = []
+            for row in self.scanElementChildrenDirect(instanceId, frontier) or []:
+                child_id = row[8]
+                if child_id in visited:
+                    continue
+                visited.add(child_id)
+                descendants.append(child_id)
+                next_frontier.append(child_id)
+            frontier = next_frontier
+        return descendants
 
     def correlationResultCreate(
         self,

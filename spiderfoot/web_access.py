@@ -20,7 +20,16 @@ class WebScanDb(SpiderFootDb):
         owner = current_user_id()
         owned = {row[0] for row in self.conn.execute(
             "SELECT scan_id FROM web_scan_owners WHERE user_id=?", (owner,))}
-        return [row for row in super().scanInstanceList() if row[0] in owned]
+        counts = dict(self.conn.execute(
+            "SELECT scan_instance_id,COUNT(*) FROM tbl_scan_results WHERE user_id=? "
+            "AND type <> 'ROOT' AND COALESCE(module,'') <> 'SpiderFoot UI' GROUP BY scan_instance_id", (owner,)))
+        return [(*row[:7], counts.get(row[0], 0)) for row in super().scanInstanceList() if row[0] in owned]
+
+    def scanResultEvent(self, *args, **kwargs):
+        return [row for row in super().scanResultEvent(*args, **kwargs) if row[3] != 'SpiderFoot UI']
+
+    def scanResultSummary(self, instanceId, by="type"):
+        return super().scanResultSummary(instanceId, by, excludeInputSeeds=True)
 
     def search(self, criteria, filterFp=False):
         if criteria.get("scan_id"):
@@ -68,6 +77,7 @@ def validate_business_csrf():
     if supplied is None:
         supplied = cherrypy.request.params.get("csrf_token")
     if (not isinstance(expected, str) or not isinstance(supplied, str)
+            or not expected.isascii() or not supplied.isascii()
             or len(supplied) > 256 or not secrets.compare_digest(expected, supplied)):
         cherrypy.response.headers["X-CSRF-Error"] = "1"
         raise cherrypy.HTTPError(403, "安全令牌无效或已过期，请刷新页面后重试。")
