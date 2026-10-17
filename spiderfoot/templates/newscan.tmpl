@@ -1,0 +1,442 @@
+<%include file="HEADER.tmpl"/>
+<script>var docroot = '${docroot}';</script>
+<script src="${docroot}/static/js/spiderfoot.newscan.js"></script>
+
+<div class="pg-page-header pg-fade-in">
+  <h1 class="pg-page-title">新建数字痕迹扫描</h1>
+  <p class="pg-page-subtitle">输入您的个人信息，系统将自动扫描全网公开的数字痕迹并评估隐私风险</p>
+</div>
+
+<form class="pg-fade-in" action='${docroot}/startscan' method='POST' id="newscan-form">
+  <input type="hidden" name="csrf_token" value="">
+  <div class="pg-newscan-layout">
+
+    <!-- 左侧：输入区域 -->
+    <div>
+      <div class="pg-card" style="margin-bottom: 16px;">
+        <div class="pg-card-header">
+          <div class="pg-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            检测目标信息
+          </div>
+        </div>
+        <div class="pg-card-body">
+          <div class="pg-form-group">
+            <label class="pg-label" for="scanname">任务名称</label>
+            <input class='pg-input' type="text" id="scanname" name="scanname" value="${scanname}" placeholder="给这次扫描起个名字，如：个人信息检测-2026">
+          </div>
+          <div class="pg-form-group">
+            <label class="pg-label" for="scantarget">检测目标</label>
+            <input class='pg-input' type="text" value="${scantarget}" id="scantarget" name="scantarget" placeholder="输入邮箱、手机号、用户名、姓名或域名…">
+            <div style="margin-top: 8px; font-size: 11px; color: var(--text-muted); line-height: 1.7;">
+              支持自动识别目标类型，无需手动选择
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 快速选择常见场景 -->
+      <div class="pg-card">
+        <div class="pg-card-header">
+          <div class="pg-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            快速场景
+          </div>
+        </div>
+        <div class="pg-card-body" style="padding: 12px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <button type="button" class="pg-btn pg-btn-ghost" style="justify-content: flex-start; gap: 8px;" onclick="setQuickTarget('email')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              邮箱泄露检测
+            </button>
+            <button type="button" class="pg-btn pg-btn-ghost" style="justify-content: flex-start; gap: 8px;" onclick="setQuickTarget('phone')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.06 6.06l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              手机号溯源
+            </button>
+            <button type="button" class="pg-btn pg-btn-ghost" style="justify-content: flex-start; gap: 8px;" onclick="setQuickTarget('username')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2" width="16" height="16"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              昵称/用户名关联
+            </button>
+            <button type="button" class="pg-btn pg-btn-ghost" style="justify-content: flex-start; gap: 8px;" onclick="setQuickTarget('name')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              真实姓名检索
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧：扫描配置 -->
+    <div>
+      <!-- 目标类型说明 -->
+      <div class="pg-target-tips" style="margin-bottom: 16px;">
+        <div class="tip-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="display:inline;vertical-align:middle;margin-right:5px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          支持的目标格式（自动识别）
+        </div>
+        <table style="width:100%;font-size:12px;line-height:2;">
+          <tr><td style="color:var(--text-muted);width:100px;">邮箱地址</td><td><code>user@example.com</code></td></tr>
+          <tr><td style="color:var(--text-muted);">手机号码</td><td><code>+8613800138000</code>（E.164格式）</td></tr>
+          <tr><td style="color:var(--text-muted);">真实姓名</td><td><code>"张三"</code>（需加英文引号）</td></tr>
+          <tr><td style="color:var(--text-muted);">用户名</td><td><code>"jsmith2000"</code>（需加英文引号）</td></tr>
+          <tr><td style="color:var(--text-muted);">域名</td><td><code>example.com</code></td></tr>
+          <tr><td style="color:var(--text-muted);">IP地址</td><td><code>1.2.3.4</code></td></tr>
+        </table>
+      </div>
+
+      <!-- 扫描模式选择 -->
+      <div class="pg-card" style="margin-bottom: 16px;">
+        <div class="pg-card-header">
+          <div class="pg-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            扫描模式
+          </div>
+        </div>
+        <div class="pg-card-body">
+          <div class="pg-usecase-grid">
+            <label class="pg-usecase-card">
+              <input type="radio" name="usecase" value="all" id="usecase_all" checked>
+              <div class="pg-usecase-label">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <span style="font-size:18px;">🔍</span>
+                  <div class="pg-usecase-name">全面扫描</div>
+                </div>
+                <div class="pg-usecase-desc">启用全部模块，获取目标的所有可能数字痕迹（速度较慢但最全面）</div>
+              </div>
+            </label>
+            <label class="pg-usecase-card">
+              <input type="radio" name="usecase" value="Footprint" id="usecase_footprint">
+              <div class="pg-usecase-label">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <span style="font-size:18px;">👣</span>
+                  <div class="pg-usecase-name">痕迹追踪</div>
+                </div>
+                <div class="pg-usecase-desc">分析目标在互联网上的公开足迹、关联账号和暴露信息</div>
+              </div>
+            </label>
+            <label class="pg-usecase-card">
+              <input type="radio" name="usecase" value="Investigate" id="usecase_investigate">
+              <div class="pg-usecase-label">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <span style="font-size:18px;">🛡️</span>
+                  <div class="pg-usecase-name">风险调查</div>
+                </div>
+                <div class="pg-usecase-desc">检测账号是否出现在数据泄露库、黑名单等风险来源中</div>
+              </div>
+            </label>
+            <label class="pg-usecase-card">
+              <input type="radio" name="usecase" value="Passive" id="usecase_passive">
+              <div class="pg-usecase-label">
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+                  <span style="font-size:18px;">🥷</span>
+                  <div class="pg-usecase-name">隐匿扫描</div>
+                </div>
+                <div class="pg-usecase-desc">被动收集公开信息，不直接接触目标，最大程度保护隐私</div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- 高级选项：模块选择 -->
+      <div class="pg-card">
+        <div class="pg-card-header">
+          <div class="pg-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="15" x2="12" y2="15"/></svg>
+            高级配置
+          </div>
+          <button type="button" class="pg-btn pg-btn-ghost pg-btn-sm" id="btn-advanced-toggle" onclick="toggleAdvanced()">
+            展开配置
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" id="advanced-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+        <div id="advanced-section" style="display:none;">
+          <div style="padding: 0 20px 8px;">
+            <div class="pg-tabs">
+              <div class="pg-tab active" id="typetab-btn" onclick="switchTab('type')">按数据类型</div>
+              <div class="pg-tab" id="moduletab-btn" onclick="switchTab('module')">按扫描模块</div>
+            </div>
+
+            <!-- 数据类型表 -->
+            <div id="typesection">
+              <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <button type="button" class="pg-btn pg-btn-ghost pg-btn-sm" onclick="$('input[id^=type_]').prop('checked',true)">全选</button>
+                <button type="button" class="pg-btn pg-btn-ghost pg-btn-sm" onclick="$('input[id^=type_]').prop('checked',false)">全不选</button>
+              </div>
+              <div class="pg-table-wrap" style="max-height:300px;overflow-y:auto;">
+                <table class="pg-table" id="typetable">
+                  <thead><tr><th></th><th>数据类型</th><th></th><th>数据类型</th></tr></thead>
+                  <tbody>
+                  <%
+                  count = 0
+                  items = list(sorted(types))
+                  %>
+                  % for i in range(0, len(items), 2):
+                    <tr>
+                      <td style="width:30px;"><input type="checkbox" id="type_${items[i][1]}" checked style="accent-color: var(--accent-blue);"></td>
+                      <td style="font-size:12px;">${items[i][0]}</td>
+                      % if i+1 < len(items):
+                      <td style="width:30px;"><input type="checkbox" id="type_${items[i+1][1]}" checked style="accent-color: var(--accent-blue);"></td>
+                      <td style="font-size:12px;">${items[i+1][0]}</td>
+                      % else:
+                      <td></td><td></td>
+                      % endif
+                    </tr>
+                  % endfor
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- 模块表 -->
+            <div id="modulesection" style="display:none;">
+              <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <button type="button" class="pg-btn pg-btn-ghost pg-btn-sm" onclick="$('input[id^=module_]').prop('checked',true)">全选</button>
+                <button type="button" class="pg-btn pg-btn-ghost pg-btn-sm" onclick="$('input[id^=module_]').prop('checked',false)">全不选</button>
+              </div>
+              <%
+              modlist = dict()
+              for item in modules:
+                  modlist[modules[item]['name']] = item
+              %>
+              <div class="pg-table-wrap" style="max-height:300px;overflow-y:auto;">
+                <table class="pg-table" id="moduletable">
+                  <thead><tr><th></th><th>模块名称</th><th>说明</th></tr></thead>
+                  <tbody>
+                  % for it in sorted(modlist, key=lambda v: v.upper()):
+                    <% item = modlist[it] %>
+                    <% keylist = dict((k, v) for k, v in modules[item]['opts'].items() if not k.startswith('_')) %>
+                    <% keyicon = "" %>
+                    % if len(keylist) > 0:
+                      <% apikeylist = dict((k, v) for k, v in modules[item]['opts'].items() if k.find("api_key") >= 0) %>
+                      <%
+                      if len(apikeylist) > 0:
+                          keyicon = "<span style='font-size:10px;color:var(--accent-yellow);margin-left:4px;' title='需要API密钥'>🔑</span>"
+                      %>
+                    % endif
+                    % if item != "sfp__stor_db" and item != "sfp__stor_stdout":
+                    <tr>
+                      <td><input type="checkbox" id="module_${item}" checked style="accent-color: var(--accent-blue);"></td>
+                      <td style="font-size:12px;white-space:nowrap;">${modules[item]['name']}${keyicon}</td>
+                      <td style="font-size:12px;color:var(--text-muted);">${modules[item]['descr']}</td>
+                    </tr>
+                    % endif
+                  % endfor
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 底部提交区域 -->
+  <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:20px;" class="pg-fade-in">
+    <a href="${docroot}/" class="pg-btn pg-btn-ghost">取消</a>
+    <input type="hidden" id='modulelist' name='modulelist' value=''>
+    <input type="hidden" id='typelist' name='typelist' value=''>
+    <button id="btn-run-scan" class="pg-btn pg-btn-primary pg-btn-lg">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      开始扫描
+    </button>
+  </div>
+</form>
+
+<script type='text/javascript'>
+  // 快速目标设置
+  function setQuickTarget(type) {
+    var placeholders = {
+      'email': '输入邮箱地址，如 user@example.com',
+      'phone': '输入手机号，如 +8613800138000',
+      'username': '输入用户名，如 "nickname"（需加引号）',
+      'name': '输入真实姓名，如 "张三"（需加引号）'
+    };
+    $('#scantarget').attr('placeholder', placeholders[type]).focus();
+  }
+
+  // 高级选项切换
+  function toggleAdvanced() {
+    var section = document.getElementById('advanced-section');
+    var chevron = document.getElementById('advanced-chevron');
+    var btn = document.getElementById('btn-advanced-toggle');
+    if (section.style.display === 'none') {
+      section.style.display = 'block';
+      btn.childNodes[0].textContent = '收起配置 ';
+      chevron.style.transform = 'rotate(180deg)';
+    } else {
+      section.style.display = 'none';
+      btn.childNodes[0].textContent = '展开配置 ';
+      chevron.style.transform = '';
+    }
+  }
+
+  // Tab切换
+  function switchTab(tab) {
+    if (tab === 'type') {
+      document.getElementById('typesection').style.display = 'block';
+      document.getElementById('modulesection').style.display = 'none';
+      document.getElementById('typetab-btn').classList.add('active');
+      document.getElementById('moduletab-btn').classList.remove('active');
+    } else {
+      document.getElementById('typesection').style.display = 'none';
+      document.getElementById('modulesection').style.display = 'block';
+      document.getElementById('typetab-btn').classList.remove('active');
+      document.getElementById('moduletab-btn').classList.add('active');
+    }
+  }
+
+  // 预填选中模块
+  if ("${selectedmods}" != "") {
+    toggleAdvanced();
+    switchTab('module');
+    $("input[id^=module_]").each(function(idx, obj) {
+      if ("${selectedmods}".indexOf(obj.id.replace("module_", "")) >= 0) {
+        $("#" + obj.id).prop("checked", true);
+      } else {
+        $("#" + obj.id).prop("checked", false);
+      }
+    });
+  }
+
+  // 表单预提交：收集选中模块/类型，填充隐藏字段，然后提交
+  $(document).ready(function() {
+    // 拦截按钮点击，先填充 hidden 字段再提交
+    $('#btn-run-scan').off('click').on('click', function(e) {
+      e.preventDefault();
+
+      // 1. 收集当前 Tab 的选中项
+      var activeTab = $('#typetab-btn').hasClass('active') ? 'type' :
+                      $('#moduletab-btn').hasClass('active') ? 'module' : 'type';
+
+      var selectedItems = [];
+      $("input[id^=" + activeTab + "_]").each(function(idx, obj) {
+        if ($(obj).is(":checked")) {
+          selectedItems.push(obj.id);
+        }
+      });
+
+      if (activeTab === 'type') {
+        $('#typelist').val(selectedItems.join(','));
+        $('#modulelist').val('');
+      } else {
+        $('#modulelist').val(selectedItems.join(','));
+        $('#typelist').val('');
+      }
+
+      // 2. 验证目标格式并自动修正
+      var target = $('#scantarget').val().trim();
+      var name = $('#scanname').val().trim();
+      var hasModuleOrType = selectedItems.length > 0 || $('input[name="usecase"]:checked').val();
+
+      if (!name) {
+        alertify.error('请输入任务名称');
+        return;
+      }
+      if (!target) {
+        alertify.error('请输入检测目标');
+        return;
+      }
+      if (!hasModuleOrType) {
+        alertify.error('请选择至少一种数据类型或扫描模式');
+        return;
+      }
+
+      // 目标格式自动修正 & 友好错误提示（覆盖所有后端 targetTypeFromString 支持的格式）
+      var corrected = validateAndFixTarget(target);
+      if (!corrected.valid) {
+        alertify.error(corrected.message);
+        return;
+      }
+      if (corrected.fixed) {
+        $('#scantarget').val(corrected.value);
+        alertify.success('已自动修正目标格式：' + corrected.fixedReason);
+      }
+
+      function validateAndFixTarget(val) {
+        var result = { valid: true, fixed: false, value: val, message: '' };
+
+        // 1. 邮箱格式 - 直接放行
+        if (/^[^@\s]+@[^\s@]+\.[^\s@]+$/.test(val)) return result;
+        // 2. IP地址 (x.x.x.x)
+        if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(val)) return result;
+        // 3. 网段 (x.x.x.x/n)
+        if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d+$/.test(val)) return result;
+        // 4. 带前缀的手机号 (+开头数字)
+        if (/^\+\d+$/.test(val)) return result;
+        // 5. 已有引号包裹的姓名（包含空格）- 直接放行
+        if (/^\".+\s+.+\"$/.test(val)) return result;
+        // 6. 已有引号包裹的用户名 - 直接放行
+        if (/^\".+\"$/i.test(val)) return result;
+        // 7. IPv6 地址
+        if (/^[0-9a-f:]+$/i.test(val)) return result;
+        // 8. 域名（含点）
+        if (/^([a-z0-9]([a-z0-9\-]*[a-z0-9])?\.)+[a-z]{2,}$/i.test(val)) return result;
+        // 9. 比特币地址
+        if (/^(bc(0([ac-hj-np-z02-9]{39}|[ac-hj-np-z02-9]{59})|1[ac-hj-np-z02-9]{8,87})|[13][a-km-zA-HJ-NP-Z1-9]{25,35})$/.test(val)) return result;
+
+        // ---- 自动修正规则 ----
+
+        // 10. 中国手机号（11位纯数字，以1开头）→ 自动补 +
+        if (/^1[3-9]\d{9}$/.test(val)) {
+          result.value = '+' + val;
+          result.fixed = true;
+          result.fixedReason = '已补全 E.164 格式前缀 (+)';
+          return result;
+        }
+        // 11. 包含空格的名字 → 自动加引号（HUMAN_NAME 格式）
+        if (/\s/.test(val)) {
+          result.value = '"' + val + '"';
+          result.fixed = true;
+          result.fixedReason = '已加引号（姓名格式）';
+          return result;
+        }
+        // 12. 中文/中英文混合 → 自动加引号（当作用户名或姓名）
+        if (/[\u4e00-\u9fa5]/.test(val)) {
+          result.value = '"' + val + '"';
+          result.fixed = true;
+          result.fixedReason = '已加引号（中文姓名/用户名格式）';
+          return result;
+        }
+        // 13. 普通字母/下划线开头的字符串 → 当作用户名加引号
+        if (/^[a-zA-Z_].*$/.test(val)) {
+          result.value = '"' + val + '"';
+          result.fixed = true;
+          result.fixedReason = '已加引号（用户名格式）';
+          return result;
+        }
+        // 14. 纯数字（7-15位）→ 当作手机号补 +
+        if (/^\d{7,15}$/.test(val)) {
+          result.value = '+' + val;
+          result.fixed = true;
+          result.fixedReason = '已补全国际电话前缀 (+)';
+          return result;
+        }
+
+        // 兜底：无法识别
+        result.valid = false;
+        result.message = '无法识别目标格式。可接受格式：<br>' +
+          '&nbsp;• 邮箱：user@example.com<br>' +
+          '&nbsp;• 手机号：+8613800138000 或直接输 13800138000<br>' +
+          '&nbsp;• 姓名："张三"（需加英文双引号）<br>' +
+          '&nbsp;• 用户名："nickname"（需加英文双引号）<br>' +
+          '&nbsp;• 域名：example.com<br>' +
+          '&nbsp;• IP：1.2.3.4';
+        return result;
+      }
+
+      // 3. 显示加载状态
+      $('#btn-run-scan').prop('disabled', true).html('<span class="pg-loader" style="width:16px;height:16px;border-width:2px;display:inline-block;"></span> 扫描启动中...');
+
+      // 4. 提交表单
+      $('#newscan-form')[0].submit();
+    });
+  });
+</script>
+
+<%include file="FOOTER.tmpl"/>
