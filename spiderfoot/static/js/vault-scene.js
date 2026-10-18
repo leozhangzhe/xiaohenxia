@@ -13,8 +13,8 @@
     var disposed=false, raf=0, frames=0, samples=0, elapsed=0, last=0, tick=0;
     var reduced=env.matchMedia('(prefers-reduced-motion: reduce)'), small=env.matchMedia('(max-width: 680px)');
     var offscreen=false, stopped=false, quality='full', listeners=[], observer, boost=0, impulse=0, error=0;
-    var cursor={x:0,y:0,inside:false}, width=1,height=1,dpr=1;
-    var points=[], count=options.mini?150:580;
+    var cursor={x:0,y:0,inside:false}, view={x:0,y:0}, width=1,height=1,dpr=1;
+    var points=[], count=options.mini?150:960;
     for(var i=0;i<count;i++) {
       var y=1-(i+.5)*2/count, radius=Math.sqrt(1-y*y), a=i*2.399963229728653;
       points.push([Math.cos(a)*radius,y,Math.sin(a)*radius]);
@@ -29,44 +29,58 @@
     function resize(){var box=canvas.getBoundingClientRect();width=Math.max(1,box.width);height=Math.max(1,box.height);dpr=Math.min(env.devicePixelRatio||1,1.5);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);if(ctx)ctx.setTransform(dpr,0,0,dpr,0,0);status();}
     function project(x,y,z,r,rotation){
       var cos=Math.cos(rotation),sin=Math.sin(rotation),rx=x*cos+z*sin,rz=z*cos-x*sin;
-      var tilt=cursor.y*.08,py=y*Math.cos(tilt)-rz*Math.sin(tilt),depth=rz*Math.cos(tilt)+y*Math.sin(tilt);
+      var tilt=view.y*.08,py=y*Math.cos(tilt)-rz*Math.sin(tilt),depth=rz*Math.cos(tilt)+y*Math.sin(tilt);
       var scale=3.6/(3.6-depth);
-      return [width/2+(rx+cursor.x*.035)*r*scale,height/2+(py+cursor.y*.025)*r*scale,depth,scale];
+      return [width/2+(rx+view.x*.035)*r*scale,height/2+(py+view.y*.025)*r*scale,depth,scale];
     }
     function draw(t){
       ctx.clearRect(0,0,width,height);
-      var r=Math.min(width*.29,height*.34), rotation=t*.075+cursor.x*.12, breath=1+Math.sin(t*.8)*.012;
+      view.x+=(cursor.x-view.x)*.045;view.y+=(cursor.y-view.y)*.045;
+      var r=Math.min(width*.28,height*.34), rotation=t*.028+view.x*.10, breath=1+Math.sin(t*.6)*.008;
       var cyan=options.cyan, color=error>0?'255,113,141':cyan?'89,233,231':'139,159,255';
       var glow=ctx.createRadialGradient(width/2,height/2,r*.1,width/2,height/2,r*1.7);
-      glow.addColorStop(0,'rgba('+color+','+(.10+boost*.05)+')');glow.addColorStop(.5,'rgba(94,75,213,.06)');glow.addColorStop(1,'rgba(0,0,0,0)');
+      glow.addColorStop(0,'rgba('+color+','+(.13+boost*.04)+')');glow.addColorStop(.55,'rgba(72,94,195,.065)');glow.addColorStop(1,'rgba(0,0,0,0)');
       ctx.fillStyle=glow;ctx.fillRect(0,0,width,height);
-      // Three real geometric orbits, intentionally independent of task completion.
+      // Three parallel data planes: depth without the intersecting atom-symbol silhouette.
       for(var band=0;band<3;band++) {
-        var angle=t*(.09+band*.035)*(band%2?-1:1), tilt=.28+band*.55;
+        var angle=t*(.07+band*.022)*(band%2?-1:1), tilt=.24+band*.045;
         ctx.beginPath();
-        for(var j=0;j<=100;j++) {var a=j/100*Math.PI*2, rr=1.35+band*.14;
-          var p=project(Math.cos(a)*rr,Math.sin(a)*Math.sin(tilt)*rr,Math.sin(a)*Math.cos(tilt)*rr,r,band*.8);
+        for(var j=0;j<=100;j++) {var a=j/100*Math.PI*2, rr=1.30+band*.15;
+          var p=project(Math.cos(a)*rr,Math.sin(a)*Math.sin(tilt)*rr+(band-1)*.19,Math.sin(a)*Math.cos(tilt)*rr,r,-.22);
           if(!j)ctx.moveTo(p[0],p[1]);else ctx.lineTo(p[0],p[1]);}
-        ctx.strokeStyle='rgba('+color+',.17)';ctx.lineWidth=.7;ctx.stroke();
+        ctx.strokeStyle='rgba('+color+','+(.12-band*.022)+')';ctx.lineWidth=.65;ctx.stroke();
         for(var k=0;k<2;k++) {var n=angle+k*Math.PI,rr2=1.35+band*.14;
-          var q=project(Math.cos(n)*rr2,Math.sin(n)*Math.sin(tilt)*rr2,Math.sin(n)*Math.cos(tilt)*rr2,r,band*.8);
-          ctx.fillStyle=band===1?'#66e5de':'#b2b7ff';ctx.beginPath();ctx.arc(q[0],q[1],2.6,0,Math.PI*2);ctx.fill();
-          if(cursor.inside){ctx.beginPath();ctx.moveTo(q[0],q[1]);ctx.lineTo(width/2+cursor.x*r*.35,height/2+cursor.y*r*.35);ctx.strokeStyle='rgba('+color+',.13)';ctx.stroke();}}
+          var q=project(Math.cos(n)*rr2,Math.sin(n)*Math.sin(tilt)*rr2+(band-1)*.19,Math.sin(n)*Math.cos(tilt)*rr2,r,-.22);
+          ctx.fillStyle=band===1?'#7ee5e4':'#afbaff';ctx.beginPath();ctx.arc(q[0],q[1],1.9,0,Math.PI*2);ctx.fill();
+          if(cursor.inside&&Math.abs(q[0]-(width/2+view.x*width*.4))<100){ctx.beginPath();ctx.moveTo(q[0],q[1]);ctx.lineTo(width/2+view.x*r*.35,height/2+view.y*r*.35);ctx.strokeStyle='rgba('+color+',.12)';ctx.stroke();}}
       }
       for(var index=0;index<points.length;index+=(quality==='low'?2:1)) {
         var point=points[index],shrink=impulse>0?1-Math.sin(impulse*Math.PI)*.16:1;
         var pt=project(point[0]*breath*shrink,point[1]*breath*shrink,point[2]*breath*shrink,r,rotation);
-        var alpha=.15+(pt[2]+1)*.27+boost*.1;
+        var alpha=.035+(pt[2]+1)*.14+boost*.045;
         ctx.fillStyle='rgba('+(index%7===0?'87,223,233':color)+','+Math.min(.95,alpha)+')';
-        ctx.beginPath();ctx.arc(pt[0],pt[1],(.65+(pt[2]+1)*.55)*pt[3],0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.arc(pt[0],pt[1],(.38+(pt[2]+1)*.26)*pt[3],0,Math.PI*2);ctx.fill();
       }
-      // Fingerprint contours inside the identity sphere. No biometric data.
-      ctx.save();ctx.translate(width/2,height/2);ctx.scale(r/130,r/130);
-      ctx.strokeStyle='rgba('+color+',.62)';ctx.lineWidth=1.2;
-      for(var f=0;f<8;f++){ctx.beginPath();ctx.ellipse(0,8,17+f*7,25+f*8,-.18,.30+f*.02,Math.PI*1.91);ctx.stroke();}
-      ctx.beginPath();ctx.moveTo(-5,12);ctx.bezierCurveTo(3,-28,29,-8,19,30);ctx.bezierCurveTo(11,54,4,66,-2,72);ctx.stroke();
-      ctx.strokeStyle='rgba(135,224,243,.47)';ctx.beginPath();ctx.moveTo(0,-84);ctx.lineTo(64,-60);ctx.lineTo(57,18);ctx.quadraticCurveTo(48,61,0,87);ctx.quadraticCurveTo(-48,61,-57,18);ctx.lineTo(-64,-60);ctx.closePath();ctx.stroke();ctx.restore();
-      var wave=(t*.13)%1;ctx.beginPath();ctx.ellipse(width/2,height/2,r*(1+wave*.9),r*(.28+wave*.12),-.2,0,Math.PI*2);ctx.strokeStyle='rgba('+color+','+((1-wave)*.21)+')';ctx.stroke();
+      // Authored synthetic fingerprint: open ridges, asymmetric flow and a quiet shield perimeter.
+      // These are geometry, not captured or inferred biometric information.
+      ctx.save();ctx.translate(width/2+view.x*r*.025,height/2+view.y*r*.018);ctx.scale(r/116,r/116);
+      ctx.rotate(-.07+view.x*.035);ctx.lineCap='round';
+      var scan=Math.sin(t*.52)*96;
+      for(var f=0;f<20;f++){
+        var w=7+f*3.55,h=17+f*4.05,bottom=20+f*1.55;
+        ctx.beginPath();ctx.moveTo(-w-6,bottom+18-f*.36);
+        ctx.bezierCurveTo(-w+4,bottom,-w,-h*.35,-w,-h*.48);
+        ctx.bezierCurveTo(-w-2,-h*1.32,w*.78,-h*1.38,w+2,-h*.36);
+        ctx.bezierCurveTo(w+12,bottom*.7,w-f*.6,bottom+24,w-12-f*.45,bottom+42-f*.75);
+        ctx.lineWidth=f%4===0?1.25:.8;
+        ctx.strokeStyle='rgba('+(f%4===0?'181,219,255':cyan?'115,223,224':'129,166,242')+','+(.67-f*.016+boost*.09)+')';ctx.stroke();
+      }
+      ctx.beginPath();ctx.moveTo(-5,41);ctx.bezierCurveTo(5,17,-4,-14,8,-11);ctx.bezierCurveTo(20,-5,11,44,2,58);ctx.strokeStyle='rgba(197,233,255,.8)';ctx.lineWidth=1.2;ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,-105);ctx.lineTo(80,-78);ctx.lineTo(74,15);ctx.quadraticCurveTo(65,72,0,108);ctx.quadraticCurveTo(-65,72,-74,15);ctx.lineTo(-80,-78);ctx.closePath();ctx.strokeStyle='rgba('+color+',.14)';ctx.lineWidth=.75;ctx.stroke();
+      // One slow light plane reveals the fingerprint; it never signifies a successful login.
+      var span=Math.sqrt(Math.max(0,1-(scan/116)*(scan/116)))*107;
+      ctx.beginPath();ctx.moveTo(-span,scan);ctx.lineTo(span,scan);ctx.strokeStyle='rgba(135,234,244,.48)';ctx.lineWidth=.8;ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-span*.92,scan+2);ctx.lineTo(span*.92,scan+2);ctx.strokeStyle='rgba(105,199,239,.08)';ctx.lineWidth=8;ctx.stroke();ctx.restore();
       if(impulse>0)impulse=Math.max(0,impulse-.045);
       if(error>0)error=Math.max(0,error-.08);
     }
