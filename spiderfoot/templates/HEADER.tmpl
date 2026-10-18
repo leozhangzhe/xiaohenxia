@@ -12,7 +12,10 @@
 <link href="${docroot}/static/css/privacyguard.css" rel="stylesheet">
 <link href="${docroot}/static/css/fluent.css?v=competition-1" rel="stylesheet">
 <script src="${docroot}/static/node_modules/jquery/dist/jquery.min.js"></script>
-<script src="${docroot}/static/js/fluent-ui.js?v=competition-1" defer></script>
+<link href="${docroot}/static/css/vault-motion.css?v=20261018" rel="stylesheet">
+<script src="${docroot}/static/js/vault-scene.js?v=20261018" defer></script>
+<script src="${docroot}/static/js/vault-motion.js?v=20261018" defer></script>
+<script src="${docroot}/static/js/fluent-ui.js?v=vault-1" defer></script>
 </head>
 <%def name="nav_icon(kind)">
 <svg class="fl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -32,7 +35,7 @@
 <header class="fl-topbar">
 <a class="fl-brand" href="${docroot}/#overview"><span class="fl-brand-icon"><img src="${docroot}/static/img/xhen-brand.svg" alt=""></span><span><strong>消痕侠</strong><small>数字痕迹管理平台</small></span></a>
 <span class="fl-top-caption">数字痕迹管理平台</span>
-<div class="fl-top-actions"><span class="fl-coverage">来源透明 · 数据覆盖有限</span><span class="fl-avatar" title="当前登录用户" aria-label="当前登录用户">我</span><a class="fl-logout" href="${docroot}/logout">退出登录</a><button class="fl-menu" id="fl-menu" type="button" aria-label="展开导航" aria-expanded="false" aria-controls="sidebar"><svg class="fl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></div>
+<div class="fl-top-actions"><button id="vault-motion-toggle" class="vault-motion-toggle" type="button" aria-pressed="false">暂停视觉动效</button><span class="fl-coverage">来源透明 · 数据覆盖有限</span><span class="fl-avatar" title="当前登录用户" aria-label="当前登录用户">我</span><a class="fl-logout" href="${docroot}/logout">退出登录</a><button class="fl-menu" id="fl-menu" type="button" aria-label="展开导航" aria-expanded="false" aria-controls="sidebar"><svg class="fl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button></div>
 </header>
 <aside class="pg-sidebar fl-sidebar" id="sidebar">
 <p class="fl-nav-label">我的工作区</p>

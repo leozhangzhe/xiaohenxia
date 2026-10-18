@@ -39,6 +39,7 @@
     var taskId=null,task=null,timer=null,availability=[];
     var inputSources={domain:['spiderfoot'],username:['sherlock','maigret','whatsmyname'],email:['holehe','hibp']};
     function get(id){return document.getElementById(id);}
+    function motion(method){if(global.vaultMotion&&global.vaultMotion[method])global.vaultMotion[method].apply(null,Array.prototype.slice.call(arguments,1));}
     function message(text,error){var n=get('live-message');n.textContent=text;n.className='fl-live-message'+(error?' is-error':'');}
     function request(path,options){return fetch(docroot+path,options).then(function(r){
       if(r.status===400)return r.json().then(function(body){throw new Error(body.error||'输入格式无效。');});
@@ -65,6 +66,8 @@
         if(info){var state=el('span',!info.installed?'未安装':!info.configured?'未配置':'安装就绪');state.className='fl-pill '+(info.installed&&info.configured?'ready':'not_configured');label.appendChild(state);}target.appendChild(label);
       });
       var hints={domain:['输入域名、网站或公开 IP','网站仅查询主机名，统一入口运行 SpiderFoot DNS 模块。'],username:['输入要检索的用户名','支持字母、数字、点、下划线与连字符；规则匹配需要人工核验。'],email:['输入邮箱地址','Holehe 提供注册信号，不是泄露记录；HIBP 需要有效 API Key。']};
+      motion('selection',kind);
+      if(document.querySelectorAll)document.querySelectorAll('[data-vault-kind]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.vaultKind===kind));});
       get('live-query').placeholder=hints[kind][0];setText('live-input-hint',hints[kind][1]);
     }
     function filters(){
@@ -74,11 +77,11 @@
         Array.from(new Set(values)).forEach(function(value){var option=el('option',spec[1]==='source'?(sourceNames[value]||value):value);option.value=value;select.appendChild(option);});select.value=old;
       });
     }
-    function render(){if(task){var source=get('live-source-filter').value,type=get('live-type-filter').value;renderResults(get('live-results'),task,source,type);var rows=(task.results||[]).filter(function(r){return (!source||r.source===source)&&(!type||r.result_type===type);});setText('live-result-count',rows.length+' 条已返回线索 · 需人工核验');}}
+    function render(){if(task){var source=get('live-source-filter').value,type=get('live-type-filter').value;renderResults(get('live-results'),task,source,type);var rows=(task.results||[]).filter(function(r){return (!source||r.source===source)&&(!type||r.result_type===type);});if(global.vaultMotion){motion('ticker',get('live-result-count'),rows.length,' 条已返回线索 · 需人工核验');motion('results',get('live-results'),task);}else setText('live-result-count',rows.length+' 条已返回线索 · 需人工核验');}}
     function loadTask(id){
       clearTimeout(timer);taskId=id;
       request('/liveget?id='+encodeURIComponent(id)).then(function(data){
-        if(taskId!==id)return;task=data;get('live-title').textContent=data.query+' · '+(labels[data.status]||data.status);
+        if(taskId!==id)return;task=data;motion('task',data);get('live-title').textContent=data.query+' · '+(labels[data.status]||data.status);
         var state=get('live-task-status');if(state){state.replaceChildren();state.appendChild(pill(data.status));}
         setText('live-task-meta','创建 '+time(data.created_at)+' · 更新 '+time(data.updated_at));get('live-sources').replaceChildren();var finished=0;
         data.sources.forEach(function(s){var row=el('div');row.className='fl-source-row';var head=el('div');head.className='fl-source-title';head.appendChild(el('strong',sourceNames[s.source]||s.source));head.appendChild(pill(s.status));row.appendChild(head);row.appendChild(el('p',s.message));row.appendChild(el('p',s.limitations));var when=el('p','查询时间：'+time(s.queried_at));when.className='fl-source-time';row.appendChild(when);get('live-sources').appendChild(row);if(['waiting','running'].indexOf(s.status)<0)finished++;});
@@ -86,7 +89,7 @@
         get('live-cancel').disabled=['waiting','running'].indexOf(data.status)<0;get('live-delete').disabled=false;filters();render();
         if(['waiting','running'].indexOf(data.status)>=0)timer=setTimeout(function(){loadTask(id);},1000);
         else{message('本次检索已结束；请按各来源状态判断覆盖情况。');loadList();}
-      }).catch(function(error){if(taskId!==id)return;task=null;message(error.message,true);get('live-results').textContent='数据不可用；请刷新任务列表后重试。';get('live-sources').textContent='数据不可用，无法读取来源进度。';get('live-cancel').disabled=true;get('live-delete').disabled=true;setText('live-result-count','数据不可用');setText('live-source-count','进度不可用');});
+      }).catch(function(error){if(taskId!==id)return;task=null;motion('unavailable');message(error.message,true);get('live-results').textContent='数据不可用；请刷新任务列表后重试。';get('live-sources').textContent='数据不可用，无法读取来源进度。';get('live-cancel').disabled=true;get('live-delete').disabled=true;setText('live-result-count','数据不可用');setText('live-source-count','进度不可用');});
     }
     function loadList(){return request('/livelist').then(function(data){
       get('live-tasks').replaceChildren();if(!data.length){var empty=el('p','暂无检索任务');empty.className='fl-empty';get('live-tasks').appendChild(empty);}
@@ -101,8 +104,9 @@
     };
     var form=get('live-form');if(form)form.onsubmit=function(e){e.preventDefault();get('live-start').onclick(e);};
     get('live-kind').onchange=choices;
+    if(document.querySelectorAll)document.querySelectorAll('[data-vault-kind]').forEach(function(b){b.onclick=function(){get('live-kind').value=b.dataset.vaultKind;choices();};});
     get('live-cancel').onclick=function(){if(taskId)write('/livecancel',{id:taskId}).then(function(){loadTask(taskId);loadList();}).catch(function(e){message(e.message,true);});};
-    get('live-delete').onclick=function(){if(taskId&&confirm('删除此任务及保存的结果？'))write('/livedelete',{id:taskId}).then(function(){clearTimeout(timer);taskId=null;task=null;get('live-title').textContent='请选择任务';get('live-sources').replaceChildren();get('live-results').replaceChildren();get('live-delete').disabled=true;get('live-cancel').disabled=true;setText('live-source-count','选择任务后显示各来源状态');setText('live-task-meta','只显示当前用户的检索任务');get('live-task-status').replaceChildren();get('live-progress-fill').style.transform='scaleX(0)';setText('live-result-count','');navigate('progress');message('任务及保存的结果已删除。');loadList();}).catch(function(e){message(e.message,true);});};
+    get('live-delete').onclick=function(){if(taskId&&confirm('删除此任务及保存的结果？'))write('/livedelete',{id:taskId}).then(function(){clearTimeout(timer);taskId=null;task=null;motion('unavailable');get('live-title').textContent='请选择任务';get('live-sources').replaceChildren();get('live-results').replaceChildren();get('live-delete').disabled=true;get('live-cancel').disabled=true;setText('live-source-count','选择任务后显示各来源状态');setText('live-task-meta','只显示当前用户的检索任务');get('live-task-status').replaceChildren();get('live-progress-fill').style.transform='scaleX(0)';setText('live-result-count','');navigate('progress');message('任务及保存的结果已删除。');loadList();}).catch(function(e){message(e.message,true);});};
     get('live-source-filter').onchange=render;get('live-type-filter').onchange=render;
     if(get('live-refresh'))get('live-refresh').onclick=function(){loadList();if(taskId)loadTask(taskId);};
     request('/liveavailability').then(function(data){availability=data;get('live-install').replaceChildren();data.forEach(function(source){get('live-install').appendChild(el('p',(sourceNames[source.source]||source.source)+'：'+(!source.installed?'未安装':!source.configured?'未配置':'已安装')+' · '+source.limitations+' · 重建：'+source.rebuild));});choices();}).catch(function(){get('live-install').textContent='安装状态暂不可用。';});

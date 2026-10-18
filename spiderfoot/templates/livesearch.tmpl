@@ -4,6 +4,7 @@
 <p id="live-message" class="fl-live-message" role="status" aria-live="polite"></p>
 <section id="live-new-view" class="fl-grid">
 <div class="fl-panel"><div class="fl-panel-head"><h2>检索目标</h2><span class="fl-small fl-muted">统一实时检索</span></div><div class="fl-panel-body"><form id="live-form" method="post" action="${docroot}/livecreate">
+<div class="vault-input-types" role="group" aria-label="快捷选择输入类型"><button type="button" data-vault-kind="domain" aria-pressed="true">域名 / 网站 / IP</button><button type="button" data-vault-kind="username" aria-pressed="false">用户名</button><button type="button" data-vault-kind="email" aria-pressed="false">邮箱</button></div><div id="vault-selection-network" class="vault-network" aria-label="本次来源示意，不代表检索进度"></div>
 <div class="fl-field"><label for="live-kind">输入类型</label><select id="live-kind" class="fl-input"><option value="domain">域名 / 网站 / IP（SpiderFoot）</option><option value="username">用户名（Sherlock / Maigret / WhatsMyName）</option><option value="email">邮箱（Holehe / HIBP）</option></select></div>
 <div class="fl-field"><label for="live-query">检索目标</label><input id="live-query" class="fl-input" autocomplete="off" maxlength="254" required placeholder="输入域名、网站或公开 IP"><small id="live-input-hint">网站仅查询主机名，统一入口保留 SpiderFoot 的 DNS 检索。</small></div>
 <fieldset class="fl-source-field"><legend>本次使用的数据源</legend><div id="live-source-choices"></div></fieldset>
@@ -13,9 +14,10 @@
 </section>
 <section id="live-task-view" hidden><div class="fl-grid"><div class="fl-stack">
 <section class="fl-panel"><div class="fl-panel-head"><div><h2 id="live-title">请选择任务</h2><p class="fl-small fl-muted" id="live-task-meta">只显示当前用户的检索任务</p></div><span id="live-task-status"></span></div>
+<div id="vault-task-network" class="vault-network" aria-label="各来源实际任务状态"></div>
 <div class="fl-panel-body"><div class="fl-task-actions"><button id="live-cancel" class="fl-btn danger" type="button" disabled>取消当前任务</button><button id="live-delete" class="fl-btn" type="button" disabled>删除任务记录</button><a class="fl-btn primary" id="live-view-next" href="#results">查看统一结果</a></div><div class="fl-progress-caption" id="live-source-count">选择任务后显示各来源状态</div><div class="fl-progress-track" aria-hidden="true"><span id="live-progress-fill"></span></div></div>
 <div id="live-sources" aria-live="polite"></div><div class="fl-panel-foot">单来源失败不丢弃其他来源结果 · 超时、未配置与无匹配分别展示</div></section>
 <section class="fl-panel" id="live-result-panel"><div class="fl-panel-head"><h2>统一结果</h2><span id="live-result-count" class="fl-small fl-muted"></span></div><div class="fl-filter-bar"><label for="live-source-filter">按数据源筛选<select id="live-source-filter"><option value="">全部数据源</option></select></label><label for="live-type-filter">按结果类型筛选<select id="live-type-filter"><option value="">全部结果类型</option></select></label></div><div id="live-results" aria-live="polite"><div class="fl-empty">请选择任务以读取结果。</div></div></section>
 </div><aside class="fl-stack"><section class="fl-panel"><div class="fl-panel-head"><h2>我的检索任务</h2><button id="live-refresh" type="button" class="fl-btn small">刷新</button></div><div id="live-tasks">正在读取...</div><div class="fl-panel-foot">目标摘要已脱敏；仅本人可访问、取消或删除。</div></section><div class="fl-notice">未发现匹配不代表不存在相关信息；请结合各来源状态与覆盖范围判断。</div><div class="fl-notice warning">Holehe 提供邮箱注册信号，不是泄露记录。来源请求失败时不能判定无匹配。</div><a class="fl-btn" href="#new">新建检索</a></aside></div></section>
-<script>var docroot = '${docroot}';</script><script src="${docroot}/static/js/live-search.js?v=fluent-competition-1"></script>
+<script>var docroot = '${docroot}';</script><script src="${docroot}/static/js/live-search.js?v=vault-20261018"></script>
 <%include file="FOOTER.tmpl"/>

@@ -15,8 +15,8 @@
   if(!document.getElementById('fl-recent-tasks'))return;
   read('/livelist').then(function(tasks){
     if(!Array.isArray(tasks))throw new Error('invalid');
-    document.getElementById('fl-live-count').textContent=tasks.length;
-    document.getElementById('fl-result-count').textContent=tasks.reduce(function(n,t){return n+(t.results||[]).length;},0);
+    if(window.vaultMotion){window.vaultMotion.overview(true);window.vaultMotion.ticker(document.getElementById('fl-live-count'),tasks.length);}else document.getElementById('fl-live-count').textContent=tasks.length;
+    var count=tasks.reduce(function(n,t){return n+(t.results||[]).length;},0);if(window.vaultMotion)window.vaultMotion.ticker(document.getElementById('fl-result-count'),count);else document.getElementById('fl-result-count').textContent=count;
     var target=document.getElementById('fl-recent-tasks');target.replaceChildren();
     if(!tasks.length){target.appendChild(node('p','暂无统一检索任务。开始一次检索，按来源查看结果与限制。','fl-muted fl-small'));return;}
     tasks.slice(0,5).forEach(function(t){
@@ -24,18 +24,18 @@
       row.appendChild(node('small',(t.sources||[]).map(function(s){return sourceNames[s.source]||s.source;}).join(' / ')));
       row.appendChild(node('small','创建 '+time(t.created_at)+' · '+(t.results||[]).length+' 条已保存线索，需人工核验'));target.appendChild(row);
     });
-  }).catch(function(){['fl-live-count','fl-result-count'].forEach(function(id){document.getElementById(id).textContent='不可用';});fail('fl-recent-tasks');});
+  }).catch(function(){if(window.vaultMotion)window.vaultMotion.overview(false);['fl-live-count','fl-result-count'].forEach(function(id){document.getElementById(id).textContent='不可用';});fail('fl-recent-tasks');});
   read('/liveavailability').then(function(sources){
     if(!Array.isArray(sources))throw new Error('invalid');
     var target=document.getElementById('fl-source-status');target.replaceChildren();
     sources.forEach(function(s){var row=node('div',undefined,'fl-source-row'),head=node('div',undefined,'fl-source-title');head.appendChild(node('strong',sourceNames[s.source]||s.source));head.appendChild(pill(s.installed&&s.configured?'ready':'not_configured',!s.installed?'未安装':!s.configured?'未配置':'安装就绪'));row.appendChild(head);row.appendChild(node('p',s.limitations));target.appendChild(row);});
-  }).catch(function(){fail('fl-source-status');});
+  }).catch(function(){if(window.vaultMotion)window.vaultMotion.overview(false);fail('fl-source-status');});
   read('/privacyactionlist?page=1&page_size=1').then(function(data){
     if(!data.success)throw new Error('invalid');
-    document.getElementById('fl-request-count').textContent=data.total;
+    if(window.vaultMotion)window.vaultMotion.ticker(document.getElementById('fl-request-count'),data.total);else document.getElementById('fl-request-count').textContent=data.total;
     var target=document.getElementById('fl-recent-request');target.replaceChildren();var item=(data.items||[])[0];
     if(!item)target.appendChild(node('p','暂无申请记录。','fl-muted fl-small'));
     else{target.appendChild(node('h3',item.platform));target.appendChild(node('p',item.manual_note||item.note||'等待人工核实。','fl-muted fl-small'));target.appendChild(node('p','创建 '+time(item.created_at),'fl-muted fl-small'));}
     var a=node('a','查看申请记录 →','fl-btn');a.href=docroot+'/privacyaction';target.appendChild(a);
-  }).catch(function(){document.getElementById('fl-request-count').textContent='不可用';fail('fl-recent-request');});
+  }).catch(function(){if(window.vaultMotion)window.vaultMotion.overview(false);document.getElementById('fl-request-count').textContent='不可用';fail('fl-recent-request');});
 })();
