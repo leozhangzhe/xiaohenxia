@@ -193,6 +193,16 @@ body.fluent-body::before,body.fluent-body::after,.fluent-body .fl-sidebar::befor
 .fl-auth-inner .fl-notice{margin:20px 0}.fl-auth-inner .fl-field{margin-bottom:24px}
 .fl-auth-links{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin-top:28px;color:var(--fl-muted)}
 .fl-auth-boundary{font-size:12px;color:var(--fl-muted);margin-top:30px;text-align:center;line-height:1.8}
+.fl-password-wrap{position:relative}
+.fl-password-wrap .fl-input{padding-right:66px}
+.fl-password-toggle{position:absolute;right:9px;top:5px;bottom:5px;min-width:46px;border:0;border-radius:5px;background:transparent;color:var(--fl-action);font-size:12px;cursor:pointer}
+.fl-password-toggle:hover{background:var(--fl-selected)}
+.fl-password-strength{display:grid;gap:5px}
+.fl-password-strength[hidden]{display:none}
+.fl-password-strength meter{width:100%;height:8px;accent-color:var(--fl-action)}
+.fl-register .fl-field small{font-size:12px;color:var(--fl-muted);line-height:1.7}
+.fl-register .fl-confirm-hint.is-error{color:var(--fl-error)}
+.fl-register .fl-input[aria-invalid=true]{border-color:var(--fl-error)}
 @media(max-width:1120px){.fl-grid,.fl-request-grid{grid-template-columns:minmax(0,1fr) 280px;gap:18px}.fl-coverage,.fl-top-caption{display:none}.fluent-body .fl-content{padding-right:22px}.fl-auth-story{padding:40px}.fl-auth-story h1{font-size:30px}.fl-auth-form{padding:40px}.fl-summary>div{padding:17px 15px;gap:8px}}
 @media(max-width:900px){.fl-grid,.fl-request-grid{grid-template-columns:1fr}.fl-sidebar-foot{margin-top:25px}.fl-summary>div{flex-direction:column;gap:2px}.fl-auth-story h1{font-size:26px}}
 @media(max-width:680px){
