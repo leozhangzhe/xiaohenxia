@@ -107,5 +107,42 @@ body.fluent-body .dv-stat-value,body.fluent-body .dv-chart-title,body.fluent-bod
 body.fluent-body .dv-stat-label,body.fluent-body .dv-stat-sub,body.fluent-body .sm-status-label,body.fluent-body .sm-card-sub,body.fluent-body .risk-stat-label,body.fluent-body .dv-bar-label{color:var(--muted-foreground)}
 body.fluent-body .sm-status-line,body.fluent-body .risk-alert-card,body.fluent-body .dv-table td{border-color:var(--border)}
 body.fluent-body .pg-loader{border-color:var(--input);border-top-color:var(--foreground)}
+/* The registration button's glass material, adapted to readable business panels.
+   The panel itself never scales or pretends to be a button. */
+@property --module-edge-angle{syntax:"<angle>";inherits:true;initial-value:-75deg}
+body.fluent-body :is(.fl-panel,.pg-card,.pg-stat-card,.fl-summary,.fl-welcome,.pa-form-panel,.pa-stat-item,.dv-stat-card,.dv-chart-card,.dv-table-card,.sm-card,.sm-metric-card,.sm-log-card,.risk-stat-card,.risk-alert-card){
+  --module-edge-angle:-75deg;
+  position:relative;isolation:isolate;
+  background-color:var(--card);
+  background-image:linear-gradient(-75deg,#ffffff04,#ffffff09 48%,#ffffff03);
+  border:1px solid #ffffff12;
+  box-shadow:inset 0 2px 2px #ffffff0d,inset 0 -2px 2px #00000070,0 5px 4px -4px #ffffff24;
+  transition:box-shadow 260ms var(--motion-ease),--module-edge-angle 320ms ease;
+}
+body.fluent-body :is(.fl-panel,.pg-card,.pg-stat-card,.fl-summary,.fl-welcome,.pa-form-panel,.pa-stat-item,.dv-stat-card,.dv-chart-card,.dv-table-card,.sm-card,.sm-metric-card,.sm-log-card,.risk-stat-card,.risk-alert-card)::before{
+  content:"";display:block;position:absolute;inset:-1px;width:auto;height:auto;
+  border-radius:inherit;padding:1px;box-sizing:border-box;pointer-events:none;z-index:1;
+  background:conic-gradient(from var(--module-edge-angle) at 50% 50%,#ffffff70 0%,transparent 6% 40%,#ffffff60 50%,transparent 60% 94%,#ffffff70 100%),linear-gradient(#ffffff15,#ffffff09);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;
+  transform:none;opacity:.75;
+}
+body.fluent-body :is(.fl-panel,.pg-card,.pg-stat-card,.fl-summary,.fl-welcome,.pa-form-panel,.pa-stat-item,.dv-stat-card,.dv-chart-card,.dv-table-card,.sm-card,.sm-metric-card,.sm-log-card,.risk-stat-card,.risk-alert-card)::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  background:linear-gradient(-45deg,transparent 24%,#ffffff06 43%,#ffffff02 50%,transparent 62%);
+  background-size:200% 200%;background-position:0% 50%;transition:background-position 320ms var(--motion-ease);
+}
+body.fluent-body :is(.fl-panel-head,.pg-card-header){background:transparent}
+@media(hover:hover) and (pointer:fine){
+  body.fluent-body :is(.fl-panel,.pg-card,.pg-stat-card,.fl-summary,.fl-welcome,.pa-form-panel,.pa-stat-item,.dv-stat-card,.dv-chart-card,.dv-table-card,.sm-card,.sm-metric-card,.sm-log-card,.risk-stat-card,.risk-alert-card):hover{
+    --module-edge-angle:-125deg;
+    box-shadow:inset 0 2px 2px #ffffff12,inset 0 -2px 2px #00000070,0 4px 3px -3px #ffffff30;
+  }
+  body.fluent-body :is(.fl-panel,.pg-card,.pg-stat-card,.fl-summary,.fl-welcome,.pa-form-panel,.pa-stat-item,.dv-stat-card,.dv-chart-card,.dv-table-card,.sm-card,.sm-metric-card,.sm-log-card,.risk-stat-card,.risk-alert-card):hover::after{background-position:25% 50%}
+}
+@supports(backdrop-filter:blur(4px)){
+  body.fluent-body :is(.fl-panel,.pg-card,.pg-stat-card,.fl-summary,.fl-welcome,.pa-form-panel,.pa-stat-item,.dv-stat-card,.dv-chart-card,.dv-table-card,.sm-card,.sm-metric-card,.sm-log-card,.risk-stat-card,.risk-alert-card){background-color:color-mix(in srgb,var(--card) 92%,transparent);backdrop-filter:blur(4px)}
+}
+@media(max-width:680px){body.fluent-body :is(.fl-panel,.pg-card,.pg-stat-card,.fl-summary,.fl-welcome,.pa-form-panel,.pa-stat-item,.dv-stat-card,.dv-chart-card,.dv-table-card,.sm-card,.sm-metric-card,.sm-log-card,.risk-stat-card,.risk-alert-card){backdrop-filter:none;background-color:var(--card)}}
 @media(max-width:680px){body.fluent-body .fl-topbar{background:var(--card)}body.fluent-body .fl-sidebar{background:var(--background);border-bottom:1px solid var(--border)}body.fluent-body .fl-mobile-logout{display:inline-flex;margin:12px;padding:10px 14px;border:1px solid var(--input);border-radius:999px;font-size:12px}body.fluent-body .fl-page-heading h1{font-size:24px}body.fluent-body .fl-content{padding-bottom:32px}body.fluent-body .pa-list-table tr{background:var(--card)}body.fluent-body .fl-welcome{min-height:0}}
 @media(prefers-reduced-motion:reduce){body.fluent-body *,body.fluent-body *:before,body.fluent-body *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
