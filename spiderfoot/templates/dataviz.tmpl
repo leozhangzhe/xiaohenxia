@@ -9,13 +9,13 @@
   margin-bottom: 24px;
 }
 .dv-stat-card {
-  background: #fff; border-radius: 12px; padding: 20px;
-  border: 1px solid #e8ecf2; transition: box-shadow 0.2s;
+  background: var(--card); border-radius: 12px; padding: 20px;
+  border: 1px solid var(--border); transition: box-shadow 0.2s;
 }
 .dv-stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
-.dv-stat-label { font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
-.dv-stat-value { font-size: 30px; font-weight: 700; color: #1e293b; }
-.dv-stat-sub  { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+.dv-stat-label { font-size: 13px; color: var(--muted-foreground); margin-bottom: 6px; }
+.dv-stat-value { font-size: 30px; font-weight: 700; color: var(--foreground); }
+.dv-stat-sub  { font-size: 12px; color: var(--muted-foreground); margin-top: 4px; }
 
 .dv-charts-row {
   display: grid;
@@ -24,11 +24,11 @@
   margin-bottom: 24px;
 }
 .dv-chart-card {
-  background: #fff; border-radius: 12px; padding: 20px;
-  border: 1px solid #e8ecf2;
+  background: var(--card); border-radius: 12px; padding: 20px;
+  border: 1px solid var(--border);
 }
 .dv-chart-title {
-  font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 16px;
+  font-size: 15px; font-weight: 600; color: var(--foreground); margin-bottom: 16px;
   display: flex; align-items: center; gap: 8px;
 }
 .dv-chart-title svg { width: 18px; height: 18px; color: #3b82f6; }
@@ -47,7 +47,7 @@
   transition: height 0.6s ease; min-height: 4px; position: relative; cursor: pointer;
 }
 .dv-bar:hover { opacity: 0.85; }
-.dv-bar-label { font-size: 11px; color: #94a3b8; text-align: center; word-break: break-all; max-width: 50px; }
+.dv-bar-label { font-size: 11px; color: var(--muted-foreground); text-align: center; word-break: break-all; max-width: 50px; }
 .dv-bar-value {
   font-size: 10px; font-weight: 600; color: #475569;
   position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
@@ -62,10 +62,10 @@
   position: absolute; inset: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
 }
-.dv-donut-num { font-size: 28px; font-weight: 700; color: #1e293b; }
-.dv-donut-label { font-size: 12px; color: #94a3b8; }
+.dv-donut-num { font-size: 28px; font-weight: 700; color: var(--foreground); }
+.dv-donut-label { font-size: 12px; color: var(--muted-foreground); }
 .dv-donut-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; justify-content: center; }
-.dv-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #64748b; }
+.dv-legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted-foreground); }
 .dv-legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
 
 /* 风险分布 */
@@ -73,16 +73,16 @@
 .dv-risk-item { }
 .dv-risk-header { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
 .dv-risk-name { color: #475569; font-weight: 500; }
-.dv-risk-count { color: #1e293b; font-weight: 600; }
-.dv-risk-track { width: 100%; height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+.dv-risk-count { color: var(--foreground); font-weight: 600; }
+.dv-risk-track { width: 100%; height: 8px; background: var(--secondary); border-radius: 4px; overflow: hidden; }
 .dv-risk-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
 
-.dv-empty { text-align: center; padding: 40px; color: #94a3b8; font-size: 14px; }
+.dv-empty { text-align: center; padding: 40px; color: var(--muted-foreground); font-size: 14px; }
 </style>
 
 <div style="margin-bottom: 20px;">
-  <h2 style="font-size: 20px; font-weight: 700; color: #1e293b;">数据洞察看板</h2>
-  <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">可视化呈现扫描数据与风险分布，辅助决策分析</p>
+  <h2 style="font-size: 20px; font-weight: 700; color: var(--foreground);">数据洞察看板</h2>
+  <p style="font-size: 13px; color: var(--muted-foreground); margin-top: 4px;">可视化呈现扫描数据与风险分布，辅助决策分析</p>
 </div>
 
 <!-- 概览统计 -->

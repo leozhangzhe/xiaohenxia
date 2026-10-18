@@ -185,6 +185,7 @@ docs/_build/
 /.cache/
 /.tools/
 /.pytest_cache/
+/.impeccable/review/
 /tmp/
 /temp/
 /test/**/tmp/

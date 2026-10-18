@@ -1,0 +1,111 @@
+/* Operate surfaces share the sign-up palette and glass-control vocabulary. */
+body.fluent-body {
+  --fl-canvas:var(--background);--fl-surface:var(--card);--fl-soft:var(--secondary);--fl-selected:#30303a;
+  --fl-ink:var(--foreground);--fl-muted:var(--muted-foreground);--fl-line:var(--border);
+  --fl-action:var(--primary);--fl-action-hover:#dedee8;--fl-radius:var(--radius-panel);--radius:var(--radius-panel);--fl-control:18px;
+  --fl-success:var(--success);--fl-success-bg:var(--success-surface);
+  --fl-warning:var(--warning);--fl-warning-bg:var(--warning-surface);
+  --fl-error:var(--destructive);--fl-error-bg:var(--danger-surface);
+  --fl-shadow:none;--fl-font:var(--font-ui);--fl-header:72px;
+  --bg-app:var(--background);--bg-primary:var(--background);--bg-secondary:var(--card);--bg-card:var(--card);--bg-card-hover:var(--secondary);--bg-sidebar:var(--card);
+  --card-bg:var(--card);--text-primary:var(--foreground);--text-secondary:var(--muted-foreground);--text-muted:var(--muted-foreground);
+  --border: #ffffff1a;--border-color:var(--border);--accent-purple:var(--info);--accent-blue:var(--info);--accent-cyan:#91dae3;
+  --accent-green:var(--success);--accent-red:var(--destructive);--accent-yellow:var(--warning);
+  background:var(--background);color:var(--foreground);font-family:var(--font-ui);
+}
+body.fluent-body ::selection{background:var(--foreground);color:var(--background)}
+body.fluent-body :focus-visible{outline:2px solid var(--ring);outline-offset:3px}
+body.fluent-body .fl-topbar{background:var(--card);border-bottom:1px solid var(--border)}
+body.fluent-body .fl-brand-icon{background:var(--secondary);box-shadow:var(--control-shadow)}
+body.fluent-body .fl-avatar{background:var(--secondary);color:var(--foreground);border:1px solid var(--border)}
+body.fluent-body .fl-sidebar{background:var(--background)}
+body.fluent-body .fl-nav{min-height:43px;border-radius:10px}
+body.fluent-body .fl-nav:hover{background:var(--secondary);color:var(--foreground)!important}
+body.fluent-body .fl-nav.active{background:var(--secondary);color:var(--foreground)!important;box-shadow:inset 0 1px #ffffff0a}
+body.fluent-body .fl-other-nav summary:hover,body.fluent-body .fl-other-nav a:hover{color:var(--foreground)}
+body.fluent-body .fl-mobile-logout{display:none}
+body.fluent-body .fl-page-heading h1,body.fluent-body .pg-page-title{font-size:28px;font-weight:600;letter-spacing:-.025em}
+body.fluent-body .fl-panel,body.fluent-body .pg-card,body.fluent-body .pg-stat-card,body.fluent-body .fl-summary,body.fluent-body .pa-form-panel,body.fluent-body .pa-stat-item,
+body.fluent-body .dv-stat-card,body.fluent-body .dv-chart-card,body.fluent-body .dv-table-card,body.fluent-body .sm-card,body.fluent-body .risk-stat-card,body.fluent-body .risk-alert-card{background:var(--card);color:var(--foreground);border:1px solid var(--border);border-radius:var(--radius);box-shadow:none}
+body.fluent-body .pg-card:hover,body.fluent-body .sm-card:hover,body.fluent-body .dv-stat-card:hover,body.fluent-body .risk-stat-card:hover{box-shadow:none}
+body.fluent-body .pg-card-header,body.fluent-body .fl-panel-head,body.fluent-body .fl-panel-foot,body.fluent-body .fl-source-row,body.fluent-body .fl-filter-bar,body.fluent-body .fl-summary>div{background:transparent;border-color:var(--border)}
+body.fluent-body .fl-panel-head h2,body.fluent-body .pg-card-title{font-weight:600;font-size:16px}
+body.fluent-body .fl-btn,body.fluent-body .pg-btn,body.fluent-body .btn,body.fluent-body .sm-btn,body.fluent-body .risk-btn{background:linear-gradient(160deg,#ffffff10,#ffffff04);color:var(--foreground);border:1px solid var(--input);border-radius:var(--radius-control);box-shadow:var(--control-shadow);font-weight:500;text-shadow:none;transition:background var(--motion-duration),border-color var(--motion-duration);transform:none}
+body.fluent-body .fl-btn:hover,body.fluent-body .pg-btn:hover,body.fluent-body .btn:hover{background:var(--secondary);color:var(--foreground);transform:none}
+body.fluent-body .fl-btn.primary,body.fluent-body .pg-btn-primary,body.fluent-body .btn-primary{background:var(--primary);border-color:var(--primary);color:var(--primary-foreground);box-shadow:none}
+body.fluent-body .fl-btn.primary:hover,body.fluent-body .pg-btn-primary:hover,body.fluent-body .btn-primary:hover{background:#dedee8;color:var(--primary-foreground)}
+body.fluent-body .fl-btn.danger,body.fluent-body .pg-btn-danger,body.fluent-body .btn-danger{color:var(--destructive);background:var(--danger-surface);border-color:#fca5a530}
+body.fluent-body .fl-btn.quiet,body.fluent-body .pg-btn-ghost{background:transparent;box-shadow:none;color:var(--muted-foreground);border-color:transparent}
+body.fluent-body .fl-input,body.fluent-body .pg-input,body.fluent-body .form-control,body.fluent-body .fl-filter-bar select,body.fluent-body #adminRequestList select,body.fluent-body .pg-select,
+body.fluent-body input:not([type=checkbox]):not([type=radio]):not([type=hidden]):not([type=button]):not([type=submit]),body.fluent-body select,body.fluent-body textarea{background:var(--background);color:var(--foreground);border:1px solid var(--input);border-radius:20px;box-shadow:inset 0 1px #ffffff08;caret-color:var(--foreground);font-family:var(--font-ui)}
+body.fluent-body textarea{border-radius:var(--radius)}
+body.fluent-body input::placeholder,body.fluent-body textarea::placeholder{color:var(--muted-foreground)}
+body.fluent-body input[type=checkbox],body.fluent-body input[type=radio]{accent-color:var(--primary)}
+body.fluent-body .fl-task-option{background:var(--card);color:var(--foreground);border-color:var(--border)}
+body.fluent-body .fl-task-option:hover,body.fluent-body .fl-task-option.selected{background:var(--secondary)}
+body.fluent-body .fl-pill,body.fluent-body .pa-badge,body.fluent-body .pg-badge{background:var(--secondary);color:var(--muted-foreground);font-weight:500}
+body.fluent-body .fl-pill.completed,body.fluent-body .fl-pill.ready,body.fluent-body .pa-badge-done,body.fluent-body .pg-badge-finished{background:var(--success-surface);color:var(--success)}
+body.fluent-body .fl-pill.running,body.fluent-body .pg-badge-running{background:var(--info-surface);color:var(--info)}
+body.fluent-body .fl-pill.failed,body.fluent-body .pa-badge-failed,body.fluent-body .pa-badge-delete,body.fluent-body .pg-badge-error,body.fluent-body .pg-badge-aborted{background:var(--danger-surface);color:var(--destructive)}
+body.fluent-body .fl-pill.partial,body.fluent-body .fl-pill.timeout,body.fluent-body .pa-badge-processing{background:var(--warning-surface);color:var(--warning)}
+body.fluent-body .fl-pill.manual,body.fluent-body .pa-badge-hide,body.fluent-body .pa-badge-mask{background:var(--info-surface);color:var(--info)}
+body.fluent-body .fl-notice,body.fluent-body .fl-live-message:not(:empty),body.fluent-body .pa-result-box,body.fluent-body .alert-info{background:var(--info-surface);color:#d8dfff;border-color:var(--border)}
+body.fluent-body .fl-notice.error,body.fluent-body .fl-live-message.is-error,body.fluent-body .pa-result-box.error,body.fluent-body .alert-danger{background:var(--danger-surface);color:var(--destructive)}
+body.fluent-body .fl-notice.warning,body.fluent-body .alert-warning{background:var(--warning-surface);color:var(--warning)}
+body.fluent-body .alert-success{background:var(--success-surface);color:var(--success)}
+body.fluent-body .fl-result details,body.fluent-body .fl-action-tabs{background:var(--background)}
+body.fluent-body .fl-action-tabs .pa-action-card.selected{background:var(--secondary);color:var(--foreground)}
+body.fluent-body .fl-empty,body.fluent-body .pg-empty-state,body.fluent-body .sm-empty,body.fluent-body .dv-empty{color:var(--muted-foreground)}
+body.fluent-body .fl-welcome{background:var(--card);color:var(--foreground);border:1px solid var(--border);min-height:180px}
+body.fluent-body .fl-welcome p{color:var(--muted-foreground)}
+body.fluent-body .vault-mini{display:none}
+body.fluent-body .fl-welcome>div:first-child{max-width:100%}
+body.fluent-body .vault-network{background:radial-gradient(ellipse at center,#30274655,transparent 75%),var(--background);border:1px solid var(--border);color:var(--foreground)}
+body.fluent-body .vault-network-center{background:var(--card);border-color:#ffffff30;color:var(--foreground)}
+body.fluent-body .vault-source-node{background:var(--secondary);border-color:var(--border)}
+body.fluent-body .vault-source-node.running,body.fluent-body .vault-source-node.selected{background:var(--info-surface);color:var(--info)}
+body.fluent-body .vault-input-types button{background:var(--background);border-color:var(--border);color:var(--muted-foreground);border-radius:20px}
+body.fluent-body .vault-input-types button:hover,body.fluent-body .vault-input-types button[aria-pressed=true]{background:var(--secondary);color:var(--foreground);border-color:var(--input);box-shadow:none}
+body.fluent-body .vault-motion-toggle{border-color:var(--input);color:var(--muted-foreground);background:var(--secondary);border-radius:999px}
+body.fluent-body .vault-request-track summary,body.fluent-body .vault-request-track li.current{color:var(--info)}
+body.fluent-body .vault-request-track li{color:var(--muted-foreground);border-color:var(--input)}
+body.fluent-body .vault-request-track li.current:before{background:var(--info);box-shadow:0 0 0 4px var(--info-surface)}
+body.fluent-body .vault-timeline-cursor{background:var(--info)}
+body.fluent-body .vault-count-changed{color:var(--info)}
+body.fluent-body .fl-progress-track{background:var(--secondary)}
+body.fluent-body .fl-progress-track span{background:var(--info)}
+/* Legacy SpiderFoot tables keep all columns, sorting and horizontal scroll. */
+body.fluent-body table,body.fluent-body .table,body.fluent-body .tablesorter-default{background:transparent;color:var(--foreground);border-color:var(--border)}
+body.fluent-body table th,body.fluent-body .tablesorter thead tr th{background:var(--secondary)!important;color:var(--muted-foreground)!important;border-color:var(--border)!important;box-shadow:none;font-weight:500}
+body.fluent-body table td,body.fluent-body .table>tbody>tr>td{background:transparent;color:var(--foreground);border-color:var(--border)!important}
+body.fluent-body .table-striped>tbody>tr:nth-of-type(odd),body.fluent-body .tablesorter-default .odd,body.fluent-body .tablesorter-default .even{background:transparent}
+body.fluent-body .tablesorter tbody tr:hover,body.fluent-body .pg-table tr:hover td,body.fluent-body table tbody tr:hover{background:var(--secondary)!important}
+body.fluent-body .tablesorter-header-inner{color:var(--muted-foreground)}
+@media(min-width:681px){
+  body.fluent-body .pa-list-table{width:1200px;min-width:1200px;table-layout:fixed}
+  body.fluent-body .pa-list-table th:nth-child(1){width:90px}
+  body.fluent-body .pa-list-table th:nth-child(2){width:160px}
+  body.fluent-body .pa-list-table th:nth-child(3){width:220px}
+  body.fluent-body .pa-list-table th:nth-child(4){width:190px}
+  body.fluent-body .pa-list-table th:nth-child(5){width:260px}
+  body.fluent-body .pa-list-table th:nth-child(6){width:180px}
+  body.fluent-body .pa-list-table th:nth-child(7){width:100px}
+  body.fluent-body .pa-list-table td:nth-child(2),body.fluent-body .pa-list-table td:nth-child(3){max-width:none!important;white-space:normal!important;overflow-wrap:anywhere;overflow:visible}
+}
+body.fluent-body .table-hover>tbody>tr:hover>td{background:var(--secondary)}
+body.fluent-body .nav-tabs{border-color:var(--border)}
+body.fluent-body .nav-tabs>li>a{color:var(--muted-foreground);border-radius:14px 14px 0 0}
+body.fluent-body .nav-tabs>li>a:hover,body.fluent-body .nav-tabs>li.active>a{background:var(--card);color:var(--foreground);border-color:var(--border)}
+body.fluent-body .pg-modal,body.fluent-body .modal-content,body.fluent-body .alertify .ajs-dialog{background:var(--popover);color:var(--foreground);border:1px solid var(--input);border-radius:var(--radius);box-shadow:var(--surface-shadow)}
+body.fluent-body .pg-modal-header,body.fluent-body .pg-modal-footer,body.fluent-body .modal-header,body.fluent-body .modal-footer,body.fluent-body .alertify .ajs-header,body.fluent-body .alertify .ajs-footer{background:transparent;color:var(--foreground);border-color:var(--border)}
+body.fluent-body .close,body.fluent-body .pg-modal-close{color:var(--muted-foreground);text-shadow:none}
+body.fluent-body .alertify .ajs-button{border-radius:999px;color:var(--foreground);background:var(--secondary);border:1px solid var(--input)}
+body.fluent-body .alertify .ajs-button.ajs-ok{background:var(--primary);color:var(--primary-foreground)}
+body.fluent-body pre,body.fluent-body code,body.fluent-body .pg-code,body.fluent-body .well{background:var(--secondary);color:#dddaf4;border-color:var(--border)}
+body.fluent-body .popover,body.fluent-body .popover-title{background:var(--popover);color:var(--foreground);border-color:var(--input)}
+body.fluent-body .dv-stat-value,body.fluent-body .dv-chart-title,body.fluent-body .sm-card-name,body.fluent-body .risk-stat-num,body.fluent-body .risk-alert-title{color:var(--foreground)}
+body.fluent-body .dv-stat-label,body.fluent-body .dv-stat-sub,body.fluent-body .sm-status-label,body.fluent-body .sm-card-sub,body.fluent-body .risk-stat-label,body.fluent-body .dv-bar-label{color:var(--muted-foreground)}
+body.fluent-body .sm-status-line,body.fluent-body .risk-alert-card,body.fluent-body .dv-table td{border-color:var(--border)}
+body.fluent-body .pg-loader{border-color:var(--input);border-top-color:var(--foreground)}
+@media(max-width:680px){body.fluent-body .fl-topbar{background:var(--card)}body.fluent-body .fl-sidebar{background:var(--background);border-bottom:1px solid var(--border)}body.fluent-body .fl-mobile-logout{display:inline-flex;margin:12px;padding:10px 14px;border:1px solid var(--input);border-radius:999px;font-size:12px}body.fluent-body .fl-page-heading h1{font-size:24px}body.fluent-body .fl-content{padding-bottom:32px}body.fluent-body .pa-list-table tr{background:var(--card)}body.fluent-body .fl-welcome{min-height:0}}
+@media(prefers-reduced-motion:reduce){body.fluent-body *,body.fluent-body *:before,body.fluent-body *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

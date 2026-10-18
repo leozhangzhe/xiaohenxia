@@ -1,0 +1,23 @@
+/* Stage 6: tokens extracted from the supplied sign-up.tsx/globals.css. */
+:root {
+  color-scheme:dark;
+  --font-ui:"Segoe UI","Microsoft YaHei UI","Microsoft YaHei",ui-sans-serif,system-ui,sans-serif;
+  --font-display:"Times New Roman","Songti SC","SimSun",serif;
+  --radius:.75rem; --radius-panel:12px; --radius-control:999px;
+  --background:#121212; --foreground:#fafafa;
+  --card:#181818; --card-foreground:#fafafa;
+  --popover:#202020; --popover-foreground:#fafafa;
+  --primary:#fafafa; --primary-foreground:#171717;
+  --secondary:#262626; --secondary-foreground:#fafafa;
+  --muted:#262626; --muted-foreground:#b0b0b0;
+  --accent:#262626; --accent-foreground:#fafafa;
+  --destructive:#fca5a5; --border:#ffffff1a; --input:#ffffff40; --ring:#b9bbec;
+  --chart-1:#6366f1; --chart-2:#22d3ee; --chart-3:#4338ca; --chart-4:#7c3aed; --chart-5:#db2777;
+  --success:#88d7ad; --success-surface:#153227;
+  --warning:#efd28b; --warning-surface:#342b1b;
+  --danger-surface:#3a2025; --info:#bac8ff; --info-surface:#24283b;
+  --surface-shadow:0 8px 28px #00000026;
+  --control-shadow:inset 0 1px 1px #ffffff12,0 3px 8px #00000020;
+  --motion-duration:180ms; --motion-ease:cubic-bezier(.16,1,.3,1);
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px; --space-6:24px; --space-8:32px;
+}

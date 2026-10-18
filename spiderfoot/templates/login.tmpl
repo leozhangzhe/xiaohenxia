@@ -1,18 +1,1 @@
-<!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>登录—消痕侠数字痕迹管理平台</title><link rel="icon" href="${docroot}/static/img/xhen-brand.svg" type="image/svg+xml"><link rel="stylesheet" href="${docroot}/static/css/fluent.css?v=competition-1">
-<link rel="stylesheet" href="${docroot}/static/css/vault-motion.css?v=20261018b"><script src="${docroot}/static/js/vault-scene.js?v=20261018b" defer></script><script src="${docroot}/static/js/vault-motion.js?v=20261018b" defer></script></head><body class="fluent-login"><main class="fl-auth-shell">
-<section class="fl-auth-story"><div class="fl-brand"><span class="fl-brand-icon"><img src="${docroot}/static/img/xhen-brand.svg" alt="盾牌与扫描十字"></span><span><strong>消痕侠</strong><small>数字痕迹管理平台</small></span></div>
-<div class="vault-auth-heading"><h1>看清你的数字痕迹，<br>从容决定下一步。</h1><p>把多来源检索、结果核验与人工跟进，放在同一个工作区。</p></div>
-<div class="vault-stage"><%include file="VAULT_CORE.tmpl"/><canvas data-vault-scene aria-hidden="true"></canvas><span class="vault-scene-caption">身份核心 · 来源线索的交汇点</span></div>
-<div class="vault-auth-bottom"><div class="fl-source-words"><span>SpiderFoot</span><span>Sherlock</span><span>Maigret</span><span>WhatsMyName</span><span>Holehe</span><span>HIBP</span></div><div class="vault-auth-controls"><p class="fl-story-footer">覆盖有限 · 来源透明 · 人工核验<br>消痕侠—数字痕迹管理平台</p><button id="vault-motion-toggle" class="vault-motion-toggle" type="button" aria-pressed="false">暂停视觉动效</button></div></div></section>
-<section class="fl-auth-form"><div class="fl-auth-inner"><h2>登录消痕侠</h2><p class="fl-muted">进入你的数字痕迹工作区。</p>
-% if error:
-<div class="fl-notice error" role="alert">${error | h}</div>
-% endif
-<form method="post" action="${docroot}/login"><input type="hidden" name="next" value="${next | h}"><input type="hidden" name="csrf_token" value="${csrf_token}">
-<div class="fl-field"><label for="username">用户名</label><input class="fl-input" id="username" name="username" type="text" placeholder="请输入用户名" required autocomplete="username" maxlength="64"></div>
-<div class="fl-field"><label for="password">密码</label><input class="fl-input" id="password" name="password" type="password" placeholder="请输入密码" required autocomplete="current-password"></div>
-<button class="fl-btn primary wide" type="submit">登录工作区 <span aria-hidden="true">→</span></button></form>
-<div class="fl-auth-links"><a href="${docroot}/register">新用户注册</a><span>v${version}</span></div><div class="fl-auth-boundary"><p>仅查询本人或已获授权的目标。</p><p>当前数据源未发现匹配，不代表不存在相关信息。</p><p>Holehe 提供邮箱注册信号；HIBP 需要配置 API Key。</p></div>
-</div></section></main></body></html>
+<%include file="AUTH_PAGE.tmpl" args="mode='login', auth_success='', auth_next=next"/>

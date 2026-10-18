@@ -1,6 +1,5 @@
 /* Holographic Identity Vault — additive visual layer; original procedural art. */
 :root{--vault-space:#080d22;--vault-panel:#111b36;--vault-violet:#a59aff;--vault-cyan:#70e3e5;--vault-ease:cubic-bezier(.16,1,.3,1);view-transition-name:root}
-@view-transition{navigation:auto}
 ::view-transition-old(root){animation:vault-page-out 180ms ease-out both}
 ::view-transition-new(root){animation:vault-page-in 260ms var(--vault-ease) both}
 @keyframes vault-page-out{to{opacity:0}}

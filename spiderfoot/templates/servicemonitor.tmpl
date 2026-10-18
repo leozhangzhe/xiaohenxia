@@ -9,8 +9,8 @@
   margin-bottom: 24px;
 }
 .sm-card {
-  background: #fff; border-radius: 12px; padding: 20px;
-  border: 1px solid #e8ecf2; transition: box-shadow 0.2s;
+  background: var(--card); border-radius: 12px; padding: 20px;
+  border: 1px solid var(--border); transition: box-shadow 0.2s;
 }
 .sm-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
 .sm-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
@@ -19,16 +19,16 @@
   display: flex; align-items: center; justify-content: center;
 }
 .sm-card-icon svg { width: 20px; height: 20px; }
-.sm-card-name { font-size: 15px; font-weight: 600; color: #1e293b; }
-.sm-card-sub { font-size: 12px; color: #94a3b8; }
+.sm-card-name { font-size: 15px; font-weight: 600; color: var(--foreground); }
+.sm-card-sub { font-size: 12px; color: var(--muted-foreground); }
 
 .sm-status-line {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px solid #f1f5f9;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
   font-size: 13px;
 }
 .sm-status-line:last-child { border-bottom: none; }
-.sm-status-label { color: #64748b; }
+.sm-status-label { color: var(--muted-foreground); }
 .sm-status-right { display: flex; align-items: center; gap: 8px; }
 
 .sm-dot {
@@ -47,7 +47,7 @@
 .sm-badge.ok     { background: rgba(34,197,94,0.1); color: #16a34a; }
 .sm-badge.error  { background: rgba(239,68,68,0.1); color: #ef4444; }
 .sm-badge.warn   { background: rgba(245,158,11,0.1); color: #d97706; }
-.sm-badge.checking { background: rgba(148,163,184,0.1); color: #94a3b8; }
+.sm-badge.checking { background: rgba(148,163,184,0.1); color: var(--muted-foreground); }
 
 /* 性能指标 */
 .sm-metrics {
@@ -55,24 +55,24 @@
   gap: 16px; margin-bottom: 24px;
 }
 .sm-metric-card {
-  background: #fff; border-radius: 12px; padding: 18px;
-  border: 1px solid #e8ecf2; text-align: center;
+  background: var(--card); border-radius: 12px; padding: 18px;
+  border: 1px solid var(--border); text-align: center;
 }
-.sm-metric-value { font-size: 24px; font-weight: 700; color: #1e293b; }
-.sm-metric-label { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+.sm-metric-value { font-size: 24px; font-weight: 700; color: var(--foreground); }
+.sm-metric-label { font-size: 12px; color: var(--muted-foreground); margin-top: 4px; }
 .sm-metric-bar {
-  width: 100%; height: 6px; background: #f1f5f9; border-radius: 3px;
+  width: 100%; height: 6px; background: var(--secondary); border-radius: 3px;
   margin-top: 10px; overflow: hidden;
 }
 .sm-metric-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
 
 /* 日志流 */
 .sm-log-section {
-  background: #fff; border-radius: 12px; padding: 20px;
-  border: 1px solid #e8ecf2; margin-bottom: 24px;
+  background: var(--card); border-radius: 12px; padding: 20px;
+  border: 1px solid var(--border); margin-bottom: 24px;
 }
 .sm-log-title {
-  font-size: 15px; font-weight: 600; color: #1e293b; margin-bottom: 12px;
+  font-size: 15px; font-weight: 600; color: var(--foreground); margin-bottom: 12px;
   display: flex; align-items: center; gap: 8px;
 }
 .sm-log-title svg { width: 18px; height: 18px; color: #3b82f6; }
@@ -81,8 +81,8 @@
   max-height: 240px; overflow-y: auto; font-family: 'Consolas', 'Monaco', monospace;
   font-size: 12px; line-height: 1.7;
 }
-.sm-log-entry { color: #94a3b8; }
-.sm-log-entry .time { color: #64748b; }
+.sm-log-entry { color: var(--muted-foreground); }
+.sm-log-entry .time { color: var(--muted-foreground); }
 .sm-log-entry .ok { color: #22c55e; }
 .sm-log-entry .err { color: #ef4444; }
 .sm-log-entry .warn { color: #f59e0b; }
@@ -90,8 +90,8 @@
 </style>
 
 <div style="margin-bottom: 20px;">
-  <h2 style="font-size: 20px; font-weight: 700; color: #1e293b;">服务监控</h2>
-  <p style="font-size: 13px; color: #94a3b8; margin-top: 4px;">实时监测各核心服务的运行状态与性能指标</p>
+  <h2 style="font-size: 20px; font-weight: 700; color: var(--foreground);">服务监控</h2>
+  <p style="font-size: 13px; color: var(--muted-foreground); margin-top: 4px;">实时监测各核心服务的运行状态与性能指标</p>
 </div>
 
 <!-- 磁盘使用率 -->
@@ -139,11 +139,11 @@
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">端口</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;">5001</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;">5001</span>
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">响应时间</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-web-rt">-- ms</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;" id="sm-web-rt">-- ms</span>
     </div>
   </div>
 
@@ -161,11 +161,11 @@
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">认证模式</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;">MySQL Session Auth</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;">MySQL Session Auth</span>
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">查询延迟</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-db-rt">-- ms</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;" id="sm-db-rt">-- ms</span>
     </div>
   </div>
 
@@ -183,11 +183,11 @@
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">活跃任务</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-scan-active">0</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;" id="sm-scan-active">0</span>
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">历史任务</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-scan-total">0</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;" id="sm-scan-total">0</span>
     </div>
   </div>
 </div>
@@ -207,11 +207,11 @@
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">待处理告警</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-alert-pending">0</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;" id="sm-alert-pending">0</span>
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">告警总数</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-alert-total">0</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;" id="sm-alert-total">0</span>
     </div>
   </div>
 
@@ -228,11 +228,11 @@
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">累计处理</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-priv-total">0</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;" id="sm-priv-total">0</span>
     </div>
     <div class="sm-status-line">
       <span class="sm-status-label">最近操作</span>
-      <span class="sm-status-label" style="color:#1e293b;font-weight:500;" id="sm-priv-last">--</span>
+      <span class="sm-status-label" style="color:var(--foreground);font-weight:500;" id="sm-priv-last">--</span>
     </div>
   </div>
 </div>
@@ -242,7 +242,7 @@
   <div class="sm-log-title">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
     检测日志
-    <button onclick="clearLogs()" style="margin-left:auto;padding:3px 10px;border:1px solid #e2e8f0;border-radius:5px;background:#fff;font-size:11px;color:#64748b;cursor:pointer;">清空</button>
+    <button onclick="clearLogs()" style="margin-left:auto;padding:3px 10px;border:1px solid var(--border);border-radius:5px;background:var(--card);font-size:11px;color:var(--muted-foreground);cursor:pointer;">清空</button>
   </div>
   <div class="sm-log-box" id="sm-log-box"></div>
 </div>

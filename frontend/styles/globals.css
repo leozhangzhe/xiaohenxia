@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "../../spiderfoot/static/css/theme.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -31,35 +32,6 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-}
-
-:root {
-  color-scheme: dark;
-  font-family: ui-sans-serif, system-ui, sans-serif;
-  --radius: 0.75rem;
-  --background: #121212;
-  --foreground: #fafafa;
-  --card: #181818;
-  --card-foreground: #fafafa;
-  --popover: #181818;
-  --popover-foreground: #fafafa;
-  --primary: #fafafa;
-  --primary-foreground: #171717;
-  --secondary: #262626;
-  --secondary-foreground: #fafafa;
-  --muted: #262626;
-  --muted-foreground: #a3a3a3;
-  --accent: #262626;
-  --accent-foreground: #fafafa;
-  --destructive: #f87171;
-  --border: #ffffff1a;
-  --input: #ffffff26;
-  --ring: #a3a3a3;
-  --chart-1: #6366f1;
-  --chart-2: #22d3ee;
-  --chart-3: #4338ca;
-  --chart-4: #7c3aed;
-  --chart-5: #db2777;
 }
 
 .auth-sign-up .glass-input {

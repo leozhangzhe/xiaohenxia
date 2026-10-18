@@ -31,14 +31,16 @@ def test_motion_enhancement_uses_local_assets_and_preserves_real_forms(alice):
         assets = Assets()
         assets.feed(page)
         assert all(p.startswith("/") and not p.startswith("//") for p in assets.paths)
-        assert any("vault-motion.js" in p for p in assets.paths)
+        if route not in ("/login", "/register"):
+            assert any("vault-motion.js" in p for p in assets.paths)
         for asset in assets.paths:
             assert session.get(url + asset).status_code == 200
         if route in ("/login", "/register"):
             assert 'method="post"' in page and 'name="csrf_token"' in page
-            assert '<canvas data-vault-scene aria-hidden="true">' in page
-            # Auth can render before JS/Canvas loads; the fallback is shipped inline.
-            assert 'class="vault-static"' in page and '<label for="password">' in page
+            # Stage 6 deliberately replaces the decorative auth Canvas with React.
+            # Preserve this test's local-assets, real-form and no-JS usability boundary.
+            assert any("react-auth/auth.js" in p for p in assets.paths)
+            assert 'class="auth-fallback"' in page and '<label for="password">' in page
     assert public.post(url + "/register", data={"username":"synthetic_motion"}).status_code == 403
 
 

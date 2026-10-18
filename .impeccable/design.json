@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-19T00:03:13.3808609+08:00",
+  "title": "Design System: 消痕侠",
+  "extensions": {
+    "shadows": [
+      {
+        "name": "surface-shadow",
+        "purpose": "弹层的表面投影。",
+        "value": "0 8px 28px #00000026"
+      },
+      {
+        "name": "control-shadow",
+        "purpose": "工作区次级控件的内高光与轻投影。",
+        "value": "inset 0 1px 1px #ffffff12,0 3px 8px #00000020"
+      }
+    ],
+    "motion": [
+      {
+        "name": "motion-duration",
+        "purpose": "工作区普通过渡。",
+        "value": "180ms"
+      },
+      {
+        "name": "motion-ease",
+        "purpose": "共享运动曲线。",
+        "value": "cubic-bezier(.16,1,.3,1)"
+      },
+      {
+        "name": "auth-glass-duration",
+        "purpose": "原始玻璃控件反馈。",
+        "value": "400ms"
+      },
+      {
+        "name": "auth-glass-ease",
+        "purpose": "认证玻璃反馈曲线。",
+        "value": "cubic-bezier(0.25,1,0.5,1)"
+      },
+      {
+        "name": "auth-heading",
+        "purpose": "步骤标题切换。",
+        "value": "200ms"
+      },
+      {
+        "name": "auth-background",
+        "purpose": "桌面 SVG 色雾；移动端和减少动态效果偏好停动。",
+        "value": "20s / 25s ease-in-out infinite"
+      },
+      {
+        "name": "document-navigation",
+        "value": "native",
+        "purpose": "工作区与 React 认证页之间不启用自动跨文档视图过渡。"
+      }
+    ],
+    "breakpoints": [
+      {
+        "value": "680px",
+        "name": "mobile"
+      },
+      {
+        "value": "900px",
+        "name": "stacked-context"
+      },
+      {
+        "value": "1120px",
+        "name": "compact-context"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "工作区主按钮",
+      "html": "<button class=\"ds-primary\">新建检索</button>",
+      "refersTo": "button-primary",
+      "description": "真实业务主操作。",
+      "css": ".ds-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:8px 14px;border:1px solid var(--primary,#fafafa);border-radius:var(--radius-control,999px);background:var(--primary,#fafafa);color:var(--primary-foreground,#171717);font:500 13px var(--font-ui,system-ui);cursor:pointer;transition:background var(--motion-duration,180ms)}.ds-primary:hover{background:#dedee8}.ds-primary:disabled{opacity:.5;cursor:not-allowed}:focus-visible{outline:2px solid var(--ring,#b9bbec);outline-offset:3px}",
+      "kind": "button"
+    },
+    {
+      "name": "工作区次按钮",
+      "html": "<button class=\"ds-secondary\">查看来源</button>",
+      "refersTo": "button-secondary",
+      "description": "薄边与内高光的次级操作。",
+      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;background:linear-gradient(160deg,#ffffff10,#ffffff04);color:var(--foreground,#fafafa);border:1px solid var(--input,#ffffff40);border-radius:var(--radius-control,999px);box-shadow:var(--control-shadow,inset 0 1px 1px #ffffff12,0 3px 8px #00000020);font:500 13px var(--font-ui,system-ui);cursor:pointer;transition:background var(--motion-duration,180ms)}.ds-secondary:hover{background:var(--secondary,#262626)}:focus-visible{outline:2px solid var(--ring,#b9bbec);outline-offset:3px}",
+      "kind": "button"
+    },
+    {
+      "name": "认证玻璃按钮",
+      "html": "<div class=\"ds-glass-button-wrap\"><button class=\"ds-glass-button\"><span class=\"ds-glass-button-text\">继续 <svg width=\"17\" height=\"17\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M5 12h14m-6-6 6 6-6 6\"/></svg></span></button><div class=\"ds-glass-button-shadow\"></div></div>",
+      "refersTo": "auth-glass-button",
+      "description": "从现有 glass.css 提取的认证玻璃材质与悬停、按压状态。",
+      "css": "@property --angle-1 { syntax: \"<angle>\"; inherits: false; initial-value: -75deg; } @property --angle-2 { syntax: \"<angle>\"; inherits: false; initial-value: -45deg; }\r\n            .ds-glass-button-wrap { --anim-time: 400ms; --anim-ease: cubic-bezier(0.25, 1, 0.5, 1); --border-width: clamp(1px, 0.0625em, 4px); position: relative; z-index: 2; transform-style: preserve-3d; transition: transform var(--anim-time) var(--anim-ease); } .ds-glass-button-wrap:has(.ds-glass-button:active) { transform: rotateX(25deg); } .ds-glass-button-shadow { --shadow-cutoff-fix: 2em; position: absolute; width: calc(100% + var(--shadow-cutoff-fix)); height: calc(100% + var(--shadow-cutoff-fix)); top: calc(0% - var(--shadow-cutoff-fix) / 2); left: calc(0% - var(--shadow-cutoff-fix) / 2); filter: blur(clamp(2px, 0.125em, 12px)); transition: filter var(--anim-time) var(--anim-ease); pointer-events: none; z-index: 0; } .ds-glass-button-shadow::after { content: \"\"; position: absolute; inset: 0; border-radius: 9999px; background: linear-gradient(180deg, oklch(from var(--foreground) l c h / 20%), oklch(from var(--foreground) l c h / 10%)); width: calc(100% - var(--shadow-cutoff-fix) - 0.25em); height: calc(100% - var(--shadow-cutoff-fix) - 0.25em); top: calc(var(--shadow-cutoff-fix) - 0.5em); left: calc(var(--shadow-cutoff-fix) - 0.875em); padding: 0.125em; box-sizing: border-box; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; transition: all var(--anim-time) var(--anim-ease); opacity: 1; }\r\n            .ds-glass-button { -webkit-tap-highlight-color: transparent; backdrop-filter: blur(clamp(1px, 0.125em, 4px)); transition: all var(--anim-time) var(--anim-ease); background: linear-gradient(-75deg, oklch(from var(--background) l c h / 5%), oklch(from var(--background) l c h / 20%), oklch(from var(--background) l c h / 5%)); box-shadow: inset 0 0.125em 0.125em oklch(from var(--foreground) l c h / 5%), inset 0 -0.125em 0.125em oklch(from var(--background) l c h / 50%), 0 0.25em 0.125em -0.125em oklch(from var(--foreground) l c h / 20%), 0 0 0.1em 0.25em inset oklch(from var(--background) l c h / 20%), 0 0 0 0 oklch(from var(--background) l c h); } .ds-glass-button:hover { transform: scale(0.975); backdrop-filter: blur(0.01em); box-shadow: inset 0 0.125em 0.125em oklch(from var(--foreground) l c h / 5%), inset 0 -0.125em 0.125em oklch(from var(--background) l c h / 50%), 0 0.15em 0.05em -0.1em oklch(from var(--foreground) l c h / 25%), 0 0 0.05em 0.1em inset oklch(from var(--background) l c h / 50%), 0 0 0 0 oklch(from var(--background) l c h); } .ds-glass-button-text { color: oklch(from var(--foreground) l c h / 90%); text-shadow: 0em 0.25em 0.05em oklch(from var(--foreground) l c h / 10%); transition: all var(--anim-time) var(--anim-ease); } .ds-glass-button:hover .ds-glass-button-text { text-shadow: 0.025em 0.025em 0.025em oklch(from var(--foreground) l c h / 12%); } .ds-glass-button-text::after { content: \"\"; display: block; position: absolute; width: calc(100% - var(--border-width)); height: calc(100% - var(--border-width)); top: calc(0% + var(--border-width) / 2); left: calc(0% + var(--border-width) / 2); box-sizing: border-box; border-radius: 9999px; overflow: clip; background: linear-gradient(var(--angle-2), transparent 0%, oklch(from var(--background) l c h / 50%) 40% 50%, transparent 55%); z-index: 3; mix-blend-mode: screen; pointer-events: none; background-size: 200% 200%; background-position: 0% 50%; transition: background-position calc(var(--anim-time) * 1.25) var(--anim-ease), --angle-2 calc(var(--anim-time) * 1.25) var(--anim-ease); } .ds-glass-button:hover .ds-glass-button-text::after { background-position: 25% 50%; } .ds-glass-button:active .ds-glass-button-text::after { background-position: 50% 15%; --angle-2: -15deg; } .ds-glass-button::after { content: \"\"; position: absolute; z-index: 1; inset: 0; border-radius: 9999px; width: calc(100% + var(--border-width)); height: calc(100% + var(--border-width)); top: calc(0% - var(--border-width) / 2); left: calc(0% - var(--border-width) / 2); padding: var(--border-width); box-sizing: border-box; background: conic-gradient(from var(--angle-1) at 50% 50%, oklch(from var(--foreground) l c h / 50%) 0%, transparent 5% 40%, oklch(from var(--foreground) l c h / 50%) 50%, transparent 60% 95%, oklch(from var(--foreground) l c h / 50%) 100%), linear-gradient(180deg, oklch(from var(--background) l c h / 50%), oklch(from var(--background) l c h / 50%)); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; transition: all var(--anim-time) var(--anim-ease), --angle-1 500ms ease; box-shadow: inset 0 0 0 calc(var(--border-width) / 2) oklch(from var(--background) l c h / 50%); pointer-events: none; } .ds-glass-button:hover::after { --angle-1: -125deg; } .ds-glass-button:active::after { --angle-1: -75deg; } .ds-glass-button-wrap:has(.ds-glass-button:hover) .ds-glass-button-shadow { filter: blur(clamp(2px, 0.0625em, 6px)); } .ds-glass-button-wrap:has(.ds-glass-button:hover) .ds-glass-button-shadow::after { top: calc(var(--shadow-cutoff-fix) - 0.875em); opacity: 1; } .ds-glass-button-wrap:has(.ds-glass-button:active) .ds-glass-button-shadow { filter: blur(clamp(2px, 0.125em, 12px)); } .ds-glass-button-wrap:has(.ds-glass-button:active) .ds-glass-button-shadow::after { top: calc(var(--shadow-cutoff-fix) - 0.5em); opacity: 0.75; } .ds-glass-button-wrap:has(.ds-glass-button:active) .ds-glass-button-text { text-shadow: 0.025em 0.25em 0.05em oklch(from var(--foreground) l c h / 12%); } .ds-glass-button-wrap:has(.ds-glass-button:active) .ds-glass-button { box-shadow: inset 0 0.125em 0.125em oklch(from var(--foreground) l c h / 5%), inset 0 -0.125em 0.125em oklch(from var(--background) l c h / 50%), 0 0.125em 0.125em -0.125em oklch(from var(--foreground) l c h / 20%), 0 0 0.1em 0.25em inset oklch(from var(--background) l c h / 20%), 0 0.225em 0.05em 0 oklch(from var(--foreground) l c h / 5%), 0 0.25em 0 0 oklch(from var(--background) l c h / 75%), inset 0 0.25em 0.05em 0 oklch(from var(--foreground) l c h / 15%); } @media (hover: none) and (pointer: coarse) { .ds-glass-button::after, .ds-glass-button:hover::after, .ds-glass-button:active::after { --angle-1: -75deg; } .ds-glass-button .ds-glass-button-text::after, .ds-glass-button:active .ds-glass-button-text::after { --angle-2: -45deg; } }\r\n            .ds-glass-button-wrap{max-width:360px;border-radius:999px}.ds-glass-button{position:relative;z-index:10;width:100%;border:0;border-radius:999px;background-color:#ffffff12;cursor:pointer}.ds-glass-button:hover{background-color:#ffffff1a}.ds-glass-button-text{position:relative;display:flex;min-height:48px;align-items:center;justify-content:center;gap:8px;padding:12px 24px;font:500 14px var(--font-ui,system-ui)}.ds-glass-button:focus-visible{outline:2px solid var(--ring,#b9bbec);outline-offset:3px}@media(prefers-reduced-motion:reduce){.ds-glass-button-wrap,.ds-glass-button-wrap *,.ds-glass-button-wrap *:before,.ds-glass-button-wrap *:after{animation:none!important;transition:none!important}}",
+      "kind": "button"
+    },
+    {
+      "name": "认证玻璃输入",
+      "html": "<div class=\"ds-auth-field\"><label for=\"ds-username\">用户名</label><div class=\"ds-glass-input-wrap\"><div class=\"ds-glass-input\"><span class=\"ds-glass-input-text-area\"></span><svg width=\"19\" height=\"19\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M6 21v-2a6 6 0 0 1 12 0v2\"/></svg><input id=\"ds-username\" type=\"text\" placeholder=\"输入用户名\" autocomplete=\"username\"></div></div></div>",
+      "refersTo": "auth-input",
+      "description": "有标签、完整胶囊高光和可见焦点的用户名输入。",
+      "css": ".ds-glass-input-wrap { position: relative; z-index: 2; transform-style: preserve-3d; border-radius: 9999px; } .ds-glass-input { display: flex; position: relative; width: 100%; align-items: center; gap: 0.5rem; border-radius: 9999px; padding: 0.25rem; -webkit-tap-highlight-color: transparent; backdrop-filter: blur(clamp(1px, 0.125em, 4px)); transition: all 400ms cubic-bezier(0.25, 1, 0.5, 1); background: linear-gradient(-75deg, oklch(from var(--background) l c h / 5%), oklch(from var(--background) l c h / 20%), oklch(from var(--background) l c h / 5%)); box-shadow: inset 0 0.125em 0.125em oklch(from var(--foreground) l c h / 5%), inset 0 -0.125em 0.125em oklch(from var(--background) l c h / 50%), 0 0.25em 0.125em -0.125em oklch(from var(--foreground) l c h / 20%), 0 0 0.1em 0.25em inset oklch(from var(--background) l c h / 20%), 0 0 0 0 oklch(from var(--background) l c h); } .ds-glass-input-wrap:focus-within .ds-glass-input { backdrop-filter: blur(0.01em); box-shadow: inset 0 0.125em 0.125em oklch(from var(--foreground) l c h / 5%), inset 0 -0.125em 0.125em oklch(from var(--background) l c h / 50%), 0 0.15em 0.05em -0.1em oklch(from var(--foreground) l c h / 25%), 0 0 0.05em 0.1em inset oklch(from var(--background) l c h / 50%), 0 0 0 0 oklch(from var(--background) l c h); } .ds-glass-input::after { content: \"\"; position: absolute; z-index: 1; inset: 0; border-radius: 9999px; width: calc(100% + clamp(1px, 0.0625em, 4px)); height: calc(100% + clamp(1px, 0.0625em, 4px)); top: calc(0% - clamp(1px, 0.0625em, 4px) / 2); left: calc(0% - clamp(1px, 0.0625em, 4px) / 2); padding: clamp(1px, 0.0625em, 4px); box-sizing: border-box; background: conic-gradient(from var(--angle-1) at 50% 50%, oklch(from var(--foreground) l c h / 50%) 0%, transparent 5% 40%, oklch(from var(--foreground) l c h / 50%) 50%, transparent 60% 95%, oklch(from var(--foreground) l c h / 50%) 100%), linear-gradient(180deg, oklch(from var(--background) l c h / 50%), oklch(from var(--background) l c h / 50%)); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask-composite: exclude; transition: all 400ms cubic-bezier(0.25, 1, 0.5, 1), --angle-1 500ms ease; box-shadow: inset 0 0 0 calc(clamp(1px, 0.0625em, 4px) / 2) oklch(from var(--background) l c h / 50%); pointer-events: none; } .ds-glass-input-wrap:focus-within .ds-glass-input::after { --angle-1: -125deg; } .ds-glass-input-text-area { position: absolute; inset: 0; border-radius: 9999px; pointer-events: none; } .ds-glass-input-text-area::after { content: \"\"; display: block; position: absolute; width: calc(100% - clamp(1px, 0.0625em, 4px)); height: calc(100% - clamp(1px, 0.0625em, 4px)); top: calc(0% + clamp(1px, 0.0625em, 4px) / 2); left: calc(0% + clamp(1px, 0.0625em, 4px) / 2); box-sizing: border-box; border-radius: 9999px; overflow: clip; background: linear-gradient(var(--angle-2), transparent 0%, oklch(from var(--background) l c h / 50%) 40% 50%, transparent 55%); z-index: 3; mix-blend-mode: screen; pointer-events: none; background-size: 200% 200%; background-position: 0% 50%; transition: background-position calc(400ms * 1.25) cubic-bezier(0.25, 1, 0.5, 1), --angle-2 calc(400ms * 1.25) cubic-bezier(0.25, 1, 0.5, 1); } .ds-glass-input-wrap:focus-within .ds-glass-input-text-area::after { background-position: 25% 50%; }\r\n.ds-auth-field{max-width:360px;color:var(--foreground,#fafafa);font-family:var(--font-ui,system-ui)}.ds-auth-field label{display:block;font-size:12px;font-weight:500;margin:0 0 8px 16px}.ds-auth-field .ds-glass-input{min-height:52px;padding:5px 14px;gap:10px;background-color:#12121236}.ds-auth-field svg{position:relative;z-index:4;flex-shrink:0;color:var(--muted-foreground,#b0b0b0)}.ds-auth-field input{position:relative;z-index:4;width:0;flex:1;min-width:0;padding:7px 0;background:transparent;border:0;outline:0;color:var(--foreground,#fafafa);font:400 16px/1.5 var(--font-ui,system-ui)}.ds-auth-field input::placeholder{color:#c2becb}.ds-auth-field .ds-glass-input-wrap:focus-within{outline:2px solid var(--ring,#b9bbec);outline-offset:4px}@media(prefers-reduced-motion:reduce){.ds-auth-field *,.ds-auth-field *:after{animation:none!important;transition:none!important}}",
+      "kind": "input"
+    },
+    {
+      "name": "导航",
+      "description": "紧凑侧栏导航的默认与选中状态。",
+      "kind": "nav",
+      "css": ".ds-nav{display:flex;flex-direction:column;gap:6px;background:var(--background,#121212);padding:10px 18px;font-family:var(--font-ui,system-ui)}.ds-nav a{display:flex;align-items:center;gap:12px;min-height:43px;padding:12px;border-radius:10px;font-size:13px;font-weight:500;color:var(--muted-foreground,#b0b0b0);text-decoration:none}.ds-nav a:hover,.ds-nav a[aria-current=page]{background:var(--secondary,#262626);color:var(--foreground,#fafafa)}.ds-nav a[aria-current=page]{box-shadow:inset 0 1px #ffffff0a;font-weight:650}:focus-visible{outline:2px solid var(--ring,#b9bbec);outline-offset:3px}",
+      "html": "<nav class=\"ds-nav\" aria-label=\"工作区\"><a href=\"#overview\" aria-current=\"page\">工作区总览</a><a href=\"#search\">新建检索</a></nav>"
+    },
+    {
+      "name": "完成标签",
+      "html": "<span class=\"ds-status\">已完成</span>",
+      "refersTo": "status-completed",
+      "description": "表示执行完成，文字不承诺目标安全。",
+      "css": ".ds-status{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:99px;font:500 12px/1.7 var(--font-ui,system-ui);white-space:nowrap;background:var(--success-surface,#153227);color:var(--success,#88d7ad)}.ds-status:before{content:\"\";height:5px;width:5px;border-radius:50%;background:currentColor;flex-shrink:0}",
+      "kind": "chip"
+    },
+    {
+      "name": "业务面板",
+      "html": "<section class=\"ds-panel\"><header><h2>来源状态</h2></header><div>当前数据源未发现匹配，不代表不存在相关信息。</div></section>",
+      "refersTo": "panel",
+      "description": "依靠色阶和细边分层的工作区面板。",
+      "css": ".ds-panel{background:var(--card,#181818);color:var(--foreground,#fafafa);border:1px solid var(--border,#ffffff1a);border-radius:var(--radius-panel,12px);box-shadow:none;overflow:hidden;font-family:var(--font-ui,system-ui)}.ds-panel header{padding:20px 22px;border-bottom:1px solid var(--border,#ffffff1a)}.ds-panel h2{margin:0;font-size:16px;font-weight:600;line-height:1.45}.ds-panel>div{padding:22px;font-size:14px;line-height:1.8;color:var(--muted-foreground,#b0b0b0)}",
+      "kind": "card"
+    }
+  ],
+  "narrative": {
+    "northStar": "sign-up.tsx 深色玻璃",
+    "overview": "视觉依据为用户指定的 `frontend/components/ui/sign-up.tsx` 原始版本（checkpoint `4d9f76e0cf5a331f7a41bb1a24f2d606018a96b0`）与 `frontend/.impeccable/review/sign-up/{desktop,mobile}.png`。采用暗色中性底、明亮文字、衬线认证标题和薄边玻璃控件。认证页的模糊 SVG 渐变提供氛围，业务工作区使用相同令牌并维持便于操作的信息密度。\n\n`spiderfoot/static/css/theme.css` 是共享令牌来源；认证材质在 `frontend/styles/glass.css` 与 `frontend/components/ui/auth-primitives.tsx`；业务覆盖样式在 `spiderfoot/static/css/workspace.css`。早期浅色 C-Fluent 和 Canvas 认证页不再构成当前视觉规范。",
+    "keyCharacteristics": [
+      "深色中性表面与高可读文字。",
+      "认证玻璃胶囊、柔和色雾与留白。",
+      "业务面板紧凑、状态清楚、完整保留证据字段。",
+      "本地字体与素材，移动及减少动态效果降级。"
+    ],
+    "rules": [],
+    "dos": [
+      "**Do** 从共享 theme.css 取色、圆角、字体和间距，认证材质复用现有玻璃原语。",
+      "**Do** 为输入保留标签、为状态保留文字、为键盘操作保留清楚焦点。",
+      "**Do** 在桌面申请表内部滚动，在移动条目中换行保留所有字段。",
+      "**Do** 让统计、进度、成功与错误跟随真实 API 和服务端响应。",
+      "**Do** 保留数据覆盖有限、无匹配不代表安全、申请需人工跟进等边界文案。"
+    ],
+    "donts": [
+      "**Don't** 将历史浅色 C-Fluent 或 Canvas 认证页当作当前视觉依据。",
+      "**Don't** 用演示计时器、装饰网络或色彩制造认证成功、安全评分或平台已受理的印象。",
+      "**Don't** 截断申请备注、隐藏数据字段，或依赖颜色单独传达状态。",
+      "**Don't** 让移动认证背景持续漂移，或绕过减少动态效果偏好。",
+      "**Don't** 将开发截图、回归结果或 ship 审阅结论表述为用户正式验收。"
+    ]
+  }
+}

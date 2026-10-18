@@ -29,6 +29,11 @@ class LiveMySQL:
         # temp path on a different volume, so requiring it to be below ROOT
         # turned a fixture configuration detail into an unrelated test failure.
         data_dir = folder.resolve().as_posix()
+        # The Windows server can initialize a Unicode datadir yet exit before
+        # emitting its startup log. Reuse this fixture's existing ASCII drive
+        # mapping for project-local data; keep cross-volume temp paths supported.
+        if folder.resolve().is_relative_to(ROOT):
+            data_dir = self.letter + ":/" + folder.resolve().relative_to(ROOT).as_posix()
         self.common = [
             "--no-defaults", f"--basedir={self.letter}:/.mysql/mysql-8.0.46-winx64",
             f"--datadir={data_dir}/data", "--innodb-undo-log-truncate=OFF",
