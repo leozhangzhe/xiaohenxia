@@ -497,6 +497,7 @@ class TestSpiderFoot(unittest.TestCase):
         self.assertFalse(addrs)
         self.assertIsInstance(addrs, list)
 
+    @pytest.mark.external
     def test_resolve_ip_should_return_list(self):
         sf = SpiderFoot(self.default_options)
 

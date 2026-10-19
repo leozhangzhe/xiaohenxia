@@ -596,11 +596,13 @@
     ]
   },
   {
-    "name": "pyreadline",
-    "version": "2.1",
-    "license": "OSI Approved :: BSD License",
-    "homepage": "http://ipython.org/pyreadline.html",
-    "license_files": []
+    "name": "pyreadline3",
+    "version": "3.5.6",
+    "license": "BSD",
+    "homepage": "https://github.com/pyreadline3/pyreadline3",
+    "license_files": [
+      "third_party/python/licenses/pyreadline3/licenses/LICENSE.md"
+    ]
   },
   {
     "name": "PySocks",

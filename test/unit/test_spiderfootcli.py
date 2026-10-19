@@ -1,5 +1,6 @@
 # test_spiderfootcli.py
 import io
+import os
 import pytest
 import sys
 import unittest
@@ -119,7 +120,7 @@ class TestSpiderFootCli(unittest.TestCase):
         """
         sfcli = SpiderFootCli()
 
-        sfcli.ownopts['cli.spool_file'] = '/dev/null'
+        sfcli.ownopts['cli.spool_file'] = os.devnull
 
         sfcli.do_spool(None)
         initial_spool_state = sfcli.ownopts['cli.spool']

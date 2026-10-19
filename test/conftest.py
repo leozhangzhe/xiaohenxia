@@ -47,6 +47,12 @@ def default_options(request, tmp_path, monkeypatch):
         'root': '/'
     }
 
+    # CLI subprocesses use the same isolated cache. Passive unit/integration
+    # scans must not fetch the public suffix list from the Internet.
+    from sflib import SpiderFoot
+    SpiderFoot(request.cls.default_options).cachePut(
+        'internet_tlds', request.cls.default_options['_internettlds'])
+
     request.cls.cli_default_options = {
         "cli.debug": False,
         "cli.silent": False,
