@@ -349,9 +349,11 @@ class SpiderFootDb:
         # Now we actually check to ensure the database file has the schema set
         # up correctly.
         with self.dbhLock:
+            # SQL functions belong to the connection, including the first
+            # connection that has to create the schema below.
+            self.conn.create_function("REGEXP", 2, __dbregex__)
             try:
                 self.dbh.execute('SELECT COUNT(*) FROM tbl_scan_config')
-                self.conn.create_function("REGEXP", 2, __dbregex__)
             except sqlite3.Error:
                 init = True
                 try:

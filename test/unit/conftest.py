@@ -5,6 +5,8 @@ Real authenticated HTTP coverage remains in stage1–stage6.
 """
 from copy import deepcopy
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+import logging
+from queue import Queue
 import threading
 
 import pytest
@@ -43,3 +45,28 @@ def isolate_legacy_cli_options(request, monkeypatch):
     options = deepcopy(request.cls.cli_default_options)
     options['cli.server_baseurl'] = request.getfixturevalue('denied_cli_transport')
     monkeypatch.setattr(SpiderFootCli, 'ownopts', options)
+
+
+@pytest.fixture(autouse=True)
+def isolate_legacy_ui_log_queue(request, monkeypatch):
+    if request.cls is None or request.cls.__name__ != 'TestSpiderFootWebUi':
+        yield
+        return
+    from sfwebui import SpiderFootWebUi
+    original = SpiderFootWebUi.__init__
+    logger = logging.getLogger('spiderfoot')
+    previous = list(logger.handlers)
+    logger.handlers.clear()
+
+    def initialize(self, *args, **kwargs):
+        # Unit rendering tests have no log-consumer process. Use the public
+        # injected queue boundary instead of leaking multiprocessing listeners.
+        if len(args) < 3 and kwargs.get('loggingQueue') is None:
+            kwargs['loggingQueue'] = Queue()
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(SpiderFootWebUi, '__init__', initialize)
+    try:
+        yield
+    finally:
+        logger.handlers[:] = previous

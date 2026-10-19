@@ -482,7 +482,8 @@ class SpiderFootWebUi:
             str: HTTP response template
         """
         templ = Template(filename='spiderfoot/templates/error.tmpl', lookup=self.lookup)
-        return templ.render(message='Not Found', docroot=self.docroot, status=status, version=__version__)
+        return templ.render(message='Not Found', docroot=self.docroot, status=status,
+                            pageid='ERROR', version=__version__)
 
     def jsonify_error(self: 'SpiderFootWebUi', status: str, message: str) -> dict:
         """Jsonify error response.
@@ -775,7 +776,7 @@ class SpiderFootWebUi:
             None
         """
         templ = Template(filename='spiderfoot/templates/error.tmpl', lookup=self.lookup)
-        return templ.render(message=message, docroot=self.docroot, version=__version__)
+        return templ.render(message=message, docroot=self.docroot, pageid='ERROR', version=__version__)
 
     def cleanUserInput(self: 'SpiderFootWebUi', inputList: list) -> list:
         """Convert data to HTML entities; except quotes and ampersands.
