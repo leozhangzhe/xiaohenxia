@@ -173,7 +173,9 @@ def main():
                     check('scan survives restart', a.get(url + '/scanresults', params={'id':scan_id}, timeout=15).status_code == 200)
                     check('unified task survives restart', a.get(url + '/liveget', params={'id':task_id}, timeout=15).status_code == 200)
                     old = csrf(a)
-                    response = post(a, 'logout', {})
+                    # Preserve the accepted application's actual navigation contract:
+                    # logout is a GET link with no parameters, not a business-write form.
+                    response = a.get(url + '/logout', allow_redirects=False, timeout=15)
                     check('logout', response.status_code in (200,302,303))
                     check('logout invalidates access', a.get(url + '/privacyactionlist', allow_redirects=False, timeout=15).status_code in (302,303,401))
                     check('old session token unusable', a.post(url + '/privacyactionsubmit', data={'csrf_token':old}, allow_redirects=False, timeout=15).status_code in (302,303,401,403))
