@@ -15,7 +15,7 @@
 先从最终 Git 提交生成 ZIP，再解压到新的独立目录，按 README 安装。不会复制原 .venv、数据库、账号、配置或查询记录。首次在线安装验证与可选 wheelhouse 安装方式均由 README 描述，Node 不参与运行或安装。
 
 ```powershell
-py -3.12 scripts/install-release.py --mysql-archive '<官方MySQL ZIP路径>'
+python scripts/install-release.py --mysql-archive '<官方MySQL ZIP路径>'
 # 可选：在上述命令加 --wheelhouse '<已下载Python发行包目录>'
 .\.venv\Scripts\python.exe -B scripts/verify-release.py --report '..\cold-start-results.json'
 ```

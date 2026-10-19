@@ -26,17 +26,19 @@
 
 ## 全新电脑首次安装
 
-1. 安装 Python 3.12 x64（包含 Python Launcher）。新开 PowerShell：`py -3.12 --version`。
+1. 安装 Python 3.12 x64。新开 PowerShell：`python --version`，应为 3.12.x；如有 Python Launcher，也可使用 `py -3.12 --version`。本次验收机为 `D:\Programs\Python312\python.exe`，版本 3.12.10，无 `py`，故使用下面的 `python` 命令。
 2. MySQL 如提示缺少运行库，从微软官方安装 Visual C++ 2015–2022 x64 Redistributable。
 3. 从 [MySQL 官方页面](https://dev.mysql.com/downloads/mysql/8.0.html) 下载 **mysql-8.0.46-winx64.zip**，不要选 debug/test。官方直链：<https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.46-winx64.zip>。安装脚本不自动下载二进制，也不安装系统服务。
 4. 解压本源码到新的、有写权限的目录，如 `D:\Contest\xiaohenxia`。中文路径支持。不要复制旧 `.venv`、`.runtime-profile` 或数据库。
 5. 在解压目录打开 PowerShell（下载路径按实际替换）：
 
 ```powershell
-py -3.12 scripts/install-release.py --mysql-archive 'D:\Downloads\mysql-8.0.46-winx64.zip'
+python scripts/install-release.py --mysql-archive 'D:\Downloads\mysql-8.0.46-winx64.zip'
 ```
 
 也可执行 `安装比赛环境.bat --mysql-archive "D:\Downloads\mysql-8.0.46-winx64.zip"`。
+
+安装批处理优先使用 `py -3.12`，没有 Launcher 时使用 `python`；脚本会拒绝错误的 Python 主次版本。若系统有多个 Python，可在 PowerShell 用 `& '你的Python3.12完整路径\python.exe' scripts/install-release.py ...` 显式指定。比赛电脑路径无需与验收机相同。
 
 安装器校验 MySQL SHA-256，在项目内创建 `.venv`、`.mysql` 和 `.tools/live`，按锁文件安装 Python 依赖，将 21 个发布资源恢复至旧模板兼容路径。不运行 npm，不全局安装，不读取开发数据库。
 
