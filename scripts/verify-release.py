@@ -97,7 +97,9 @@ def main():
                     for route in ('newscan', 'livesearch', 'privacyaction', 'leakcheck'):
                         check('page ' + route, a.get(url + '/' + route, timeout=20).status_code == 200)
                     # Verify every actual stylesheet/script referenced by a business page is present.
-                    html = a.get(url + '/', timeout=20).text + a.get(url + '/login', timeout=20).text
+                    with client() as anonymous:
+                        auth_html = anonymous.get(url + '/login', timeout=20).text
+                    html = a.get(url + '/', timeout=20).text + auth_html
                     assets = set(re.findall(r'(?:src|href)=["\'](/static/[^"\']+)', html))
                     for path in assets:
                         check('asset ' + path.split('?')[0], a.get(url + path, timeout=15).status_code == 200)
@@ -132,6 +134,22 @@ def main():
                                 break
                             time.sleep(.2)
                         check('HIBP missing Key does not fake results', task['sources'][0]['status'] == 'not_configured' and not task['results'])
+                        disposable = task_id
+                        check('cancel unified task', post(a, 'livecancel', {'id':disposable}).status_code == 200)
+                        check('delete unified task', post(a, 'livedelete', {'id':disposable}).status_code == 200)
+                        check('deleted task no longer readable', a.get(url + '/liveget', params={'id':disposable}, timeout=15).status_code == 404)
+                        response = post(a, 'livecreate', {'input_type':'domain', 'query':'example.com', 'sources':'["spiderfoot"]'})
+                        check('real unified DNS task created', response.status_code == 200 and bool(response.json().get('id')))
+                        task_id = response.json()['id']
+                        deadline = time.monotonic() + 105
+                        while time.monotonic() < deadline:
+                            task = a.get(url + '/liveget', params={'id':task_id}, timeout=15).json()
+                            if task['status'] not in ('waiting','running'):
+                                break
+                            time.sleep(.5)
+                        check('real unified source finishes with explicit state', task['sources'][0]['status'] in
+                              ('completed','partial','failed','timeout'), task['sources'][0]['status'])
+                        check('unified results have provenance', all('source' in row and 'queried_at' in row for row in task['results']))
                         response = post(a, 'startscan', {'scanname':'Synthetic release DNS verification', 'scantarget':'example.com',
                             'modulelist':'sfp_dnsresolve'}, {'headers':{'Accept':'application/json'}})
                         check('real SpiderFoot scan created', response.status_code == 200 and response.json()[0] == 'SUCCESS')

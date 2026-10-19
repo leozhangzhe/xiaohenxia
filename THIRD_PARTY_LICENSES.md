@@ -25,4 +25,6 @@
 
 外部工具依赖锁文件为 scripts/live-source-locks/*.txt，安装元数据与许可在对应独立环境保留。若日后整体分发工具/解释器/MySQL 环境，需要另外履行完整许可及适用源码义务。
 
+前端直接依赖的实际版本和原许可另见 third_party/frontend/inventory.json 及同目录各包 LICENSE；构建内使用的传递依赖许可见 react-auth/THIRD_PARTY_LICENSES.txt。两份清单共同保留源码样本与正式构建的归属。
+
 不使用 Poliigon、外部 HDRI、专有模型、公司品牌素材或 CDN。液态金属使用程序化 GLSL。旧字典、图片和模块保留原声明。leak-check 移植来源保留在 spiderfoot/leakcheck.py；样例数据已全部合成化。
