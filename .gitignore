@@ -238,3 +238,6 @@ secrets.json
 .env.*.local
 *.db-wal
 *.db-shm
+
+# Curated browser release assets (not package-manager installations).
+!third_party/runtime-assets/files/**

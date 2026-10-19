@@ -1,0 +1,8 @@
+/* Imported by the button module, including when used outside the preview. */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="metal-button"],
+  [data-slot="metal-button"] * {
+    transition: none !important;
+    transform: none !important;
+  }
+}

@@ -36,9 +36,16 @@ def test_timeout_and_cancel_close_worker_and_its_child(tmp_path, mode):
     finally:
         if timer:
             timer.cancel()
-    assert time.monotonic() - started < 6
     assert pids.exists(), "the real worker and child must have started"
-    for pid in json.loads(pids.read_text()):
+    owned_pids = json.loads(pids.read_text())
+    # Closing a Windows Job initiates descendant termination; the kernel can finish
+    # it just after the parent wait returns. Keep the ORIGINAL six-second total
+    # deadline and require every real process to disappear, rather than asserting
+    # on a single scheduler instant. A genuine retained child still fails below.
+    while any(psutil.pid_exists(pid) for pid in owned_pids) and time.monotonic() - started < 6:
+        time.sleep(0.01)
+    assert time.monotonic() - started < 6
+    for pid in owned_pids:
         assert not psutil.pid_exists(pid), "source child process was left running"
 
 

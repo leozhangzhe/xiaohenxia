@@ -1,0 +1,80 @@
+/* LiquidButton material from frontend/components/ui/liquid-glass-button.tsx.
+   Template adapter: retain native buttons, links, handlers and sizing. */
+body.fluent-body :is(button,a,input).workspace-liquid-button {
+  --liquid-button-fill:rgba(255,255,255,.025);
+  position:relative;isolation:isolate;overflow:visible;
+  background:var(--liquid-button-fill);color:var(--foreground);
+  border:1px solid transparent;border-radius:999px;
+  box-shadow:none;text-shadow:none;
+  transition:transform 300ms var(--motion-ease),background-color 200ms ease,color 200ms ease;
+}
+body.fluent-body .workspace-liquid-button::before {
+  content:"";position:absolute;inset:0;z-index:1;border-radius:inherit;
+  pointer-events:none;opacity:1;transform:none;
+  /* Same dark-theme inset highlights as LiquidButton's first decorative layer. */
+  background:none;
+  box-shadow:0 0 8px rgba(0,0,0,.03),0 2px 6px rgba(0,0,0,.08),
+    inset 3px 3px .5px -3.5px rgba(255,255,255,.09),
+    inset -3px -3px .5px -3.5px rgba(255,255,255,.85),
+    inset 1px 1px 1px -.5px rgba(255,255,255,.6),
+    inset -1px -1px 1px -.5px rgba(255,255,255,.6),
+    inset 0 0 6px 6px rgba(255,255,255,.12),
+    inset 0 0 2px 2px rgba(255,255,255,.06),0 0 12px rgba(0,0,0,.15);
+}
+body.fluent-body .workspace-liquid-button::after {
+  content:"";position:absolute;inset:0;z-index:0;overflow:hidden;border-radius:inherit;
+  background:none;opacity:1;transform:none;pointer-events:none;
+  -webkit-backdrop-filter:blur(4px);
+  backdrop-filter:blur(4px) url("#workspace-liquid-glass-refraction");
+}
+body.fluent-body .workspace-liquid-label {
+  position:relative;z-index:2;display:inline-flex;align-items:center;justify-content:center;
+  gap:inherit;pointer-events:none;min-width:0;max-width:100%;
+}
+body.fluent-body .workspace-liquid-label svg{flex-shrink:0;pointer-events:none}
+body.fluent-body .workspace-liquid-button:is(.primary,.pg-btn-primary,.btn-primary,.ajs-ok) {
+  --liquid-button-fill:rgba(186,200,255,.13);
+  color:var(--foreground);border-color:rgba(186,200,255,.32);
+  background:var(--liquid-button-fill);box-shadow:none;
+}
+body.fluent-body .workspace-liquid-button:is(.danger,.pg-btn-danger,.btn-danger,.risk-btn-danger) {
+  --liquid-button-fill:rgba(130,45,59,.3);
+  color:var(--destructive);border-color:rgba(252,165,165,.35);
+  background:var(--liquid-button-fill);
+}
+body.fluent-body .workspace-liquid-button:is(.quiet,.pg-btn-ghost) {
+  --liquid-button-fill:rgba(255,255,255,.012);
+  color:var(--muted-foreground);
+}
+body.fluent-body .workspace-liquid-button:is(:disabled,[aria-disabled="true"],.disabled) {
+  opacity:.45;cursor:not-allowed;transform:none;pointer-events:none;
+}
+body.fluent-body .workspace-liquid-button:focus-visible {
+  outline:3px solid var(--ring);outline-offset:3px;
+}
+@media(hover:hover) and (pointer:fine) {
+  body.fluent-body .workspace-liquid-button:not(:disabled):not([aria-disabled="true"]):not(.disabled):hover {
+    background:color-mix(in srgb,var(--liquid-button-fill),#ffffff 5%);
+    transform:scale(1.05);box-shadow:none;
+  }
+  body.fluent-body .workspace-liquid-button:is(.danger,.pg-btn-danger,.btn-danger,.risk-btn-danger):hover {color:var(--destructive)}
+}
+body.fluent-body .workspace-liquid-button:not(:disabled):not([aria-disabled="true"]):not(.disabled):active {transform:scale(.98)}
+/* A real native input cannot hold decorative children: retain a readable CSS-only material. */
+body.fluent-body input.workspace-liquid-button {
+  border-color:var(--input);background:linear-gradient(160deg,#ffffff18,#ffffff06);
+  box-shadow:inset 1px 1px 1px #ffffff60,inset -1px -1px 1px #ffffff60;
+}
+@media(max-width:680px) {
+  body.fluent-body .workspace-liquid-button::after {-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+}
+@media(prefers-reduced-motion:reduce) {
+  body.fluent-body .workspace-liquid-button,
+  body.fluent-body .workspace-liquid-button:hover,
+  body.fluent-body .workspace-liquid-button:active {transition:none!important;transform:none!important}
+}
+@media(forced-colors:active) {
+  body.fluent-body .workspace-liquid-button {border:1px solid ButtonText;background:ButtonFace;color:ButtonText}
+  body.fluent-body .workspace-liquid-button::before,
+  body.fluent-body .workspace-liquid-button::after {display:none}
+}

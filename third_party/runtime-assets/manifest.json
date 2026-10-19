@@ -1,0 +1,177 @@
+{
+  "files": [
+    {
+      "path": "alertifyjs/build/alertify.min.js",
+      "size": 36995,
+      "sha256": "cb1d39a1e5cacaff5d2ee78770996d3c0f75a6f2a46fa6a960ae729b20a9244f"
+    },
+    {
+      "path": "alertifyjs/build/css/alertify.min.css",
+      "size": 21457,
+      "sha256": "12e60b6d60e45a69e3dc0f442bb4005eb47fba5ceb42fc6435cd8b4867a3f69d"
+    },
+    {
+      "path": "bootstrap/dist/css/bootstrap.min.css",
+      "size": 121457,
+      "sha256": "6d92dfc1700fd38cd130ad818e23bc8aef697f815b2ea5face2b5dfad22f2e11"
+    },
+    {
+      "path": "bootstrap/dist/fonts/glyphicons-halflings-regular.eot",
+      "size": 20127,
+      "sha256": "13634da87d9e23f8c3ed9108ce1724d183a39ad072e73e1b3d8cbf646d2d0407"
+    },
+    {
+      "path": "bootstrap/dist/fonts/glyphicons-halflings-regular.svg",
+      "size": 108738,
+      "sha256": "42f60659d265c1a3c30f9fa42abcbb56bd4a53af4d83d316d6dd7a36903c43e5"
+    },
+    {
+      "path": "bootstrap/dist/fonts/glyphicons-halflings-regular.ttf",
+      "size": 45404,
+      "sha256": "e395044093757d82afcb138957d06a1ea9361bdcf0b442d06a18a8051af57456"
+    },
+    {
+      "path": "bootstrap/dist/fonts/glyphicons-halflings-regular.woff",
+      "size": 23424,
+      "sha256": "a26394f7ede100ca118eff2eda08596275a9839b959c226e15439557a5a80742"
+    },
+    {
+      "path": "bootstrap/dist/fonts/glyphicons-halflings-regular.woff2",
+      "size": 18028,
+      "sha256": "fe185d11a49676890d47bb783312a0cda5a44c4039214094e7957b4c040ef11c"
+    },
+    {
+      "path": "bootstrap/dist/js/bootstrap.min.js",
+      "size": 39680,
+      "sha256": "9ee2fcff6709e4d0d24b09ca0fc56aade12b4961ed9c43fd13b03248bfb57afe"
+    },
+    {
+      "path": "d3/d3.min.js",
+      "size": 151725,
+      "sha256": "76c39718d1c0a3fb321676b3b7e29306c0907919a5716d5728bd1b08ae0169e7"
+    },
+    {
+      "path": "jquery/dist/jquery.min.js",
+      "size": 87533,
+      "sha256": "fc9a93dd241f6b045cbff0481cf4e1901becd0e12fb45166a8f17f95823f0b1a"
+    },
+    {
+      "path": "sigma/build/plugins/sigma.layout.forceAtlas2.min.js",
+      "size": 11573,
+      "sha256": "caebe6199291c9010c6c7efe4a99dfd2d2229261809cde6699b76a7f0cc15677"
+    },
+    {
+      "path": "sigma/build/plugins/sigma.parsers.json.min.js",
+      "size": 807,
+      "sha256": "e04bd72800027f650f6fe9e9c9c8f13a50707fc42a8cbda4fb38203ce17eb44e"
+    },
+    {
+      "path": "sigma/build/plugins/sigma.plugins.dragNodes.min.js",
+      "size": 3196,
+      "sha256": "1ac0aa997c3cd61e4d83e6acb0867856132e8fa936f275066e81932ff3076905"
+    },
+    {
+      "path": "sigma/build/plugins/sigma.renderers.snapshot.min.js",
+      "size": 1399,
+      "sha256": "ac1b826efa80b0c2f7cffde500408187d7926b85c0107881326aa1eb8f8718ae"
+    },
+    {
+      "path": "sigma/build/sigma.min.js",
+      "size": 115110,
+      "sha256": "4d3b7d3ba812c360cac5e7f6b65420b51d766a3fb490bd3996c6082931099b1b"
+    },
+    {
+      "path": "tablesorter/dist/css/jquery.tablesorter.pager.min.css",
+      "size": 404,
+      "sha256": "e6cf92f054f5eba3dcccc05be9ea401a87501bd6568105230ec95cd22bcd46ae"
+    },
+    {
+      "path": "tablesorter/dist/css/theme.default.min.css",
+      "size": 4502,
+      "sha256": "e6c804c4d4e790df0d700a4a214ef7fdaaa0666aaaff3269f7ef735dff5a484c"
+    },
+    {
+      "path": "tablesorter/dist/js/extras/jquery.tablesorter.pager.min.js",
+      "size": 20452,
+      "sha256": "f3f87633fca88dd6df2e8b4dd997584c33ebf49e4d139bbe3199b78db8c0081d"
+    },
+    {
+      "path": "tablesorter/dist/js/jquery.tablesorter.min.js",
+      "size": 44100,
+      "sha256": "29cf3b72cb635ab78b92e508e8c4e4da41ac8168ef9dee97c6432b83c923296c"
+    },
+    {
+      "path": "tablesorter/dist/js/jquery.tablesorter.widgets.min.js",
+      "size": 52971,
+      "sha256": "70d2977b66eb05143146c3cec186a1bda60221321b907f9ee00c87e489f550a0"
+    }
+  ],
+  "packages": {
+    "alertifyjs": {
+      "version": "1.14.0",
+      "license": "SEE LICENSE",
+      "source": {
+        "type": "git",
+        "url": "git@github.com:MohammadYounes/AlertifyJS.git"
+      },
+      "license_files": [
+        "licenses/alertifyjs/LICENSE"
+      ]
+    },
+    "bootstrap": {
+      "version": "3.4.1",
+      "license": "MIT",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/twbs/bootstrap.git"
+      },
+      "license_files": [
+        "licenses/bootstrap/LICENSE"
+      ]
+    },
+    "d3": {
+      "version": "3.5.17",
+      "license": "BSD-3-Clause",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/mbostock/d3.git"
+      },
+      "license_files": [
+        "licenses/d3/LICENSE"
+      ]
+    },
+    "jquery": {
+      "version": "3.7.1",
+      "license": "MIT",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/jquery/jquery.git"
+      },
+      "license_files": [
+        "licenses/jquery/LICENSE.txt"
+      ]
+    },
+    "sigma": {
+      "version": "1.2.2",
+      "license": "MIT",
+      "source": {
+        "type": "git",
+        "url": "http://github.com/jacomyal/sigma.js.git"
+      },
+      "license_files": [
+        "licenses/sigma/LICENSE.txt"
+      ]
+    },
+    "tablesorter": {
+      "version": "2.32.0",
+      "license": "(MIT OR GPL-2.0)",
+      "source": {
+        "type": "git",
+        "url": "git://github.com/Mottie/tablesorter.git"
+      },
+      "license_files": [
+        "licenses/tablesorter/LICENSE"
+      ]
+    }
+  }
+}

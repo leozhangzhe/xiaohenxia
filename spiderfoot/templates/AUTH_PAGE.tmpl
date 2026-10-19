@@ -3,8 +3,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#121212">
 <title>${'注册' if mode == 'register' else '登录'}—消痕侠数字痕迹管理平台</title>
 <link rel="icon" href="${docroot}/static/img/xhen-brand.svg" type="image/svg+xml">
-<link rel="stylesheet" href="${docroot}/static/react-auth/auth.css?v=stage6-1">
-<script defer src="${docroot}/static/react-auth/auth.js?v=stage6-1"></script>
+<link rel="stylesheet" href="${docroot}/static/react-auth/auth.css?v=auth-restored-1">
+<script defer src="${docroot}/static/react-auth/auth.js?v=auth-restored-1"></script>
 </head><body>
 <div id="auth-root" data-mode="${mode | h}" data-docroot="${docroot | h}" data-csrf-token="${csrf_token | h}" data-error="${error or '' | h}" data-success="${auth_success | h}" data-next="${auth_next | h}" data-version="${version | h}">
 <main class="auth-fallback"><h1>${'创建账号' if mode == 'register' else '登录消痕侠'}</h1><p>数字痕迹管理平台</p>

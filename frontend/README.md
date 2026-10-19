@@ -36,6 +36,24 @@ npm run build
 
 第三方运行库的本地版本与许可证保存在 `../spiderfoot/static/react-auth/THIRD_PARTY_LICENSES.txt`。
 
-## 验证
+## 液态玻璃与金属按钮
+
+项目已配置 React、TypeScript、Tailwind CSS 4 与 shadcn，无需重新初始化。组件默认目录为 `frontend/components/ui`，全局样式为 `frontend/styles/globals.css`，路径别名 `@/` 指向 `frontend/`；`components.json` 与 Vite、TypeScript 配置一致。保留 `components/ui` 目录可使 shadcn CLI 生成的组件和示例导入路径保持一致。
+
+`components/ui/liquid-glass-button.tsx` 提供 `Button`、`LiquidButton`、`MetalButton`、`buttonVariants` 和 `liquidbuttonVariants`。依赖 `@radix-ui/react-slot`、`class-variance-authority` 已加入包与锁文件；`cn` 复用 `lib/utils.ts`。应用入口需导入全局样式；按钮模块自动加载 `styles/liquid-glass.css` 以支持减少动态效果偏好。
+
+```tsx
+import { LiquidButton, MetalButton } from "@/components/ui/liquid-glass-button";
+
+<LiquidButton onClick={() => console.log("clicked")}>Liquid Glass</LiquidButton>
+<LiquidButton asChild><a href="/login">登录</a></LiquidButton>
+<MetalButton variant="gold">继续</MetalButton>
+```
+
+默认按钮类型为 `button`，提交表单需显式传入 `type="submit"`。`asChild` 要求单个有效 React 元素（如链接）；不要用于禁用链接，禁用交互请使用原生按钮的 `disabled`。滤镜 ID 每实例独立，支持同页多个按钮；浏览器不支持 SVG backdrop filter 时回退普通背景模糊。
+
+在本目录运行 `npm run dev`，打开 `http://127.0.0.1:5173/liquid-glass-demo.html` 查看独立组件示例，包含点击计数、尺寸、禁用、链接及六种金属色。预览页仅用于开发，不替换正式认证入口，也不加入认证生产包。
+
+## 验证命令
 
 `npm run build`包含TypeScript检查。项目根目录 `pytest test/stage1 test/stage2 test/stage3 test/stage4 test/stage5 test/stage6 -ra` 覆盖现有业务和新增HTTP边界；真实MySQL测试需要本机项目内MySQL，使用独立数据目录。开发自测结果和浏览器证据见 `../docs/stage6-react-auth.md`。

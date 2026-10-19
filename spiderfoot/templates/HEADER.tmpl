@@ -14,10 +14,15 @@
 <script src="${docroot}/static/node_modules/jquery/dist/jquery.min.js"></script>
 <link href="${docroot}/static/css/vault-motion.css?v=stage6-1" rel="stylesheet">
 <link href="${docroot}/static/css/theme.css?v=stage6-1" rel="stylesheet">
-<link href="${docroot}/static/css/workspace.css?v=stage6-glass-2" rel="stylesheet">
+<link href="${docroot}/static/css/workspace.css?v=stage6-glass-6" rel="stylesheet">
+<link href="${docroot}/static/css/app-background.css?v=liquid-5" rel="stylesheet">
+<link href="${docroot}/static/css/liquid-glass-buttons.css?v=glass-buttons-1" rel="stylesheet">
+<script src="${docroot}/static/js/liquid-glass-buttons.js?v=glass-buttons-1" defer></script>
+<script src="${docroot}/static/vendor/liquid-metal/liquid-metal.js?v=liquid-1" defer></script>
+<script src="${docroot}/static/js/app-background.js?v=liquid-3" defer></script>
 <script src="${docroot}/static/js/vault-scene.js?v=20261018" defer></script>
 <script src="${docroot}/static/js/vault-motion.js?v=20261018" defer></script>
-<script src="${docroot}/static/js/fluent-ui.js?v=vault-1" defer></script>
+<script src="${docroot}/static/js/fluent-ui.js?v=nav-persist-1" defer></script>
 </head>
 <%def name="nav_icon(kind)">
 <svg class="fl-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -33,6 +38,7 @@
 </svg>
 </%def>
 <body class="pg-body fluent-body" data-page="${pageid | h}">
+<div class="app-background" data-app-background="workspace" data-mode="workspace" aria-hidden="true"></div>
 <a class="fl-skip" href="#mainbody">跳转到主要内容</a>
 <header class="fl-topbar">
 <a class="fl-brand" href="${docroot}/#overview"><span class="fl-brand-icon"><img src="${docroot}/static/img/xhen-brand.svg" alt=""></span><span><strong>消痕侠</strong><small>数字痕迹管理平台</small></span></a>

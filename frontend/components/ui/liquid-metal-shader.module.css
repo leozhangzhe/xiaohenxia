@@ -1,0 +1,7 @@
+/* Nacre UI's clipping/fallback surface; global AppBackground owns the fixed layer. */
+.root {
+  display: block;
+  overflow: hidden;
+  min-width: 0;
+  border-radius: inherit;
+}

@@ -1,0 +1,860 @@
+[
+  {
+    "name": "adblockparser",
+    "version": "0.7",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/scrapinghub/adblockparser",
+    "license_files": []
+  },
+  {
+    "name": "annotated-doc",
+    "version": "0.0.5",
+    "license": "MIT",
+    "homepage": "Homepage, https://github.com/fastapi/annotated-doc",
+    "license_files": [
+      "third_party/python/licenses/annotated-doc/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "astor",
+    "version": "0.8.1",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "https://github.com/berkerpeksag/astor",
+    "license_files": [
+      "third_party/python/licenses/astor/LICENSE"
+    ]
+  },
+  {
+    "name": "attrs",
+    "version": "26.1.0",
+    "license": "MIT",
+    "homepage": "Documentation, https://www.attrs.org/",
+    "license_files": [
+      "third_party/python/licenses/attrs/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "beautifulsoup4",
+    "version": "4.15.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "Download, https://www.crummy.com/software/BeautifulSoup/bs4/download/",
+    "license_files": [
+      "third_party/python/licenses/beautifulsoup4/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "certifi",
+    "version": "2026.7.22",
+    "license": "OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "homepage": "https://github.com/certifi/python-certifi",
+    "license_files": [
+      "third_party/python/licenses/certifi/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "cffi",
+    "version": "2.1.1",
+    "license": "MIT-0",
+    "homepage": "Documentation, https://cffi.readthedocs.io/",
+    "license_files": [
+      "third_party/python/licenses/cffi/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "charset-normalizer",
+    "version": "3.5.2",
+    "license": "MIT",
+    "homepage": "Changelog, https://github.com/jawah/charset_normalizer/blob/master/CHANGELOG.md",
+    "license_files": [
+      "third_party/python/licenses/charset-normalizer/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "cheroot",
+    "version": "11.1.2",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "Homepage, https://cheroot.cherrypy.dev",
+    "license_files": [
+      "third_party/python/licenses/cheroot/LICENSE.md"
+    ]
+  },
+  {
+    "name": "CherryPy",
+    "version": "18.10.0",
+    "license": "Freely Distributable; OSI Approved :: BSD License",
+    "homepage": "https://www.cherrypy.dev",
+    "license_files": [
+      "third_party/python/licenses/CherryPy/LICENSE.md"
+    ]
+  },
+  {
+    "name": "cherrypy-cors",
+    "version": "1.7.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/cherrypy/cherrypy-cors",
+    "license_files": [
+      "third_party/python/licenses/cherrypy-cors/LICENSE"
+    ]
+  },
+  {
+    "name": "colorama",
+    "version": "0.4.6",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "Homepage, https://github.com/tartley/colorama",
+    "license_files": [
+      "third_party/python/licenses/colorama/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "coverage",
+    "version": "7.16.2",
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/coveragepy/coveragepy",
+    "license_files": [
+      "third_party/python/licenses/coverage/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "cryptography",
+    "version": "3.4.8",
+    "license": "OSI Approved :: Apache Software License; OSI Approved :: BSD License",
+    "homepage": "https://github.com/pyca/cryptography",
+    "license_files": [
+      "third_party/python/licenses/cryptography/LICENSE",
+      "third_party/python/licenses/cryptography/LICENSE.APACHE",
+      "third_party/python/licenses/cryptography/LICENSE.BSD",
+      "third_party/python/licenses/cryptography/LICENSE.PSF"
+    ]
+  },
+  {
+    "name": "darglint",
+    "version": "1.8.1",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "",
+    "license_files": [
+      "third_party/python/licenses/darglint/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "dlint",
+    "version": "0.14.0",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "https://github.com/dlint-py/dlint",
+    "license_files": [
+      "third_party/python/licenses/dlint/LICENSE"
+    ]
+  },
+  {
+    "name": "dnspython",
+    "version": "2.9.0",
+    "license": "ISC",
+    "homepage": "homepage, https://www.dnspython.org",
+    "license_files": []
+  },
+  {
+    "name": "et_xmlfile",
+    "version": "2.0.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://foss.heptapod.net/openpyxl/et_xmlfile",
+    "license_files": [
+      "third_party/python/licenses/et_xmlfile/LICENCE.python",
+      "third_party/python/licenses/et_xmlfile/LICENCE.rst"
+    ]
+  },
+  {
+    "name": "execnet",
+    "version": "2.1.2",
+    "license": "MIT",
+    "homepage": "Homepage, https://execnet.readthedocs.io/en/latest/",
+    "license_files": [
+      "third_party/python/licenses/execnet/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "ExifRead",
+    "version": "2.3.2",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "https://github.com/ianare/exif-py",
+    "license_files": [
+      "third_party/python/licenses/ExifRead/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "flake8",
+    "version": "5.0.4",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/pycqa/flake8",
+    "license_files": [
+      "third_party/python/licenses/flake8/LICENSE"
+    ]
+  },
+  {
+    "name": "flake8-annotations",
+    "version": "2.9.1",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/sco1/flake8-annotations",
+    "license_files": [
+      "third_party/python/licenses/flake8-annotations/LICENSE"
+    ]
+  },
+  {
+    "name": "flake8-blind-except",
+    "version": "0.2.1",
+    "license": "MIT",
+    "homepage": "https://github.com/elijahandrews/flake8-blind-except",
+    "license_files": [
+      "third_party/python/licenses/flake8-blind-except/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "flake8-bugbear",
+    "version": "23.2.13",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "Homepage, https://github.com/PyCQA/flake8-bugbear",
+    "license_files": [
+      "third_party/python/licenses/flake8-bugbear/LICENSE"
+    ]
+  },
+  {
+    "name": "flake8-builtins",
+    "version": "2.1.0",
+    "license": "OSI Approved :: GNU General Public License v2 (GPLv2)",
+    "homepage": "https://github.com/gforcada/flake8-builtins",
+    "license_files": [
+      "third_party/python/licenses/flake8-builtins/LICENSE"
+    ]
+  },
+  {
+    "name": "flake8-plugin-utils",
+    "version": "1.3.3",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://pypi.org/project/flake8-plugin-utils",
+    "license_files": [
+      "third_party/python/licenses/flake8-plugin-utils/LICENSE"
+    ]
+  },
+  {
+    "name": "flake8-quotes",
+    "version": "3.3.2",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "http://github.com/zheller/flake8-quotes/",
+    "license_files": [
+      "third_party/python/licenses/flake8-quotes/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "flake8-return",
+    "version": "1.2.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://pypi.org/project/flake8-return",
+    "license_files": [
+      "third_party/python/licenses/flake8-return/LICENSE"
+    ]
+  },
+  {
+    "name": "flake8-sfs",
+    "version": "0.0.4",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "Homepage, https://github.com/peterjc/flake8-sfs",
+    "license_files": [
+      "third_party/python/licenses/flake8-sfs/LICENSE.rst"
+    ]
+  },
+  {
+    "name": "flake8-simplify",
+    "version": "0.19.3",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/MartinThoma/flake8-simplify",
+    "license_files": [
+      "third_party/python/licenses/flake8-simplify/LICENSE"
+    ]
+  },
+  {
+    "name": "future",
+    "version": "1.0.0",
+    "license": "OSI Approved; OSI Approved :: MIT License",
+    "homepage": "https://python-future.org",
+    "license_files": [
+      "third_party/python/licenses/future/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "httpagentparser",
+    "version": "1.9.9",
+    "license": "The MIT License (MIT)",
+    "homepage": "Homepage, https://github.com/shon/httpagentparser",
+    "license_files": [
+      "third_party/python/licenses/httpagentparser/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "idna",
+    "version": "3.20",
+    "license": "BSD-3-Clause",
+    "homepage": "Changelog, https://github.com/kjd/idna/blob/master/HISTORY.md",
+    "license_files": [
+      "third_party/python/licenses/idna/licenses/LICENSE.md"
+    ]
+  },
+  {
+    "name": "iniconfig",
+    "version": "2.3.1",
+    "license": "MIT",
+    "homepage": "Homepage, https://github.com/pytest-dev/iniconfig",
+    "license_files": [
+      "third_party/python/licenses/iniconfig/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "ipaddr",
+    "version": "2.2.0",
+    "license": "OSI Approved :: Apache Software License",
+    "homepage": "https://github.com/google/ipaddr-py",
+    "license_files": [
+      "third_party/python/licenses/ipaddr/licenses/COPYING"
+    ]
+  },
+  {
+    "name": "ipwhois",
+    "version": "1.1.0",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "https://github.com/secynic/ipwhois",
+    "license_files": [
+      "third_party/python/licenses/ipwhois/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "jaraco.collections",
+    "version": "5.2.1",
+    "license": "MIT",
+    "homepage": "Source, https://github.com/jaraco/jaraco.collections",
+    "license_files": [
+      "third_party/python/licenses/jaraco.collections/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "jaraco.context",
+    "version": "6.1.2",
+    "license": "MIT",
+    "homepage": "Source, https://github.com/jaraco/jaraco.context",
+    "license_files": [
+      "third_party/python/licenses/jaraco.context/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "jaraco.functools",
+    "version": "4.6.0",
+    "license": "MIT",
+    "homepage": "Source, https://github.com/jaraco/jaraco.functools",
+    "license_files": [
+      "third_party/python/licenses/jaraco.functools/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "jaraco.text",
+    "version": "4.3.0",
+    "license": "MIT",
+    "homepage": "Source, https://github.com/jaraco/jaraco.text",
+    "license_files": [
+      "third_party/python/licenses/jaraco.text/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "lxml",
+    "version": "4.9.4",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "https://lxml.de/",
+    "license_files": [
+      "third_party/python/licenses/lxml/LICENSE.txt",
+      "third_party/python/licenses/lxml/LICENSES.txt"
+    ]
+  },
+  {
+    "name": "Mako",
+    "version": "1.4.3",
+    "license": "MIT",
+    "homepage": "Homepage, https://www.makotemplates.org/",
+    "license_files": [
+      "third_party/python/licenses/Mako/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "markdown-it-py",
+    "version": "4.2.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "Documentation, https://markdown-it-py.readthedocs.io",
+    "license_files": [
+      "third_party/python/licenses/markdown-it-py/licenses/LICENSE",
+      "third_party/python/licenses/markdown-it-py/licenses/LICENSE.markdown-it"
+    ]
+  },
+  {
+    "name": "MarkupSafe",
+    "version": "3.0.4",
+    "license": "BSD-3-Clause",
+    "homepage": "Donate, https://palletsprojects.com/donate",
+    "license_files": [
+      "third_party/python/licenses/MarkupSafe/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "mccabe",
+    "version": "0.7.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/pycqa/mccabe",
+    "license_files": [
+      "third_party/python/licenses/mccabe/LICENSE"
+    ]
+  },
+  {
+    "name": "mdurl",
+    "version": "0.1.2",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "Homepage, https://github.com/executablebooks/mdurl",
+    "license_files": [
+      "third_party/python/licenses/mdurl/LICENSE"
+    ]
+  },
+  {
+    "name": "more-itertools",
+    "version": "11.2.1",
+    "license": "MIT",
+    "homepage": "Documentation, https://more-itertools.readthedocs.io/en/stable/",
+    "license_files": [
+      "third_party/python/licenses/more-itertools/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "netaddr",
+    "version": "0.10.1",
+    "license": "OSI Approved :: BSD License; OSI Approved :: MIT License",
+    "homepage": "https://github.com/drkjam/netaddr/",
+    "license_files": [
+      "third_party/python/licenses/netaddr/LICENSE"
+    ]
+  },
+  {
+    "name": "networkx",
+    "version": "2.6.3",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "https://networkx.org/",
+    "license_files": [
+      "third_party/python/licenses/networkx/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "openpyxl",
+    "version": "3.1.5",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://openpyxl.readthedocs.io",
+    "license_files": [
+      "third_party/python/licenses/openpyxl/LICENCE.rst"
+    ]
+  },
+  {
+    "name": "packaging",
+    "version": "26.3",
+    "license": "Apache-2.0 OR BSD-2-Clause",
+    "homepage": "Documentation, https://packaging.pypa.io/",
+    "license_files": [
+      "third_party/python/licenses/packaging/licenses/LICENSE",
+      "third_party/python/licenses/packaging/licenses/LICENSE.APACHE",
+      "third_party/python/licenses/packaging/licenses/LICENSE.BSD"
+    ]
+  },
+  {
+    "name": "phonenumbers",
+    "version": "8.13.55",
+    "license": "OSI Approved :: Apache Software License",
+    "homepage": "https://github.com/daviddrysdale/python-phonenumbers",
+    "license_files": [
+      "third_party/python/licenses/phonenumbers/LICENSE"
+    ]
+  },
+  {
+    "name": "pillow",
+    "version": "12.3.0",
+    "license": "MIT-CMU",
+    "homepage": "Release notes, https://pillow.readthedocs.io/en/stable/releasenotes/index.html",
+    "license_files": [
+      "third_party/python/licenses/pillow/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "pip",
+    "version": "25.0.1",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "Homepage, https://pip.pypa.io/",
+    "license_files": [
+      "third_party/python/licenses/pip/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "pluggy",
+    "version": "1.7.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "Homepage, https://github.com/pytest-dev/pluggy",
+    "license_files": [
+      "third_party/python/licenses/pluggy/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "portend",
+    "version": "3.2.1",
+    "license": "MIT",
+    "homepage": "Source, https://github.com/jaraco/portend",
+    "license_files": [
+      "third_party/python/licenses/portend/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "psutil",
+    "version": "7.2.2",
+    "license": "BSD-3-Clause",
+    "homepage": "https://github.com/giampaolo/psutil",
+    "license_files": [
+      "third_party/python/licenses/psutil/LICENSE"
+    ]
+  },
+  {
+    "name": "publicsuffixlist",
+    "version": "0.9.4",
+    "license": "OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "homepage": "https://github.com/ko-zu/psl",
+    "license_files": [
+      "third_party/python/licenses/publicsuffixlist/LICENSE"
+    ]
+  },
+  {
+    "name": "pycodestyle",
+    "version": "2.9.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://pycodestyle.pycqa.org/",
+    "license_files": [
+      "third_party/python/licenses/pycodestyle/LICENSE"
+    ]
+  },
+  {
+    "name": "pycparser",
+    "version": "3.11",
+    "license": "BSD-3-Clause",
+    "homepage": "Homepage, https://github.com/eliben/pycparser",
+    "license_files": [
+      "third_party/python/licenses/pycparser/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "pyflakes",
+    "version": "2.5.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/PyCQA/pyflakes",
+    "license_files": [
+      "third_party/python/licenses/pyflakes/LICENSE"
+    ]
+  },
+  {
+    "name": "pygexf",
+    "version": "0.2.2",
+    "license": "UNKNOWN",
+    "homepage": "http://github.com/paulgirard/pygexf",
+    "license_files": []
+  },
+  {
+    "name": "Pygments",
+    "version": "2.21.0",
+    "license": "BSD-2-Clause",
+    "homepage": "Homepage, https://pygments.org",
+    "license_files": [
+      "third_party/python/licenses/Pygments/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "PyMySQL",
+    "version": "1.2.3",
+    "license": "MIT",
+    "homepage": "Project, https://github.com/PyMySQL/PyMySQL",
+    "license_files": [
+      "third_party/python/licenses/PyMySQL/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "pyOpenSSL",
+    "version": "21.0.0",
+    "license": "OSI Approved :: Apache Software License",
+    "homepage": "https://pyopenssl.org/",
+    "license_files": [
+      "third_party/python/licenses/pyOpenSSL/LICENSE"
+    ]
+  },
+  {
+    "name": "PyPDF2",
+    "version": "1.28.6",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "https://pypdf2.readthedocs.io/en/latest/",
+    "license_files": [
+      "third_party/python/licenses/PyPDF2/LICENSE"
+    ]
+  },
+  {
+    "name": "pyreadline",
+    "version": "2.1",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "http://ipython.org/pyreadline.html",
+    "license_files": []
+  },
+  {
+    "name": "PySocks",
+    "version": "1.7.1",
+    "license": "BSD",
+    "homepage": "https://github.com/Anorov/PySocks",
+    "license_files": [
+      "third_party/python/licenses/PySocks/LICENSE"
+    ]
+  },
+  {
+    "name": "pytest",
+    "version": "7.2.1",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://docs.pytest.org/en/latest/",
+    "license_files": [
+      "third_party/python/licenses/pytest/LICENSE"
+    ]
+  },
+  {
+    "name": "pytest-cov",
+    "version": "4.0.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/pytest-dev/pytest-cov",
+    "license_files": [
+      "third_party/python/licenses/pytest-cov/LICENSE"
+    ]
+  },
+  {
+    "name": "pytest-mock",
+    "version": "3.10.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/pytest-dev/pytest-mock/",
+    "license_files": [
+      "third_party/python/licenses/pytest-mock/LICENSE"
+    ]
+  },
+  {
+    "name": "pytest-xdist",
+    "version": "3.2.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/pytest-dev/pytest-xdist",
+    "license_files": [
+      "third_party/python/licenses/pytest-xdist/LICENSE"
+    ]
+  },
+  {
+    "name": "python-dateutil",
+    "version": "2.9.0.post0",
+    "license": "OSI Approved :: BSD License; OSI Approved :: Apache Software License",
+    "homepage": "https://github.com/dateutil/dateutil",
+    "license_files": [
+      "third_party/python/licenses/python-dateutil/LICENSE"
+    ]
+  },
+  {
+    "name": "python-docx",
+    "version": "0.8.11",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/python-openxml/python-docx",
+    "license_files": [
+      "third_party/python/licenses/python-docx/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "python-pptx",
+    "version": "0.6.23",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/scanny/python-pptx",
+    "license_files": [
+      "third_party/python/licenses/python-pptx/LICENSE"
+    ]
+  },
+  {
+    "name": "python-whois",
+    "version": "0.7.3",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/richardpenman/whois",
+    "license_files": [
+      "third_party/python/licenses/python-whois/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "PyYAML",
+    "version": "6.0.3",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://pyyaml.org/",
+    "license_files": [
+      "third_party/python/licenses/PyYAML/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "requests",
+    "version": "2.34.2",
+    "license": "OSI Approved :: Apache Software License",
+    "homepage": "Documentation, https://requests.readthedocs.io",
+    "license_files": [
+      "third_party/python/licenses/requests/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "responses",
+    "version": "0.22.0",
+    "license": "Apache 2.0",
+    "homepage": "https://github.com/getsentry/responses",
+    "license_files": [
+      "third_party/python/licenses/responses/LICENSE"
+    ]
+  },
+  {
+    "name": "rich",
+    "version": "15.0.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "Documentation, https://rich.readthedocs.io/en/latest/",
+    "license_files": [
+      "third_party/python/licenses/rich/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "secure",
+    "version": "0.3.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/TypeError/secure",
+    "license_files": [
+      "third_party/python/licenses/secure/LICENSE"
+    ]
+  },
+  {
+    "name": "setuptools",
+    "version": "84.0.0",
+    "license": "MIT",
+    "homepage": "Source, https://github.com/pypa/setuptools",
+    "license_files": [
+      "third_party/python/licenses/setuptools/licenses/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/autocommand-2.2.2.dist-info/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/backports.tarfile-1.2.0.dist-info/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/importlib_metadata-8.7.1.dist-info/licenses/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/jaraco.text-4.0.0.dist-info/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/jaraco_context-6.1.0.dist-info/licenses/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/jaraco_functools-4.4.0.dist-info/licenses/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/more_itertools-10.8.0.dist-info/licenses/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE.APACHE",
+      "third_party/python/licenses/setuptools/_vendor/packaging-26.0.dist-info/licenses/LICENSE.BSD",
+      "third_party/python/licenses/setuptools/_vendor/platformdirs-4.4.0.dist-info/licenses/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/tomli-2.4.0.dist-info/licenses/LICENSE",
+      "third_party/python/licenses/setuptools/_vendor/wheel-0.46.3.dist-info/licenses/LICENSE.txt",
+      "third_party/python/licenses/setuptools/_vendor/zipp-3.23.0.dist-info/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "shellingham",
+    "version": "1.5.4",
+    "license": "OSI Approved :: ISC License (ISCL)",
+    "homepage": "https://github.com/sarugaku/shellingham",
+    "license_files": [
+      "third_party/python/licenses/shellingham/LICENSE"
+    ]
+  },
+  {
+    "name": "six",
+    "version": "1.17.0",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/benjaminp/six",
+    "license_files": [
+      "third_party/python/licenses/six/LICENSE"
+    ]
+  },
+  {
+    "name": "soupsieve",
+    "version": "3.0.3",
+    "license": "MIT",
+    "homepage": "Homepage, https://github.com/facelessuser/soupsieve",
+    "license_files": [
+      "third_party/python/licenses/soupsieve/licenses/LICENSE.md"
+    ]
+  },
+  {
+    "name": "tempora",
+    "version": "5.13.0",
+    "license": "UNKNOWN",
+    "homepage": "Source, https://github.com/jaraco/tempora",
+    "license_files": []
+  },
+  {
+    "name": "toml",
+    "version": "0.10.2",
+    "license": "OSI Approved :: MIT License",
+    "homepage": "https://github.com/uiri/toml",
+    "license_files": [
+      "third_party/python/licenses/toml/LICENSE"
+    ]
+  },
+  {
+    "name": "typer",
+    "version": "0.27.3",
+    "license": "MIT",
+    "homepage": "Homepage, https://github.com/fastapi/typer",
+    "license_files": [
+      "third_party/python/licenses/typer/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "typer-slim",
+    "version": "0.24.0",
+    "license": "MIT",
+    "homepage": "Homepage, https://github.com/fastapi/typer",
+    "license_files": [
+      "third_party/python/licenses/typer-slim/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "types-toml",
+    "version": "0.10.8.20260518",
+    "license": "Apache-2.0",
+    "homepage": "Homepage, https://github.com/python/typeshed",
+    "license_files": [
+      "third_party/python/licenses/types-toml/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "typing_extensions",
+    "version": "4.16.0",
+    "license": "PSF-2.0",
+    "homepage": "Bug Tracker, https://github.com/python/typing_extensions/issues",
+    "license_files": [
+      "third_party/python/licenses/typing_extensions/licenses/LICENSE"
+    ]
+  },
+  {
+    "name": "urllib3",
+    "version": "2.8.0",
+    "license": "MIT",
+    "homepage": "Changelog, https://github.com/urllib3/urllib3/blob/main/CHANGES.rst",
+    "license_files": [
+      "third_party/python/licenses/urllib3/licenses/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "xlsxwriter",
+    "version": "3.2.9",
+    "license": "OSI Approved :: BSD License",
+    "homepage": "https://github.com/jmcnamara/XlsxWriter",
+    "license_files": [
+      "third_party/python/licenses/xlsxwriter/LICENSE.txt"
+    ]
+  },
+  {
+    "name": "zc.lockfile",
+    "version": "4.0",
+    "license": "OSI Approved :: Zope Public License",
+    "homepage": "https://github.com/zopefoundation/zc.lockfile",
+    "license_files": [
+      "third_party/python/licenses/zc.lockfile/licenses/LICENSE.txt"
+    ]
+  }
+]

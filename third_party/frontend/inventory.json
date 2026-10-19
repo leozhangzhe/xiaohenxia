@@ -1,0 +1,74 @@
+[
+  {
+    "name": "@radix-ui/react-slot",
+    "version": "1.5.0",
+    "license": "MIT",
+    "license_files": [
+      "third_party/frontend/@radix-ui/react-slot/LICENSE"
+    ]
+  },
+  {
+    "name": "canvas-confetti",
+    "version": "1.9.4",
+    "license": "ISC",
+    "license_files": [
+      "third_party/frontend/canvas-confetti/LICENSE"
+    ]
+  },
+  {
+    "name": "class-variance-authority",
+    "version": "0.7.1",
+    "license": "Apache-2.0",
+    "license_files": [
+      "third_party/frontend/class-variance-authority/LICENSE"
+    ]
+  },
+  {
+    "name": "clsx",
+    "version": "2.1.1",
+    "license": "MIT",
+    "license_files": [
+      "third_party/frontend/clsx/license"
+    ]
+  },
+  {
+    "name": "framer-motion",
+    "version": "14.3.0",
+    "license": "MIT",
+    "license_files": [
+      "third_party/frontend/framer-motion/LICENSE.md"
+    ]
+  },
+  {
+    "name": "lucide-react",
+    "version": "0.468.0",
+    "license": "ISC",
+    "license_files": [
+      "third_party/frontend/lucide-react/LICENSE"
+    ]
+  },
+  {
+    "name": "react",
+    "version": "19.3.1",
+    "license": "MIT",
+    "license_files": [
+      "third_party/frontend/react/LICENSE"
+    ]
+  },
+  {
+    "name": "react-dom",
+    "version": "19.3.1",
+    "license": "MIT",
+    "license_files": [
+      "third_party/frontend/react-dom/LICENSE"
+    ]
+  },
+  {
+    "name": "tailwind-merge",
+    "version": "3.7.0",
+    "license": "MIT",
+    "license_files": [
+      "third_party/frontend/tailwind-merge/LICENSE.md"
+    ]
+  }
+]

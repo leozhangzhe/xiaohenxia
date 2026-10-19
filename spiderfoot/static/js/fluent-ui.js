@@ -11,6 +11,27 @@
   window.fluentUI={node:node,pill:pill,time:time,sourceNames:sourceNames};
   var menu=document.getElementById('fl-menu'),sidebar=document.getElementById('sidebar');
   if(menu&&sidebar)menu.onclick=function(){var open=sidebar.classList.toggle('is-open');menu.setAttribute('aria-expanded',String(open));};
+  var otherNav=document.querySelector('.fl-other-nav');
+  if(otherNav){
+    var otherNavKey='xiaohenxia:sidebar:other-tools:'+(typeof docroot==='string'?docroot:'');
+    var savedOpen=null;
+    try{savedOpen=window.localStorage.getItem(otherNavKey);}catch(ignore){}
+    if(savedOpen==='true'||savedOpen==='false')otherNav.open=savedOpen==='true';
+    else{
+      // On a first visit, keep the section containing the current subpage visible.
+      otherNav.open=Array.from(otherNav.querySelectorAll('a[href]')).some(function(a){
+        var target=new URL(a.href,window.location.href);
+        return target.origin===window.location.origin&&target.pathname===window.location.pathname&&
+          (!target.hash||target.hash===window.location.hash);
+      });
+    }
+    function rememberOtherNav(){
+      try{window.localStorage.setItem(otherNavKey,String(otherNav.open));}catch(ignore){}
+    }
+    otherNav.addEventListener('toggle',rememberOtherNav);
+    // Save before native navigation even if the queued toggle event has not run yet.
+    otherNav.querySelectorAll('a[href]').forEach(function(a){a.addEventListener('click',rememberOtherNav);});
+  }
   document.querySelectorAll('.fl-nav.active').forEach(function(a){a.setAttribute('aria-current','page');});
   if(!document.getElementById('fl-recent-tasks'))return;
   read('/livelist').then(function(tasks){

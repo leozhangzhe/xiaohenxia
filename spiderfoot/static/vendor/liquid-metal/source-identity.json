@@ -1,0 +1,19 @@
+{
+  "source": "https://21st.dev/@johnmamanao/components/liquid-metal-shader",
+  "upstream": "https://github.com/johnmamanao/nacre-ui/blob/main/components/ui/liquid-metal-shader.tsx",
+  "capturedAt": "2026-10-19",
+  "license": "MIT",
+  "vertexShaderSha256": "600accbe757635d3e652fece3bd0ae37f3bb4581f2f6015d4ea8d37219aba9c0",
+  "fragmentShaderSha256": "b132f9dfa2e76552bbb51101de52d9cae5047bbe0e5926e638c2b25353b5c06a",
+  "publishedAndUpstreamGLSLIdentical": true,
+  "defaults": {
+    "baseColor": "#1a1a1a",
+    "distortion": 0.6,
+    "highlightColor": "#ffffff",
+    "interactive": true,
+    "metalColor": "#ccd0e2",
+    "pixelRatio": 1.4,
+    "scale": 0.92,
+    "speed": 0.72
+  }
+}

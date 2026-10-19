@@ -1,0 +1,11 @@
+{
+  "filename": "mysql-8.0.46-winx64.zip",
+  "version": "8.0.46",
+  "platform": "winx64",
+  "sha256": "28e9eda019d88eff4478d811ea2110b83f02a3966be157fe91cc55def3ab0d4d",
+  "official_md5": "003f527d5df61b663ff191038cd676bd",
+  "download": "https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-8.0.46-winx64.zip",
+  "official_page": "https://dev.mysql.com/downloads/mysql/8.0.html",
+  "license": "GPL-2.0 with additional permissions; binary NOT included in source ZIP",
+  "verified_date": "2026-10-19"
+}
