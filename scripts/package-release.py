@@ -70,14 +70,15 @@ def main():
     parser.add_argument('--output', type=Path)
     parser.add_argument('--audit-working', action='store_true')
     args = parser.parse_args()
+    commit = git('rev-parse', 'HEAD').decode().strip()
     if args.audit_working:
         names = git('ls-files', '--cached', '--others', '--exclude-standard', '-z').decode('utf-8').split('\0')
         files = {n: (ROOT / n).read_bytes() for n in names if n and allowed(n) and (ROOT / n).is_file()}
     else:
         if git('status', '--porcelain').strip():
             raise SystemExit('Tracked/untracked working changes remain. Commit and inspect before packaging.')
-        names = git('ls-tree', '-r', '--name-only', '-z', 'HEAD').decode('utf-8').split('\0')
-        files = {n: git('show', 'HEAD:' + n) for n in names if n and allowed(n)}
+        names = git('ls-tree', '-r', '--name-only', '-z', commit).decode('utf-8').split('\0')
+        files = {n: git('show', commit + ':' + n) for n in names if n and allowed(n)}
         if files['data/leak-check.db'] != (ROOT / 'data/leak-check.db').read_bytes():
             raise SystemExit('Working sample differs from committed sample; inspect before packaging.')
     findings = audit(files)
@@ -94,7 +95,6 @@ def main():
         raise SystemExit('--output <new ZIP path> required')
     if args.output.exists():
         raise SystemExit('Output already exists; will not overwrite an earlier package.')
-    commit = git('rev-parse', 'HEAD').decode().strip()
     files['RELEASE.json'] = (json.dumps({'commit': commit, 'created_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
                                       'runtime_data': False, 'node_required': False, 'source': 'Git committed blobs'}, indent=2) + '\n').encode()
     files['MANIFEST.sha256'] = ''.join(hashlib.sha256(d).hexdigest() + '  ' + n + '\n' for n, d in sorted(files.items())).encode('utf-8')
