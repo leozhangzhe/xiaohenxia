@@ -295,6 +295,7 @@ class SpiderFootWebUi:
 
         cherrypy.config.update({
             'error_page.401': self.error_page_401,
+            'error_page.403': self.error_page_403,
             'error_page.404': self.error_page_404,
             'request.error_response': self.error_page
         })
@@ -468,6 +469,24 @@ class SpiderFootWebUi:
             str: HTML response
         """
         return ""
+
+    def error_page_403(self: 'SpiderFootWebUi', status: str, message: str, traceback: str, version: str) -> str:
+        """Explain access denial without exposing framework errors or input."""
+        if cherrypy.response.headers.get('X-CSRF-Error') == '1':
+            title = '操作未完成'
+            explanation = '安全令牌无效或已过期，请刷新原页面后重试。'
+            hint = '刷新页面后重新操作；若仍然失败，请退出并重新登录。'
+        elif message == 'Administrator required':
+            title = '此功能仅限管理员使用'
+            explanation = '当前账号没有系统管理权限，无法访问或修改系统设置。'
+            hint = '请使用管理员账号登录，或联系管理员。您仍可继续使用自己的检索和申请功能。'
+        else:
+            title = '无法执行此操作'
+            explanation = '当前账号没有执行此操作的权限。'
+            hint = '请返回工作区继续操作；如需协助，请联系管理员。'
+        return Template(filename='spiderfoot/templates/error.tmpl', lookup=self.lookup).render(
+            message=explanation, error_title=title, error_hint=hint,
+            docroot=self.docroot, pageid='ERROR', version=__version__)
 
     def error_page_404(self: 'SpiderFootWebUi', status: str, message: str, traceback: str, version: str) -> str:
         """Not found error page 404.

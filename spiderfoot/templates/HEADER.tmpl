@@ -55,7 +55,11 @@
 <a class="fl-nav ${'active' if pageid == 'PRIVACYACTION' else ''}" href="${docroot}/privacyaction">${nav_icon('requests')}<span>申请记录与人工跟进</span></a>
 </nav>
 <details class="fl-other-nav"><summary>SpiderFoot 与其他功能</summary><nav aria-label="其他功能">
-<a href="${docroot}/#scans">原生扫描任务</a><a href="${docroot}/newscan">原生新建扫描</a><a href="${docroot}/leakcheck">本地样例泄露检测</a><a href="${docroot}/riskalertspage">风险告警</a><a href="${docroot}/dataviz">数据洞察看板</a><a href="${docroot}/servicemonitor">服务监控</a><a href="${docroot}/opts">系统设置</a>
+<a href="${docroot}/#scans">原生扫描任务</a><a href="${docroot}/newscan">原生新建扫描</a><a href="${docroot}/leakcheck">本地样例泄露检测</a><a href="${docroot}/riskalertspage">风险告警</a><a href="${docroot}/dataviz">数据洞察看板</a><a href="${docroot}/servicemonitor">服务监控</a>
+<% import cherrypy %>
+% if getattr(cherrypy.request, 'is_admin', False):
+<a href="${docroot}/opts">系统设置</a>
+% endif
 </nav></details>
 <a class="fl-mobile-logout" href="${docroot}/logout">退出登录</a>
 <div class="fl-sidebar-foot"><p>数据覆盖有限<br>匹配线索需要人工核验</p><span>v${version}</span></div>

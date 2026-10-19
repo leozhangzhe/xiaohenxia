@@ -99,6 +99,7 @@ def authorize_request(ui):
     if path.startswith("/static/") or path in ("/login", "/register", "/logout", "/favicon.ico", "/csrf"):
         return
     current_user_id()
+    cherrypy.request.is_admin = cherrypy.session.get("sf_user") == ui.auth_store.admin_user
     route = path.strip("/") or "index"
     if route in POST_ONLY_ROUTES and cherrypy.request.method != "POST":
         cherrypy.response.headers["Allow"] = "POST"
@@ -110,7 +111,7 @@ def authorize_request(ui):
         # Arbitrary SQL cannot enforce account ownership. Keep CLI scanning intact.
         raise cherrypy.HTTPError(403, "Raw SQL is unavailable in the multi-user web interface")
     if route in ADMIN_ROUTES:
-        if cherrypy.session.get("sf_user") != ui.auth_store.admin_user:
+        if not cherrypy.request.is_admin:
             raise cherrypy.HTTPError(403, "Administrator required")
     elif route not in SCAN_ROUTES | BATCH_ROUTES | GENERAL_ROUTES:
         raise cherrypy.HTTPError(404, "Resource not found")
