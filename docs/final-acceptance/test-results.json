@@ -1,0 +1,371 @@
+{
+  "date": "2026-10-19",
+  "complete_regression_rerun_after_fixes": false,
+  "final_acceptance_claimed": false,
+  "runs": [
+    {
+      "run": "full-local-once",
+      "tests": 2178,
+      "failures": [
+        {
+          "test": "test.integration.test_sf.TestSf::test_no_args_should_print_arg_l_required",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sf.TestSf::test_run_scan_invalid_target_should_exit",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sf.TestSf::test_run_scan_with_invalid_type_should_exit",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sf.TestSf::test_run_scan_with_modules_no_target_should_exit",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sf.TestSf::test_run_scan_with_types_no_target_should_exit",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_clonescan",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_index_returns_200",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_newscan_returns_200",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_rerunscan",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_rerunscanmulti_invalid_scan_id_returns_200",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_resultsetfp",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_scaninfo_invalid_scan_returns_200",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_scanlist_returns_200",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_scansummary_invalid_scan_returns_200",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_invalid_modules_returns_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_invalid_scan_name_returns_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_invalid_scan_target_returns_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_invalid_typelist_returns_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_should_start_a_scan",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_unrecognized_scan_target_returns_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_adblock.TestModuleIntegrationAdblock::test_handleEvent_event_data_external_url_matching_ad_filter_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_adblock.TestModuleIntegrationAdblock::test_handleEvent_event_data_provider_javascript_url_matching_ad_filter_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_adguard_dns.TestModuleIntegrationAdGuardDns::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_cleanbrowsing.TestModuleIntegrationcleanbrowsing::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_cloudflaredns.TestModuleIntegrationCloudflaredns::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_dns_for_family.TestModuleIntegrationDnsForFamily::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_opendns.TestModuleIntegrationOpendns::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_stevenblack_hosts.TestModuleIntegrationStevenblackHosts::test_handleEvent_event_data_affiliate_internet_name_matching_ad_server_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_stevenblack_hosts.TestModuleIntegrationStevenblackHosts::test_handleEvent_event_data_affiliate_internet_name_not_matching_ad_server_should_not_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_uceprotect.TestModuleIntegrationUceprotect::test_handleEvent_event_data_safe_ip_address_not_blocked_should_not_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.integration.modules.test_sfp_yandexdns.TestModuleIntegrationYandexDns::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_clonescan",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_error_page_404",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_index",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_opts",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_rerunscan_invalid_scan_id_should_return_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_savesettings_invalid_csrf_token_should_return_an_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_scan_export_logs_invalid_scan_id_should_return_string",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_scaninfo",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_scanlist_should_return_a_list",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_scansummary_should_return_a_list",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_invalid_modules_should_return_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_invalid_scanname_should_return_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_invalid_scantarget_should_return_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_invalid_typelist_should_return_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_unrecognized_scantarget_type_should_return_error",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.spiderfoot.test_spiderfootdb.TestSpiderFootDb::test_search_should_return_a_list",
+          "type": "failure"
+        }
+      ],
+      "errors": 0,
+      "skipped": 214,
+      "passed": 1916,
+      "warnings": 2610,
+      "process_exit_code": 15,
+      "forced_stop_after_summary": true
+    },
+    {
+      "run": "external-pytest",
+      "tests": 6,
+      "failures": [
+        {
+          "test": "test.unit.test_spiderfoot.TestSpiderFoot::test_resolve_host6_should_return_a_list",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfoot.TestSpiderFoot::test_resolve_host_should_return_list",
+          "type": "failure"
+        },
+        {
+          "test": "test.unit.test_spiderfoot.TestSpiderFoot::test_validate_ip_should_return_bool",
+          "type": "failure"
+        }
+      ],
+      "errors": 0,
+      "skipped": 0,
+      "passed": 3,
+      "warnings": 1004,
+      "process_exit_code": 1,
+      "forced_stop_after_summary": false
+    },
+    {
+      "run": "blockers-final-directed",
+      "tests": 57,
+      "failures": [],
+      "errors": 0,
+      "skipped": 0,
+      "passed": 57,
+      "warnings": 203,
+      "process_exit_code": 0,
+      "forced_stop_after_summary": false
+    },
+    {
+      "run": "final-real-startup",
+      "tests": 3,
+      "failures": [],
+      "errors": 0,
+      "skipped": 0,
+      "passed": 3,
+      "warnings": 197,
+      "process_exit_code": 0,
+      "forced_stop_after_summary": false
+    }
+  ],
+  "split_of_same_full_run": {
+    "legacy_local": {
+      "passed": 1541,
+      "skipped": 35,
+      "failed": 37
+    },
+    "unmarked_external_modules": {
+      "skipped": 179,
+      "failed": 11,
+      "passed": 23
+    },
+    "stage1_to_6": {
+      "passed": 352
+    }
+  },
+  "live_sources": {
+    "category": "live_external_sources",
+    "synthetic_inputs_only": true,
+    "attempts_per_source": 1,
+    "concurrency": 2,
+    "timeout_seconds": 90,
+    "hibp_key_used": false,
+    "results": [
+      {
+        "source": "hibp",
+        "status": "not_configured",
+        "count": 0,
+        "duration_seconds": 0.0,
+        "queried_at": 1792392255,
+        "message": "HIBP API Key 未配置；未发送请求。",
+        "limitations": "HIBP 已收录事件中的邮箱匹配；覆盖有限，无匹配不代表不存在相关信息。",
+        "result_schema_valid": true,
+        "links_safe": true
+      },
+      {
+        "source": "holehe",
+        "status": "partial",
+        "count": 0,
+        "duration_seconds": 2.92,
+        "queried_at": 1792392252,
+        "message": "部分完成；部分站点不可用或受限。",
+        "limitations": "邮箱可能注册过相关网站；仅 GitHub / Gravatar 注册信号，不是泄露记录，限流或规则失效会影响结果。",
+        "result_schema_valid": true,
+        "links_safe": true
+      },
+      {
+        "source": "maigret",
+        "status": "failed",
+        "count": 0,
+        "duration_seconds": 1.09,
+        "queried_at": 1792392249,
+        "message": "数据源不可用。",
+        "limitations": "Maigret 前 25 个站点检索，关闭递归与身份推断；可能误报或漏报。",
+        "result_schema_valid": true,
+        "links_safe": true
+      },
+      {
+        "source": "sherlock",
+        "status": "partial",
+        "count": 1,
+        "duration_seconds": 5.97,
+        "queried_at": 1792392246,
+        "message": "部分完成；部分站点不可用或受限。",
+        "limitations": "Sherlock 最多 10 个常见站点响应规则匹配；同名不证明身份归属，可能误报。",
+        "result_schema_valid": true,
+        "links_safe": true
+      },
+      {
+        "source": "spiderfoot",
+        "status": "completed",
+        "count": 2,
+        "duration_seconds": 2.39,
+        "queried_at": 1792392246,
+        "message": "检索完成",
+        "limitations": "SpiderFoot DNS 模块实时检索；仅限本次启用模块，不代表互联网全部信息。",
+        "result_schema_valid": true,
+        "links_safe": true
+      },
+      {
+        "source": "whatsmyname",
+        "status": "partial",
+        "count": 0,
+        "duration_seconds": 5.5,
+        "queried_at": 1792392250,
+        "message": "部分完成；部分站点不可用或受限。",
+        "limitations": "WhatsMyName 最多 10 个常见站点，经 sfp_accounts 检查；规则会失效，需人工核验。",
+        "result_schema_valid": true,
+        "links_safe": true
+      }
+    ],
+    "interpretation": "failed/partial/timeout/not_configured are not successful no-match outcomes"
+  },
+  "existing_assertions": [
+    {
+      "file": "test/conftest.py",
+      "existing_assertions_unchanged": true
+    },
+    {
+      "file": "test/unit/test_spiderfoot.py",
+      "existing_assertions_unchanged": true
+    },
+    {
+      "file": "test/unit/test_spiderfootcli.py",
+      "existing_assertions_unchanged": true
+    }
+  ],
+  "validated_code_commit": "2e7c3133f14d5c55d3c99dbb1ec3ff2c6b939575",
+  "rollback_commit": "643a1233978b0af41a9b1395edf4a0f2b1866509",
+  "precommit_source_audit": {
+    "files": 1123,
+    "uncompressed_bytes": 17288846,
+    "findings": [],
+    "synthetic_sample": "2 rows, example.invalid only; phone/id/QQ NULL; no free pages"
+  }
+}

@@ -27,4 +27,6 @@
 
 前端直接依赖的实际版本和原许可另见 third_party/frontend/inventory.json 及同目录各包 LICENSE；构建内使用的传递依赖许可见 react-auth/THIRD_PARTY_LICENSES.txt。两份清单共同保留源码样本与正式构建的归属。
 
+冻结期Windows启动兼容修复：使用 [pyreadline3 3.5.6](https://pypi.org/project/pyreadline3/)，BSD许可，官方轮子SHA-256为8449b734232e42a5dcd74048e39b60db2839a4c38cf3ae2bf7707d58b5389c0d；完整许可见third_party/python/licenses/pyreadline3/licenses/LICENSE.md。它替代安装锁中的旧pyreadline2.1，不是新检索数据源。
+
 不使用 Poliigon、外部 HDRI、专有模型、公司品牌素材或 CDN。液态金属使用程序化 GLSL。旧字典、图片和模块保留原声明。leak-check 移植来源保留在 spiderfoot/leakcheck.py；样例数据已全部合成化。

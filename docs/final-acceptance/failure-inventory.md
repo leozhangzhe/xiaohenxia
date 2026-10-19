@@ -1,0 +1,60 @@
+# 失败用例索引（不含响应正文或秘密）
+
+保留首次完整运行与独立外网运行的原始失败；后续定向通过不改写该历史结果。分类说明见08-tests.md。
+
+## full-local-once
+
+- `test.integration.test_sf.TestSf::test_no_args_should_print_arg_l_required`
+- `test.integration.test_sf.TestSf::test_run_scan_invalid_target_should_exit`
+- `test.integration.test_sf.TestSf::test_run_scan_with_invalid_type_should_exit`
+- `test.integration.test_sf.TestSf::test_run_scan_with_modules_no_target_should_exit`
+- `test.integration.test_sf.TestSf::test_run_scan_with_types_no_target_should_exit`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_clonescan`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_index_returns_200`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_newscan_returns_200`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_rerunscan`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_rerunscanmulti_invalid_scan_id_returns_200`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_resultsetfp`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_scaninfo_invalid_scan_returns_200`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_scanlist_returns_200`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_scansummary_invalid_scan_returns_200`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_invalid_modules_returns_error`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_invalid_scan_name_returns_error`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_invalid_scan_target_returns_error`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_invalid_typelist_returns_error`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_should_start_a_scan`
+- `test.integration.test_sfwebui.TestSpiderFootWebUiRoutes::test_startscan_unrecognized_scan_target_returns_error`
+- `test.integration.modules.test_sfp_adblock.TestModuleIntegrationAdblock::test_handleEvent_event_data_external_url_matching_ad_filter_should_return_event`
+- `test.integration.modules.test_sfp_adblock.TestModuleIntegrationAdblock::test_handleEvent_event_data_provider_javascript_url_matching_ad_filter_should_return_event`
+- `test.integration.modules.test_sfp_adguard_dns.TestModuleIntegrationAdGuardDns::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event`
+- `test.integration.modules.test_sfp_cleanbrowsing.TestModuleIntegrationcleanbrowsing::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event`
+- `test.integration.modules.test_sfp_cloudflaredns.TestModuleIntegrationCloudflaredns::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event`
+- `test.integration.modules.test_sfp_dns_for_family.TestModuleIntegrationDnsForFamily::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event`
+- `test.integration.modules.test_sfp_opendns.TestModuleIntegrationOpendns::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event`
+- `test.integration.modules.test_sfp_stevenblack_hosts.TestModuleIntegrationStevenblackHosts::test_handleEvent_event_data_affiliate_internet_name_matching_ad_server_should_return_event`
+- `test.integration.modules.test_sfp_stevenblack_hosts.TestModuleIntegrationStevenblackHosts::test_handleEvent_event_data_affiliate_internet_name_not_matching_ad_server_should_not_return_event`
+- `test.integration.modules.test_sfp_uceprotect.TestModuleIntegrationUceprotect::test_handleEvent_event_data_safe_ip_address_not_blocked_should_not_return_event`
+- `test.integration.modules.test_sfp_yandexdns.TestModuleIntegrationYandexDns::test_handleEvent_event_data_adult_internet_name_blocked_should_return_event`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_clonescan`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_error`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_error_page_404`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_index`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_opts`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_rerunscan_invalid_scan_id_should_return_error`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_savesettings_invalid_csrf_token_should_return_an_error`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_scan_export_logs_invalid_scan_id_should_return_string`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_scaninfo`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_scanlist_should_return_a_list`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_scansummary_should_return_a_list`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_invalid_modules_should_return_error`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_invalid_scanname_should_return_error`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_invalid_scantarget_should_return_error`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_invalid_typelist_should_return_error`
+- `test.unit.test_spiderfootwebui.TestSpiderFootWebUi::test_start_scan_unrecognized_scantarget_type_should_return_error`
+- `test.unit.spiderfoot.test_spiderfootdb.TestSpiderFootDb::test_search_should_return_a_list`
+
+## external-pytest
+
+- `test.unit.test_spiderfoot.TestSpiderFoot::test_resolve_host6_should_return_a_list`
+- `test.unit.test_spiderfoot.TestSpiderFoot::test_resolve_host_should_return_list`
+- `test.unit.test_spiderfoot.TestSpiderFoot::test_validate_ip_should_return_bool`

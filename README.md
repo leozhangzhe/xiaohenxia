@@ -2,6 +2,8 @@
 
 比赛提交源码，2026-10-19。本包是已完成本地验收的功能与界面，不含开发工作区、现存账号、真实查询记录或凭据。上游说明保留在 [docs/upstream-spiderfoot-README.md](docs/upstream-spiderfoot-README.md)。
 
+最终功能冻结、完整项目回归、外网实测和现场备用方案见 [docs/final-acceptance/README.md](docs/final-acceptance/README.md)。先前的阶段通过数或交付包冷启动结果不能替代本轮完整结果；已知失败与未执行项会单列。
+
 ## 功能与真实边界
 
 | 入口 | 真实能力 | 限制 |
