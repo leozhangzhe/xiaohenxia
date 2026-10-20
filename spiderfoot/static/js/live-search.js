@@ -36,7 +36,7 @@
   if(typeof module!=='undefined') module.exports=global.liveSearchView;
   if(!global.addEventListener) return;
   global.addEventListener('DOMContentLoaded',function() {
-    var taskId=null,task=null,timer=null,availability=[];
+    var taskId=null,task=null,timer=null,availability=[],listedTasks=null,listUnavailable=false;
     var inputSources={domain:['spiderfoot'],username:['sherlock','maigret','whatsmyname'],email:['holehe','hibp']};
     function get(id){return document.getElementById(id);}
     function motion(method){if(global.vaultMotion&&global.vaultMotion[method])global.vaultMotion[method].apply(null,Array.prototype.slice.call(arguments,1));}
@@ -56,6 +56,13 @@
       setText('live-page-title',content[0]);setText('live-page-name',content[0]);setText('live-page-description',content[1]);
       if(document.querySelectorAll)document.querySelectorAll('[data-live-view]').forEach(function(a){a.href=docroot+'/livesearch#'+a.dataset.liveView+(a.dataset.liveView!=='new'&&taskId?'/'+taskId:'');a.classList.toggle('active',a.dataset.liveView===view);if(a.dataset.liveView===view)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
       if(bits[1]&&/^[a-f0-9]{32}$/.test(bits[1])&&bits[1]!==taskId)loadTask(bits[1]);
+      else if(view==='results'&&!bits[1]){
+        // A generic result-center link must select a saved, owner-scoped task.
+        // Explicit IDs (including denied/missing tasks) never fall back to another task.
+        if(taskId)navigate('results',taskId);
+        else if(listedTasks&&listedTasks.length)navigate('results',listedTasks[0].id);
+        else get('live-results').textContent=listUnavailable?'数据不可用；无法读取任务列表，请刷新重试。':listedTasks?'暂无检索任务，请先新建检索。':'正在读取已保存的检索任务…';
+      }
     }
     function navigate(view,id){if(global.location){global.location.hash=view+(id?'/'+id:'');route();}}
     function choices(){
@@ -74,12 +81,18 @@
       [['live-source-filter','source','全部数据源'],['live-type-filter','result_type','全部结果类型']].forEach(function(spec){
         var select=get(spec[0]),old=select.value;select.replaceChildren();var all=el('option',spec[2]);all.value='';select.appendChild(all);
         var values=(task.results||[]).map(function(r){return r[spec[1]];});if(spec[1]==='source')values=values.concat(task.sources.map(function(s){return s.source;}));
-        Array.from(new Set(values)).forEach(function(value){var option=el('option',spec[1]==='source'?(sourceNames[value]||value):value);option.value=value;select.appendChild(option);});select.value=old;
+        Array.from(new Set(values)).forEach(function(value){var option=el('option',spec[1]==='source'?(sourceNames[value]||value):value);option.value=value;select.appendChild(option);});select.value=values.indexOf(old)>=0?old:'';
       });
     }
     function render(){if(task){var source=get('live-source-filter').value,type=get('live-type-filter').value;renderResults(get('live-results'),task,source,type);var rows=(task.results||[]).filter(function(r){return (!source||r.source===source)&&(!type||r.result_type===type);});if(global.vaultMotion){motion('ticker',get('live-result-count'),rows.length,' 条已返回线索 · 需人工核验');motion('results',get('live-results'),task);}else setText('live-result-count',rows.length+' 条已返回线索 · 需人工核验');}}
     function loadTask(id){
-      clearTimeout(timer);taskId=id;
+      clearTimeout(timer);
+      if(taskId!==id){
+        task=null;get('live-source-filter').value='';get('live-type-filter').value='';
+        get('live-results').textContent='正在读取已保存的结果…';setText('live-result-count','读取中');
+        get('live-cancel').disabled=true;get('live-delete').disabled=true;
+      }
+      taskId=id;
       request('/liveget?id='+encodeURIComponent(id)).then(function(data){
         if(taskId!==id)return;task=data;motion('task',data);get('live-title').textContent=data.query+' · '+(labels[data.status]||data.status);
         var state=get('live-task-status');if(state){state.replaceChildren();state.appendChild(pill(data.status));}
@@ -92,9 +105,12 @@
       }).catch(function(error){if(taskId!==id)return;task=null;motion('unavailable');message(error.message,true);get('live-results').textContent='数据不可用；请刷新任务列表后重试。';get('live-sources').textContent='数据不可用，无法读取来源进度。';get('live-cancel').disabled=true;get('live-delete').disabled=true;setText('live-result-count','数据不可用');setText('live-source-count','进度不可用');});
     }
     function loadList(){return request('/livelist').then(function(data){
+      if(!Array.isArray(data))throw new Error('任务列表数据不可用，请刷新重试。');
+      listedTasks=data;listUnavailable=false;
       get('live-tasks').replaceChildren();if(!data.length){var empty=el('p','暂无检索任务');empty.className='fl-empty';get('live-tasks').appendChild(empty);}
-      data.forEach(function(item){var b=el('button');b.type='button';b.className='fl-task-option';b.appendChild(el('strong',item.query));b.appendChild(pill(item.status));b.appendChild(el('small','创建 '+time(item.created_at)));b.onclick=function(){loadTask(item.id);navigate('progress',item.id);};get('live-tasks').appendChild(b);});
-    }).catch(function(error){get('live-tasks').textContent=error.message;});}
+      data.forEach(function(item){var b=el('button');b.type='button';b.className='fl-task-option';b.appendChild(el('strong',item.query));b.appendChild(pill(item.status));b.appendChild(el('small','创建 '+time(item.created_at)));b.onclick=function(){var view=global.location&&global.location.hash.split('/')[0]==='#results'?'results':'progress';loadTask(item.id);navigate(view,item.id);};get('live-tasks').appendChild(b);});
+      route();
+    }).catch(function(error){listUnavailable=true;listedTasks=null;get('live-tasks').textContent=error.message;route();});}
     get('live-start').onclick=function(event){
       if(event)event.preventDefault();var form=get('live-form');if(form&&form.reportValidity&&!form.reportValidity())return;
       var data={input_type:get('live-kind').value,query:get('live-query').value};
