@@ -2123,6 +2123,14 @@ class SpiderFootWebUi:
             # Get HIGH risk event types (sensitive data found)
             try:
                 summary = dbh.scanResultSummary(scan_id, by='type')
+                # Summary column 4 is a distinct-value count, not a risk score.
+                # Read active event risk explicitly without changing the shared
+                # SpiderFoot summary tuple consumed by the other pages.
+                risk_stats = {row[0]: (row[1], row[2]) for row in dbh.conn.execute(
+                    "SELECT type,COUNT(*),MAX(risk) FROM tbl_scan_results "
+                    "WHERE scan_instance_id=? AND user_id=? AND false_positive=0 "
+                    "AND type<>'ROOT' AND COALESCE(module,'')<>'SpiderFoot UI' GROUP BY type",
+                    (scan_id, current_user_id()))}
                 # Risk threshold: 50+ indicates significant risk
                 HIGH_RISK_TYPES = {
                     'EMAILADDR': '邮箱地址',
@@ -2157,11 +2165,16 @@ class SpiderFootWebUi:
                 }
                 for row in summary:
                     event_type = row[0]
-                    event_data = row[1]
-                    event_count = row[3]
-                    event_risk = row[4]  # risk score 0-100
+                    event_count, event_risk = risk_stats.get(event_type, (0, 0))
+                    event_risk = event_risk or 0
 
                     if event_type in HIGH_RISK_TYPES and event_risk >= 50:
+                        sample = dbh.conn.execute(
+                            "SELECT data FROM tbl_scan_results WHERE scan_instance_id=? AND user_id=? "
+                            "AND type=? AND false_positive=0 AND COALESCE(module,'')<>'SpiderFoot UI' "
+                            "ORDER BY risk DESC,generated DESC LIMIT 1",
+                            (scan_id, current_user_id(), event_type)).fetchone()
+                        event_data = sample[0] if sample else ''
                         # Mask the actual data for privacy
                         masked_data = _mask(event_data, event_type)
                         alerts.append({
