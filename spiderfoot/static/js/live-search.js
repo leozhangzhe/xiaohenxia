@@ -61,6 +61,7 @@
   if(!global.addEventListener) return;
   global.addEventListener('DOMContentLoaded',function() {
     var taskId=null,task=null,timer=null,availability=[],listedTasks=null,listUnavailable=false;
+    var taskPage=1,taskPageSize=5,taskPages=1,taskSearch='',taskStatus='',listSequence=0,listLoading=false,searchTimer=null;
     var inputSources={domain:['spiderfoot'],username:['sherlock','maigret','whatsmyname'],email:['holehe','hibp']};
     function get(id){return document.getElementById(id);}
     function motion(method){if(global.vaultMotion&&global.vaultMotion[method])global.vaultMotion[method].apply(null,Array.prototype.slice.call(arguments,1));}
@@ -116,7 +117,7 @@
         get('live-results').textContent='正在读取已保存的结果…';setText('live-result-count','读取中');
         get('live-cancel').disabled=true;get('live-delete').disabled=true;
       }
-      taskId=id;
+      taskId=id;markTaskSelection();
       request('/liveget?id='+encodeURIComponent(id)).then(function(data){
         if(taskId!==id)return;task=data;motion('task',data);get('live-title').textContent=data.query+' · '+(labels[data.status]||data.status);
         var state=get('live-task-status');if(state){state.replaceChildren();state.appendChild(pill(data.status));}
@@ -128,13 +129,44 @@
         else{var complete=data.sources.filter(function(s){return s.status==='completed';}).length;message('本次检索已结束：已保存 '+data.results.length+' 条线索；'+complete+' 个来源查询完成，'+(data.sources.length-complete)+' 个来源未完整完成。具体原因见检索执行报告。');loadList();}
       }).catch(function(error){if(taskId!==id)return;task=null;motion('unavailable');message(error.message,true);get('live-results').textContent='数据不可用；请刷新任务列表后重试。';get('live-sources').textContent='数据不可用，无法读取来源进度。';get('live-cancel').disabled=true;get('live-delete').disabled=true;setText('live-result-count','数据不可用');setText('live-source-count','进度不可用');});
     }
-    function loadList(){return request('/livelist').then(function(data){
-      if(!Array.isArray(data))throw new Error('任务列表数据不可用，请刷新重试。');
-      listedTasks=data;listUnavailable=false;
-      get('live-tasks').replaceChildren();if(!data.length){var empty=el('p','暂无检索任务');empty.className='fl-empty';get('live-tasks').appendChild(empty);}
-      data.forEach(function(item){var b=el('button');b.type='button';b.className='fl-task-option';b.appendChild(el('strong',item.query));b.appendChild(pill(item.status));b.appendChild(el('small','创建 '+time(item.created_at)));b.onclick=function(){var view=global.location&&global.location.hash.split('/')[0]==='#results'?'results':'progress';loadTask(item.id);navigate(view,item.id);};get('live-tasks').appendChild(b);});
-      route();
-    }).catch(function(error){listUnavailable=true;listedTasks=null;get('live-tasks').textContent=error.message;route();});}
+    function markTaskSelection(){Array.from(get('live-tasks').children).forEach(function(b){if(b._liveTaskId){var selected=b._liveTaskId===taskId;b.className='fl-task-option'+(selected?' selected':'');b.ariaPressed=String(selected);}});}
+    function listControls(){
+      if(get('live-task-prev'))get('live-task-prev').disabled=listLoading||taskPage<=1;
+      if(get('live-task-next'))get('live-task-next').disabled=listLoading||taskPage>=taskPages;
+      if(get('live-task-page')){get('live-task-page').value=taskPage;get('live-task-page').max=taskPages;get('live-task-page').disabled=listLoading||taskPages<=1;}
+      if(get('live-task-clear'))get('live-task-clear').disabled=!taskSearch&&!taskStatus;
+      if(get('live-refresh'))get('live-refresh').disabled=listLoading;
+    }
+    function loadList(){
+      var sequence=++listSequence;listLoading=true;listControls();setText('live-task-total','正在读取任务…');
+      return write('/livelist',{page:taskPage,page_size:taskPageSize,search:taskSearch,status:taskStatus}).then(function(data){
+        if(sequence!==listSequence)return;
+        // Preserve compatibility with the original unpaged list response.
+        if(Array.isArray(data))data={items:data.slice(0,taskPageSize),total:data.length,page:1,pages:Math.max(1,Math.ceil(data.length/taskPageSize))};
+        if(!data||!Array.isArray(data.items)||!Number.isFinite(data.total))throw new Error('任务列表数据不可用，请刷新重试。');
+        taskPage=data.page;taskPages=data.pages;listedTasks=data.items;listUnavailable=false;
+        var container=get('live-tasks');container.replaceChildren();
+        if(!data.items.length){var empty=el('p',taskSearch||taskStatus?'没有符合条件的任务，请调整或重置筛选。':'暂无检索任务，开始一次检索后会保存在这里。');empty.className='fl-empty';container.appendChild(empty);}
+        data.items.forEach(function(item){
+          var b=el('button');b.type='button';b._liveTaskId=item.id;b.className='fl-task-option';
+          var heading=el('span');heading.className='fl-task-option-heading';heading.appendChild(el('strong',item.query));heading.appendChild(pill(item.status));b.appendChild(heading);
+          var kind={domain:'域名 / IP',username:'用户名',email:'邮箱'}[item.input_type]||'检索';
+          b.appendChild(el('small',kind+' · '+time(item.created_at)+' · '+item.id.slice(0,8)));b.title='任务编号：'+item.id;
+          b.onclick=function(){var view=global.location&&global.location.hash.split('/')[0]==='#results'?'results':'progress';loadTask(item.id);navigate(view,item.id);};container.appendChild(b);
+        });
+        container.scrollTop=0;markTaskSelection();setText('live-task-total','共 '+data.total+' 项 · 第 '+taskPage+' / '+taskPages+' 页');route();
+      }).catch(function(error){if(sequence!==listSequence)return;listUnavailable=true;listedTasks=null;get('live-tasks').textContent=error.message;setText('live-task-total','列表不可用，请重试');route();})
+        .finally(function(){if(sequence===listSequence){listLoading=false;listControls();}});
+    }
+    function applyTaskFilters(){clearTimeout(searchTimer);taskSearch=get('live-task-search').value.trim();taskStatus=get('live-task-status-filter').value;taskPage=1;loadList();}
+    if(get('live-task-search-form'))get('live-task-search-form').onsubmit=function(e){e.preventDefault();applyTaskFilters();};
+    if(get('live-task-search'))get('live-task-search').oninput=function(){clearTimeout(searchTimer);searchTimer=setTimeout(applyTaskFilters,300);};
+    if(get('live-task-status-filter'))get('live-task-status-filter').onchange=applyTaskFilters;
+    if(get('live-task-page-size'))get('live-task-page-size').onchange=function(){taskPageSize=Number(this.value)||5;taskPage=1;loadList();};
+    if(get('live-task-clear'))get('live-task-clear').onclick=function(){get('live-task-search').value='';get('live-task-status-filter').value='';applyTaskFilters();};
+    if(get('live-task-prev'))get('live-task-prev').onclick=function(){if(!listLoading&&taskPage>1){taskPage--;loadList();}};
+    if(get('live-task-next'))get('live-task-next').onclick=function(){if(!listLoading&&taskPage<taskPages){taskPage++;loadList();}};
+    if(get('live-task-page'))get('live-task-page').onchange=function(){var next=Number(this.value);if(Number.isInteger(next)&&next>=1&&next<=taskPages){taskPage=next;loadList();}else this.value=taskPage;};
     get('live-start').onclick=function(event){
       if(event)event.preventDefault();var form=get('live-form');if(form&&form.reportValidity&&!form.reportValidity())return;
       var data={input_type:get('live-kind').value,query:get('live-query').value};

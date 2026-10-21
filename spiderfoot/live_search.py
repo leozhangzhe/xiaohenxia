@@ -175,6 +175,7 @@ class LiveSearchService:
                     id TEXT PRIMARY KEY, user_id INTEGER NOT NULL, input_type TEXT NOT NULL,
                     query TEXT NOT NULL, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
                 CREATE INDEX IF NOT EXISTS live_task_owner ON live_tasks(user_id);
+                CREATE INDEX IF NOT EXISTS live_task_page ON live_tasks(user_id,created_at DESC,id DESC);
                 CREATE TABLE IF NOT EXISTS live_sources (
                     task_id TEXT NOT NULL REFERENCES live_tasks(id) ON DELETE CASCADE,
                     user_id INTEGER NOT NULL, source TEXT NOT NULL, status TEXT NOT NULL,
@@ -252,6 +253,44 @@ class LiveSearchService:
         with self.connect() as db:
             ids = [r[0] for r in db.execute("SELECT id FROM live_tasks WHERE user_id=? ORDER BY created_at DESC LIMIT 100", (owner,))]
         return [self.get(owner, task_id) for task_id in ids]
+
+    def list_page(self, owner, page=1, page_size=5, search='', status=''):
+        """Return bounded, masked summaries; never load result bodies for a list."""
+        if (isinstance(page, bool) or not str(page).isdigit() or not 1 <= int(page) <= 1000000
+                or isinstance(page_size, bool) or not str(page_size).isdigit()
+                or not 1 <= int(page_size) <= 50 or not isinstance(search, str) or len(search) > 254
+                or status not in {'', 'active', 'waiting', 'running', 'completed', 'partial',
+                                  'failed', 'timeout', 'not_configured', 'cancelled'}):
+            raise ValueError('Invalid task list parameters')
+        page, page_size, search = int(page), int(page_size), search.strip()
+        statement = """WITH summaries AS (
+            SELECT t.id,t.input_type,t.query,t.created_at,t.updated_at,COUNT(s.source) AS source_count,
+              CASE WHEN SUM(s.status='running')>0 THEN 'running'
+                   WHEN SUM(s.status='waiting')>0 THEN 'waiting'
+                   WHEN COUNT(s.source)=0 OR SUM(s.status='completed')=COUNT(s.source) THEN 'completed'
+                   WHEN SUM(s.status='cancelled')=COUNT(s.source) THEN 'cancelled'
+                   WHEN SUM(s.status='not_configured')=COUNT(s.source) THEN 'not_configured'
+                   WHEN SUM(s.status IN ('completed','partial'))>0 THEN 'partial'
+                   ELSE 'failed' END AS status
+            FROM live_tasks t LEFT JOIN live_sources s ON s.task_id=t.id AND s.user_id=t.user_id
+            WHERE t.user_id=? AND (?='' OR instr(lower(t.query),lower(?))>0 OR instr(t.id,lower(?))>0)
+            GROUP BY t.id
+        ) """
+        condition = "WHERE (?='' OR status=? OR (?='active' AND status IN ('waiting','running')))"
+        arguments = (owner, search, search, search, status, status, status)
+        with self.connect() as db:
+            total = db.execute(statement + 'SELECT COUNT(*) FROM summaries ' + condition, arguments).fetchone()[0]
+            pages = max(1, (total + page_size - 1) // page_size)
+            page = min(page, pages)
+            rows = db.execute(statement + 'SELECT * FROM summaries ' + condition
+                              + ' ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?',
+                              (*arguments, page_size, (page - 1) * page_size)).fetchall()
+        items = []
+        for row in rows:
+            item = dict(row)
+            item['query'] = display_query(item['input_type'], item['query'])
+            items.append(item)
+        return {'items': items, 'total': total, 'page': page, 'page_size': page_size, 'pages': pages}
 
     def cancel(self, owner, task_id):
         self.get(owner, task_id)

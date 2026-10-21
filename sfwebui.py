@@ -131,8 +131,25 @@ class SpiderFootWebUi:
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
-    def livelist(self):
-        return self._live_operation('list')
+    def livelist(self, page=None, page_size=None, search=None, status=None, csrf_token=None):
+        if cherrypy.request.method == 'GET':
+            if any(value is not None for value in (page, page_size, search, status, csrf_token)):
+                cherrypy.response.headers['Allow'] = 'POST'
+                raise cherrypy.HTTPError(405, 'Filtered task lists require POST.')
+            return self._live_operation('list')
+        if cherrypy.request.method != 'POST':
+            cherrypy.response.headers['Allow'] = 'GET, POST'
+            raise cherrypy.HTTPError(405, 'Unsupported method.')
+        cherrypy.response.headers['Cache-Control'] = 'no-store'
+        try:
+            return self._live().list_page(current_user_id(), page or 1, page_size or 5,
+                                          search or '', status or '')
+        except ValueError:
+            cherrypy.response.status = 400
+            return {'error': '任务列表参数无效，请检查页码和筛选条件。'}
+        except Exception:
+            cherrypy.response.status = 503
+            return {'error': '任务列表数据暂不可用，请刷新重试。'}
 
     @cherrypy.expose
     @cherrypy.tools.json_out()
