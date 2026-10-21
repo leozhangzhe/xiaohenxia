@@ -428,7 +428,10 @@ function checkAll() {
       if (data && data.success !== false) {
         document.getElementById('sm-priv-total').textContent = data.total || 0;
         if (data.items && data.items.length > 0) {
-          document.getElementById('sm-priv-last').textContent = (data.items[0].created_at || '--').substring(0, 16);
+          var created = data.items[0].created_at;
+          var createdDate = new Date(typeof created === 'number' && created < 1e12 ? created * 1000 : created);
+          document.getElementById('sm-priv-last').textContent = created == null || Number.isNaN(createdDate.getTime())
+            ? '--' : createdDate.toLocaleString('zh-CN', {hour12: false});
         }
       }
     })
