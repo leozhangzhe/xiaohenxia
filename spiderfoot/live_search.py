@@ -21,8 +21,38 @@ SOURCES = {
     "hibp": "HIBP 已收录事件中的邮箱匹配；覆盖有限，无匹配不代表不存在相关信息。",
 }
 TERMINAL = {"completed", "partial", "failed", "not_configured", "timeout", "cancelled"}
+DIAGNOSTIC_REASONS = {
+    'timeout': '请求超时', 'connection': '连接失败', 'tls': 'TLS/证书验证失败',
+    'blocked': '访问被拒绝', 'rate_limit': '请求被限流', 'http_error': '站点服务错误',
+    'unsupported_input': '站点不支持此用户名格式', 'invalid_response': '响应无法判定',
+    'api_auth': 'API 授权或订阅无效', 'tool_error': '检索工具异常退出',
+    'dns_failure': 'DNS 查询失败', 'scan_error': '扫描模块报错',
+    'scan_incomplete': '扫描未正常结束', 'unknown': '错误类型未记录',
+}
 INPUT_SOURCES = {"username": ("sherlock", "maigret", "whatsmyname"), "email": ("holehe", "hibp"),
                  "domain": ("spiderfoot",), "website": ("spiderfoot",), "ip": ("spiderfoot",)}
+
+
+def diagnostic_message(value):
+    """Persist bounded counts and fixed reason labels, never raw tool exceptions."""
+    if not isinstance(value, dict):
+        return ''
+    def count(number):
+        return type(number) is int and 0 <= number <= 10000
+    parts = []
+    checked, unresolved = value.get('checked'), value.get('unresolved')
+    if count(checked) and count(unresolved) and unresolved <= checked:
+        unit = '次请求' if value.get('unit') == 'request' else '个站点'
+        parts.append(f'检查数量：{checked} {unit}；可判定：{checked-unresolved}；无法判定：{unresolved}。')
+        if value.get('unit') == 'request':
+            parts.append('请求次数不等于站点数量。')
+    reasons = value.get('reasons')
+    if isinstance(reasons, dict):
+        safe = [f'{label}：{reasons[code]}' for code, label in DIAGNOSTIC_REASONS.items()
+                if count(reasons.get(code)) and reasons[code] > 0]
+        if safe:
+            parts.append('错误分类：' + '；'.join(safe) + '。')
+    return ''.join(parts)
 
 
 def validate_input(kind, query):
@@ -123,7 +153,7 @@ class SourceAdapter:
             messages = {"completed": "检索完成" if rows else "当前数据源未发现匹配，不代表不存在相关信息。",
                         "partial": "部分完成；部分站点不可用或受限。", "failed": "数据源不可用。",
                         "timeout": "数据源超时。", "cancelled": "已取消", "not_configured": "数据源未配置或未安装。"}
-            return outcome(status, messages[status], rows)
+            return outcome(status, messages[status] + diagnostic_message(raw.get('diagnostics')), rows)
         except TimeoutError:
             return outcome("timeout", "数据源超时，已关闭检索进程。")
         except Exception:

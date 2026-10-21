@@ -8,15 +8,39 @@
   var sourceNames={spiderfoot:'SpiderFoot',sherlock:'Sherlock',maigret:'Maigret',whatsmyname:'WhatsMyName',holehe:'Holehe',hibp:'HIBP'};
   function time(ts){return Number.isFinite(Number(ts))&&ts?new Date(Number(ts)*1000).toLocaleString('zh-CN',{hour12:false}):'暂无时间';}
   function pill(status){var n=el('span',labels[status]||status);n.className='fl-pill '+status;return n;}
-  function renderResults(container, task, sourceFilter, typeFilter) {
+  function sourceReports(container,task,sourceFilter){
+    var sources=(task.sources||[]).filter(function(s){return !sourceFilter||s.source===sourceFilter;});
+    if(!sources.length)return;
+    var report=el('div');report.className='fl-execution-report';
+    var heading=el('div');heading.className='fl-source-row';heading.appendChild(el('h3','检索执行报告'));heading.appendChild(el('p','执行状态与线索数量分别列出；0 条线索不等于查询成功或目标安全。'));report.appendChild(heading);
+    var advice={completed:'可使用其他来源补充核验；无匹配不代表不存在相关信息。',partial:'稍后可在新建检索中只选择此来源重试；已保存的线索仍可查看。',failed:'请检查该来源的安装、配置及网络后重试；本次无法判断是否存在匹配。',timeout:'稍后重试或选择其他来源；超时不能判断为未匹配。',not_configured:'请由管理员检查依赖安装或 API 配置；配置完成后重新检索。',cancelled:'如需继续，请重新创建检索；已保存的线索不会因取消而删除。',waiting:'请等待来源开始执行。',running:'请等待该来源返回，结果会自动更新。'};
+    sources.forEach(function(s){
+      var count=(task.results||[]).filter(function(r){return r.source===s.source;}).length;
+      var verdict={completed:count?'查询完成，返回线索':'查询完成，未发现匹配',partial:'部分查询未能完成',failed:'查询失败',timeout:'查询超时',not_configured:'未配置或未安装',cancelled:'查询已取消',waiting:'等待查询',running:'正在查询'}[s.status]||'状态无法识别';
+      var row=el('div');row.className='fl-source-row';var title=el('div');title.className='fl-source-title';title.appendChild(el('strong',(sourceNames[s.source]||s.source||'数据源')+'：'+verdict));title.appendChild(pill(s.status));row.appendChild(title);
+      row.appendChild(el('p',count+' 条已保存线索'));
+      row.appendChild(el('p','来源反馈：'+(s.message||'这条记录未保存具体原因。')));
+      if(['partial','failed'].indexOf(s.status)>=0&&(!s.message||['部分完成；部分站点不可用或受限。','数据源不可用。','数据源不可用，请检查安装或网络。'].indexOf(s.message)>=0))row.appendChild(el('p','历史记录未保存具体失败站点或错误类型，无法还原具体原因；重新检索后将保存执行统计和错误分类。'));
+      row.appendChild(el('p','下一步：'+(advice[s.status]||'请刷新任务，或联系管理员核查。')));
+      row.appendChild(el('p','查询时间：'+time(s.queried_at)));
+      if(s.limitations)row.appendChild(el('p','覆盖范围：'+s.limitations));
+      report.appendChild(row);
+    });container.appendChild(report);
+  }
+  function renderResults(container, task, sourceFilter, typeFilter, clearFilters) {
     container.replaceChildren();
+    sourceReports(container,task,sourceFilter);
     var results=(task.results||[]).filter(function(row){return (!sourceFilter||row.source===sourceFilter)&&(!typeFilter||row.result_type===typeFilter);});
     if(!results.length) {
       var relevant=(task.sources||[]).filter(function(s){return !sourceFilter||s.source===sourceFilter;});
       var unavailable=relevant.some(function(s){return ['failed','timeout','not_configured','partial'].indexOf(s.status)>=0;});
       var active=relevant.some(function(s){return ['waiting','running'].indexOf(s.status)>=0;})||(!sourceFilter&&['waiting','running'].indexOf(task.status)>=0);
-      var text=active?'正在检索，已返回的结果会逐步显示。':unavailable?'部分数据源不可用或未配置；请查看各来源状态，不能据此判定无匹配。':task.status==='cancelled'?'任务已取消；仅保留取消前已保存的结果。':'当前数据源未发现匹配，不代表不存在相关信息。';
-      var empty=el('p',text);empty.className='fl-empty';container.appendChild(empty);return;
+      var filtered=(sourceFilter||typeFilter)&&(task.results||[]).length>0;
+      var text=filtered?'当前筛选条件下没有结果。此任务共保存 '+task.results.length+' 条线索，请清除或更改筛选。':active?'正在检索，已返回的结果会逐步显示。':unavailable?'本次没有可展示的线索，且存在未能完整完成的来源；具体状态与原因见上方执行报告，不能据此判定无匹配。':task.status==='cancelled'?'任务已取消；仅保留取消前已保存的结果。':'当前数据源未发现匹配，不代表不存在相关信息。';
+      // Keep the established unavailable wording for callers and assistive users.
+      if(unavailable&&!filtered&&!active)text='数据源不可用或未完整完成。'+text;
+      var empty=el('p',text);empty.className='fl-empty';container.appendChild(empty);
+      if(filtered&&clearFilters){var reset=el('button','清除筛选');reset.type='button';reset.className='fl-btn';reset.onclick=clearFilters;container.appendChild(reset);}return;
     }
     results.forEach(function(row) {
       var card=el('article');card.className='fl-result';card.appendChild(el('h3',row.title));
@@ -84,7 +108,7 @@
         Array.from(new Set(values)).forEach(function(value){var option=el('option',spec[1]==='source'?(sourceNames[value]||value):value);option.value=value;select.appendChild(option);});select.value=values.indexOf(old)>=0?old:'';
       });
     }
-    function render(){if(task){var source=get('live-source-filter').value,type=get('live-type-filter').value;renderResults(get('live-results'),task,source,type);var rows=(task.results||[]).filter(function(r){return (!source||r.source===source)&&(!type||r.result_type===type);});if(global.vaultMotion){motion('ticker',get('live-result-count'),rows.length,' 条已返回线索 · 需人工核验');motion('results',get('live-results'),task);}else setText('live-result-count',rows.length+' 条已返回线索 · 需人工核验');}}
+    function render(){if(task){var source=get('live-source-filter').value,type=get('live-type-filter').value;renderResults(get('live-results'),task,source,type,function(){get('live-source-filter').value='';get('live-type-filter').value='';render();});var rows=(task.results||[]).filter(function(r){return (!source||r.source===source)&&(!type||r.result_type===type);});var suffix=(source||type)?' 条当前显示 / 共 '+task.results.length+' 条已保存线索 · 需人工核验':' 条已保存线索 · 需人工核验';if(global.vaultMotion){motion('ticker',get('live-result-count'),rows.length,suffix);motion('results',get('live-results'),task);}else setText('live-result-count',rows.length+suffix);}}
     function loadTask(id){
       clearTimeout(timer);
       if(taskId!==id){
@@ -101,7 +125,7 @@
         setText('live-source-count',finished+' / '+data.sources.length+' 个来源结束；结束不代表目标安全。');var fill=get('live-progress-fill');if(fill)fill.style.transform='scaleX('+(finished/Math.max(1,data.sources.length))+')';
         get('live-cancel').disabled=['waiting','running'].indexOf(data.status)<0;get('live-delete').disabled=false;filters();render();
         if(['waiting','running'].indexOf(data.status)>=0)timer=setTimeout(function(){loadTask(id);},1000);
-        else{message('本次检索已结束；请按各来源状态判断覆盖情况。');loadList();}
+        else{var complete=data.sources.filter(function(s){return s.status==='completed';}).length;message('本次检索已结束：已保存 '+data.results.length+' 条线索；'+complete+' 个来源查询完成，'+(data.sources.length-complete)+' 个来源未完整完成。具体原因见检索执行报告。');loadList();}
       }).catch(function(error){if(taskId!==id)return;task=null;motion('unavailable');message(error.message,true);get('live-results').textContent='数据不可用；请刷新任务列表后重试。';get('live-sources').textContent='数据不可用，无法读取来源进度。';get('live-cancel').disabled=true;get('live-delete').disabled=true;setText('live-result-count','数据不可用');setText('live-source-count','进度不可用');});
     }
     function loadList(){return request('/livelist').then(function(data){
