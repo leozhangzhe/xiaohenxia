@@ -310,7 +310,7 @@ class PrivacyActionDB:
                               masked_content
                        FROM privacy_actions
                        WHERE """ + scope + """
-                       ORDER BY created_at DESC
+                       ORDER BY created_at DESC, id DESC
                        LIMIT %s OFFSET %s""",
                     (page_size, offset) if admin else (user_id, page_size, offset)
                 )
