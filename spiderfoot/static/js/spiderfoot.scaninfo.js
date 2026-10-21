@@ -126,7 +126,7 @@ function scanSummaryView(scanId) {
                 }
                 var table = '<table class="pg-table"><thead><tr><th>数据类型</th><th>数量</th><th>最后发现</th></tr></thead><tbody>';
                 data.forEach(function(row) {
-                    table += '<tr><td>' + escapeHtml(row[0]) + '</td><td>' + escapeHtml(row[1]) + '</td><td>' + escapeHtml(row[2] || '-') + '</td></tr>';
+                    table += '<tr><td>' + escapeHtml(row[0]) + '</td><td>' + escapeHtml(row[3]) + '</td><td>' + escapeHtml(row[2] || '-') + '</td></tr>';
                 });
                 table += '</tbody></table>';
                 $('#summary-table').html(table);

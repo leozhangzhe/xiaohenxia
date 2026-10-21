@@ -20,10 +20,13 @@ $.ajax = options => ({
         if (options.url.endsWith('/scanstatus')) {
             callback(['scan', '', '', '', '', 'FINISHED', {HIGH: 0, MEDIUM: 0, LOW: 0, INFO: 0}]);
         }
+        if (process.argv[2] === 'normal' && options.url.endsWith('/scansummary')) {
+            callback([['EMAILADDR', '<Synthetic Email>', '2026-10-21 12:00:00', 5, 3, 'FINISHED']]);
+        }
         return this;
     },
     fail(callback) {
-        if (options.url.endsWith('/scansummary')) callback({status: 500});
+        if (process.argv[2] !== 'normal' && options.url.endsWith('/scansummary')) callback({status: 500});
         return this;
     }
 });
